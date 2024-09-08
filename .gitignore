@@ -2,3 +2,6 @@
 /docs/AccountinglinkC/AccountinglinkC/obj/*
 /docs/AccountinglinkC/.vs/*
 /docs/AccountinglinkC/packages/*
+/SqlAccountRestAPI/.vs/*
+/SqlAccountRestAPI/bin/*
+/SqlAccountRestAPI/obj/*
