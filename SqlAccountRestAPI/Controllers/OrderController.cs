@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using SqlAccountRestAPI.Lib;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,8 +27,19 @@ namespace SqlAccountRestAPI.Controllers
 
         // POST api/<OrderController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] string jsonData)
         {
+            try
+            {
+                var ivHelper = new SalesInvoice();
+                ivHelper.ParseJsonOrder(jsonData);
+                ivHelper.AddSalesInvoice();
+                return Ok(ivHelper);
+            }             
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT api/<OrderController>/5
