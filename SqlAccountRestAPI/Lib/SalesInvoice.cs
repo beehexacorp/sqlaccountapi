@@ -78,7 +78,14 @@ namespace SqlAccountRestAPI.Lib
 
         public void ParseJsonOrder(string jsonData)
         {
-
+            //hard code here to have test data
+            OrderData = new JsonObject();
+            OrderItems = new JsonObject[2];
+            // manually create test data
+            OrderData["DocNo"] = "INV0001";
+            OrderData["DocType"] = "INV";
+            OrderData["DocDate"] = "2021-01-01";
+            OrderData["Code"] = "CUST001";
         }
     }
 }
