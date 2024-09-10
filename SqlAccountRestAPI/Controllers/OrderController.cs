@@ -1,7 +1,9 @@
 ﻿using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SqlAccountRestAPI.Lib;
+using SqlAccountRestAPI.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,6 +13,12 @@ namespace SqlAccountRestAPI.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
+        private readonly SqlComServer app;
+        public OrderController(SqlComServer comServer)
+        {
+            app = comServer;
+        }
+
         // GET: api/<OrderController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -19,26 +27,38 @@ namespace SqlAccountRestAPI.Controllers
         }
 
         // GET api/<OrderController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("OrderNo")]
+        public IActionResult Get(string orderNo)
         {
-            return "value";
+            try
+            {
+                var ivHelper = new SalesInvoice(app);
+                ivHelper.LoadOrder(orderNo);
+                if(ivHelper.Order == null) NotFound();
+                string jsonResult = string.Empty;
+                jsonResult = JsonConvert.SerializeObject(ivHelper.Order);
+                return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
         }
 
         // POST api/<OrderController>
         [HttpPost]
-        public IActionResult Post([FromBody] string jsonData)
+        public IActionResult Post([FromBody] Order order)
         {
             try
             {
-                var ivHelper = new SalesInvoice();
-                ivHelper.ParseJsonOrder(jsonData);
+                var ivHelper = new SalesInvoice(app);
+                ivHelper.Order = order;
                 ivHelper.AddSalesInvoice();
-                return Ok(ivHelper);
+                return Ok(order.DocNo);
             }             
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.ToString());
             }
         }
 

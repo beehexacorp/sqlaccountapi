@@ -9,14 +9,35 @@ namespace SqlAccountRestAPI.Controllers
     [ApiController]
     public class AppController : ControllerBase
     {
+        private readonly SqlComServer app;
+        public AppController(SqlComServer comServer)
+        {
+            app = comServer;
+        }
+
+        // GET: api/<LoginController>
+        [HttpGet("Login")]
+        public IActionResult GetLogin()
+        {
+            try
+            {
+                //var helper = new SqlComServer();
+                return Ok(app.ComServer.Title);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // GET: api/<AppController>
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
-                var helper = new SqlComServer();
-                var jsonObject = helper.GetAppInfo();
+                //var helper = new SqlComServer();
+                var jsonObject = app.GetAppInfo();
                 return Ok(jsonObject);
             }
             catch (System.Exception ex)
@@ -34,8 +55,8 @@ namespace SqlAccountRestAPI.Controllers
         {
             try
             {
-                var helper = new SqlComServer();
-                var arr = helper.GetActions();
+                //var helper = new SqlComServer();
+                var arr = app.GetActions();
                 return Ok(arr);
             }
             catch (System.Exception ex)
@@ -53,8 +74,8 @@ namespace SqlAccountRestAPI.Controllers
         {
             try
             {
-                var helper = new SqlComServer();
-                var arr = helper.GetModules();
+                //var helper = new SqlComServer();
+                var arr = app.GetModules();
                 return Ok(arr);
             }
             catch (System.Exception ex)
@@ -72,8 +93,8 @@ namespace SqlAccountRestAPI.Controllers
         {
             try
             {
-                var helper = new SqlComServer();
-                var arr = helper.GetBizObjects();
+                //var helper = new SqlComServer();
+                var arr = app.GetBizObjects();
                 return Ok(arr);
             }
             catch (System.Exception ex)

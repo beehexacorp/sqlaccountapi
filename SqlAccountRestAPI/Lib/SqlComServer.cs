@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Reflection;
+using System.Text.Json.Nodes;
 
 namespace SqlAccountRestAPI.Lib
 {
@@ -11,7 +12,28 @@ namespace SqlAccountRestAPI.Lib
         public SqlComServer()
         {
             lBizType = Type.GetTypeFromProgID("SQLAcc.BizApp");
+
+            if (lBizType == null)
+            {
+                throw new Exception("Cannot create instance of SQLAcc.BizApp");
+            }
+
             ComServer = Activator.CreateInstance(lBizType);
+            
+            if(ComServer == null)
+            {
+                throw new Exception("Cannot create instance of SQLAcc.BizApp");
+            }
+
+            Type type = ComServer.GetType();
+            MethodInfo[] methods = type.GetMethods();
+
+            Console.WriteLine($"Methods of {type.Name}:");
+            foreach (MethodInfo method in methods)
+            {
+                Console.WriteLine(method.Name);
+            }
+
             if (!ComServer.IsLogin)
             {            
                 /* check whether user has logon */

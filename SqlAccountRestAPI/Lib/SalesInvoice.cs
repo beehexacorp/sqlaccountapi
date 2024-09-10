@@ -1,16 +1,24 @@
 ﻿using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
 using System.Text.Json.Nodes;
+using SqlAccountRestAPI.Models;
 
 namespace SqlAccountRestAPI.Lib
 {
     public class SalesInvoice
     {
-        private SqlComServer? App { get; set; }
+        private SqlComServer app;
+        public SalesInvoice(SqlComServer comServer)
+        {
+            if (comServer == null) throw new Exception("Sql Accounting is not running");
+            app = comServer;
+        }
 
-        public JsonObject? OrderData { get; set; }
+        public Order? Order { get; set; }
 
-        public Array? OrderItems { get; set; }
+        //public JsonObject? OrderData { get; set; }
+
+        //public Array? OrderItems { get; set; }
 
         /// <summary>
         /// Add a new Sales Invoice
@@ -20,55 +28,54 @@ namespace SqlAccountRestAPI.Lib
         /// <exception cref="Exception"></exception>
         public void AddSalesInvoice()
         {
-            if(OrderData == null) throw new Exception("OrderData is required");
-            if (OrderItems == null) throw new Exception("orderItems are required");
+            if(Order == null) throw new Exception("OrderData is required");
+            if (Order.Items == null) throw new Exception("orderItems are required");
 
-            App = new SqlComServer();
+            //app = new SqlComServer();
 
-            var IvBizObj = App.ComServer.BizObjects.Find("SL_IV");
+            var IvBizObj = app.ComServer.BizObjects.Find("SL_IV");
             var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
             var lDetailDataSet = IvBizObj.DataSets.Find("cdsDocDetail");
             IvBizObj.New();
 
             /* update main order data */
             lMainDataSet.FindField("DocKey").value = -1;
-            lMainDataSet.FindField("DocNo").value = OrderData["DocNo"]?.GetValue<string>();
-            lMainDataSet.FindField("DocType").value = OrderData["DocType"]?.GetValue<string>();  
-            lMainDataSet.FindField("DocDate").value = OrderData["DocDate"]?.GetValue<string>();
-            lMainDataSet.FindField("PostDate").value = OrderData["DocDate"]?.GetValue<string>();
-            lMainDataSet.FindField("Code").value = OrderData["Code"]?.GetValue<string>();
-            lMainDataSet.FindField("CompanyName").value = OrderData["CompanyName"]?.GetValue<string>();
-            lMainDataSet.FindField("Address1").value = OrderData["Address1"]?.GetValue<string>();
-            lMainDataSet.FindField("Address2").value = OrderData["Address2"]?.GetValue<string>();
-            lMainDataSet.FindField("Address3").value = OrderData["Address3"]?.GetValue<string>();
-            lMainDataSet.FindField("Address4").value = OrderData["Address4"]?.GetValue<string>();
-            lMainDataSet.FindField("Agent").value = OrderData["Agent"]?.GetValue<string>();
-            lMainDataSet.FindField("Terms").value = OrderData["Terms"]?.GetValue<string>();
-            lMainDataSet.FindField("CurrencyCode").value = OrderData["CurrencyCode"]?.GetValue<string>();
-            lMainDataSet.FindField("CurrencyRate").value = OrderData["CurrencyRate"]?.GetValue<string>();
-            lMainDataSet.FindField("Description").value = OrderData["Description"]?.GetValue<string>();
-            lMainDataSet.FindField("DocAmt").value = OrderData["DocAmt"]?.GetValue<string>();
-            lMainDataSet.FindField("LocalDocAmt").value = OrderData["LocalDocAmt"]?.GetValue<string>();
-            lMainDataSet.FindField("D_Amount").value = OrderData["D_Amount"]?.GetValue<string>();
+            lMainDataSet.FindField("DocNo").value = Order.DocNo;
+            lMainDataSet.FindField("DocDate").value = Order.DocDate;
+            lMainDataSet.FindField("PostDate").value = Order.PostDate;
+            lMainDataSet.FindField("Code").value = Order.Code;
+            lMainDataSet.FindField("CompanyName").value = Order.CompanyName;
+            lMainDataSet.FindField("Address1").value = Order.Address1;
+            lMainDataSet.FindField("Address2").value = Order.Address2;
+            lMainDataSet.FindField("Address3").value = Order.Address3;
+            lMainDataSet.FindField("Address4").value = Order.Address4;
+            lMainDataSet.FindField("Agent").value = Order.Agent;
+            lMainDataSet.FindField("Terms").value = Order.Terms;
+            lMainDataSet.FindField("CurrencyCode").value = Order.CurrencyCode;
+            lMainDataSet.FindField("CurrencyRate").value = Order.CurrencyRate;
+            lMainDataSet.FindField("Description").value = Order.Description;
+            lMainDataSet.FindField("DocAmt").value = Order.DocAmt;
+            lMainDataSet.FindField("LocalDocAmt").value = Order.LocalDocAmt;
+            lMainDataSet.FindField("D_Amount").value = Order.D_Amount;
 
             /* order items */
 
-            for (int i = 0; i < OrderItems.Length; i++)
+            for (int i = 0; i < Order.Items.Count; i++)
             {
-                var item = OrderItems.GetValue(i) as JsonObject;
+                var item = Order.Items[i];
                 if (item == null) throw new Exception("orderItem is required");
 
                 lDetailDataSet.Append();
                 lDetailDataSet.FindField("DtlKey").value = -1;
                 lDetailDataSet.FindField("DocKey").value = -1;
-                lDetailDataSet.FindField("ItemCode").value = item["ItemCode"]?.GetValue<string>();
-                lDetailDataSet.FindField("Location").value = item["ItemCode"]?.GetValue<string>();
-                lDetailDataSet.FindField("Description").value = item["ItemCode"]?.GetValue<string>();
-                lDetailDataSet.FindField("Qty").value = item["ItemCode"]?.GetValue<string>();
-                lDetailDataSet.FindField("UOM").value = item["ItemCode"]?.GetValue<string>();
-                lDetailDataSet.FindField("UnitPrice").value = item["ItemCode"]?.GetValue<string>();
-                lDetailDataSet.FindField("Disc").value = item["ItemCode"]?.GetValue<string>();
-                lDetailDataSet.FindField("Amount").value = item["ItemCode"]?.GetValue<string>();
+                lDetailDataSet.FindField("ItemCode").value = item.ItemCode;
+                lDetailDataSet.FindField("Location").value = item.Location;
+                lDetailDataSet.FindField("Description").value = item.Description;
+                lDetailDataSet.FindField("Qty").value = item.Quantity;
+                lDetailDataSet.FindField("UOM").value = item.UOM;
+                lDetailDataSet.FindField("UnitPrice").value = item.UniPrice;
+                lDetailDataSet.FindField("Disc").value = item.Disc;
+                lDetailDataSet.FindField("Amount").value = item.Amount;
                 lDetailDataSet.Post();
             }
 
@@ -76,16 +83,80 @@ namespace SqlAccountRestAPI.Lib
             IvBizObj.Save();
         }
 
-        public void ParseJsonOrder(string jsonData)
+        public void LoadOrder(string DocNo)
         {
-            //hard code here to have test data
-            OrderData = new JsonObject();
-            OrderItems = new JsonObject[2];
-            // manually create test data
-            OrderData["DocNo"] = "INV0001";
-            OrderData["DocType"] = "INV";
-            OrderData["DocDate"] = "2021-01-01";
-            OrderData["Code"] = "CUST001";
+            if (DocNo == null) throw new Exception("DocNo is required");
+            if (DocNo == string.Empty) throw new Exception("DocNo is required");
+            
+
+            var IvBizObj = app.ComServer.BizObjects.Find("SL_IV");
+            IvBizObj.New();
+
+            /* get document key based on lDocNo */
+            var lDocKey = IvBizObj.FindKeyByRef("DocNo", DocNo);
+
+            /* before Biz Object opened, assigned param - DocKey to Biz Object */
+            IvBizObj.Params.Find("DocKey").Value = lDocKey;
+
+            /* if lDocKey has value */
+            if (lDocKey != null)
+            {
+                var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
+                var lDetailDataSet = IvBizObj.DataSets.Find("cdsDocDetail");
+
+                IvBizObj.Open();
+
+                if (Order == null) Order = new Order();
+
+
+                Order.DocNo = lMainDataSet.FindField("DocNo").value;
+                Order.DocDate = lMainDataSet.FindField("DocDate").value;
+                Order.PostDate = lMainDataSet.FindField("PostDate").value;
+                Order.Code = lMainDataSet.FindField("Code").value;
+                Order.CompanyName = lMainDataSet.FindField("CompanyName").value;
+                Order.Address1 = lMainDataSet.FindField("Address1").value;
+                Order.Address2 = lMainDataSet.FindField("Address2")?.value;
+                //Order.Address3 = lMainDataSet.FindField("Address3")?.value;
+                //Order.Address4 = lMainDataSet.FindField("Address4")?.value;
+
+                Order.Agent = lMainDataSet.FindField("Agent").value;
+                Order.Terms = lMainDataSet.FindField("Terms").value;
+                Order.CurrencyCode = lMainDataSet.FindField("CurrencyCode").value;
+                Order.CurrencyRate = lMainDataSet.FindField("CurrencyRate").value;
+                Order.Description = lMainDataSet.FindField("Description").value;
+                Order.LocalDocAmt = double.Parse(lMainDataSet.FindField("LocalDocAmt").AsString);
+                Order.DocAmt = double.Parse(lMainDataSet.FindField("DocAmt").AsString); 
+                Order.D_Amount = double.Parse(lMainDataSet.FindField("D_Amount").AsString);
+                Order.Cancelled = lMainDataSet.Findfield("Cancelled").value;
+
+                /* load Detail record */
+                /* move to first record */
+                lDetailDataSet.First();
+                var i = 0;
+
+                while (!lDetailDataSet.eof)
+                {
+                    var orderItem = new OrderItem();
+
+                    /* retrieve Detail DataSet record */
+                    orderItem.ItemCode = lDetailDataSet.FindField("ItemCode").value;
+                    orderItem.Description = lDetailDataSet.FindField("Description").value;
+                    orderItem.Location = lDetailDataSet.FindField("Location").value;
+                    orderItem.Quantity = double.Parse(lDetailDataSet.FindField("Qty").AsString);
+                    orderItem.UOM = lDetailDataSet.FindField("UOM").value;
+                    orderItem.UniPrice = double.Parse(lDetailDataSet.FindField("UnitPrice").AsString);
+                    //orderItem.Disc = double.Parse(lDetailDataSet.FindField("Disc").AsString);
+                    orderItem.Amount = double.Parse(lDetailDataSet.FindField("Amount").AsString);
+                    
+                    if(Order.Items == null) Order.Items = new List<OrderItem>(); 
+
+                    Order.Items.Add(orderItem);
+
+                    /* next record */
+                    lDetailDataSet.Next();
+                    i++;
+                }
+            }
         }
     }
 }
