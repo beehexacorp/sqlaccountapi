@@ -30,6 +30,7 @@ namespace SqlAccountRestAPI.Lib
         {
             if(Order == null) throw new Exception("OrderData is required");
             if (Order.Items == null) throw new Exception("orderItems are required");
+            //if (Order.Items.ItemCode == null) throw new Exception("ItemCode is required");
 
             //app = new SqlComServer();
 
@@ -64,6 +65,7 @@ namespace SqlAccountRestAPI.Lib
             {
                 var item = Order.Items[i];
                 if (item == null) throw new Exception("orderItem is required");
+                //if (Order.Items[i].ItemCode == null) throw new Exception("ItemCode is required");
 
                 lDetailDataSet.Append();
                 lDetailDataSet.FindField("DtlKey").value = -1;

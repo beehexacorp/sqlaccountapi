@@ -41,11 +41,16 @@ namespace SqlAccountRestAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.ToString());
+                var errorResponse = new
+                {
+                    error = "order not exist",
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+
+                //return BadRequest(ex.ToString());
             }
         }
-
-        // POST api/<OrderController>
         [HttpPost]
         public IActionResult Post([FromBody] Order order)
         {
@@ -54,7 +59,15 @@ namespace SqlAccountRestAPI.Controllers
                 var ivHelper = new SalesInvoice(app);
                 ivHelper.Order = order;
                 ivHelper.AddSalesInvoice();
-                return Ok(order.DocNo);
+
+                var orderResponse = new
+                {
+                    message = "Create Order successful",
+                    code = 200,
+                    docNo = order.DocNo
+                };
+                return Ok(orderResponse);
+                //return Ok(order.DocNo);
             }             
             catch (Exception ex)
             {

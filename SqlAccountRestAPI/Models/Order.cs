@@ -39,5 +39,6 @@
         public double UniPrice { get; set; } = 1999;
         public double Amount { get; set; } = 5005;
         public double Disc { get; set; } = 1500;
+        //public double Tax { get; set; } = 0;
     }
 }
