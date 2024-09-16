@@ -103,6 +103,29 @@ namespace SqlAccountRestAPI.Controllers
                 //return BadRequest(ex.ToString());
             }
         }
+
+        [HttpGet("All")]
+        public IActionResult GetAll()
+        {
+            try
+            {
+                var ivHelper = new StockItem(app);
+                ivHelper.LoadAll();
+                return Ok("OK");
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+
+                //return BadRequest(ex.ToString());
+            }
+        }
+
         //public IEnumerable<string> Get()
         //{
         //    try

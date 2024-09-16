@@ -171,5 +171,20 @@ namespace SqlAccountRestAPI.Lib
                 //Item.Lastmodified = Convert.ToInt64(lMainDataSet.FindField("Lastmodified").value);
             }
         }
+
+        public void LoadAll()
+        {
+            //FileName = BizObject.Select("Code,Description", "", "Code", "AD", ",", "C:\Data.txt");
+            var IvBizObj = app.ComServer.BizObjects.Find("ST_ITEM");
+
+            // Get the path to the debug folder
+            string debugFolderPath = AppDomain.CurrentDomain.BaseDirectory;
+            var fileName = "ST_ITEM_LIST.txt";
+
+            // Define the file name and path
+            string filePath = Path.Combine(debugFolderPath, fileName);
+
+            var FileName = IvBizObj.Select("Code,Balsqty", "", "Code", "AD", ",", filePath);
+        }
     }
 }
