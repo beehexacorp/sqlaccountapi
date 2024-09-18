@@ -2,6 +2,9 @@
 using System;
 using System.Text.Json.Nodes;
 using SqlAccountRestAPI.Models;
+using System.Xml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SqlAccountRestAPI.Lib
 {
@@ -183,8 +186,45 @@ namespace SqlAccountRestAPI.Lib
 
             // Define the file name and path
             string filePath = Path.Combine(debugFolderPath, fileName);
+            var FileName = IvBizObj.Select("*", "", "Code", "AD", ",", filePath);
+        }
+        public string LoadByQuery(Query query)
+        {
+            var IvBizObj = app.ComServer.BizObjects.Find(query.Type);
 
-            var FileName = IvBizObj.Select("Code,Balsqty", "", "Code", "AD", ",", filePath);
+            string xmlString = IvBizObj.Select("*", query.Where, "", "SX", ",", "");
+
+            // Convert XML to Json
+            var doc = new XmlDocument();
+            doc.LoadXml(xmlString);
+
+            var rowDataNode = doc.SelectSingleNode("//ROWDATA");
+
+            if (rowDataNode == null)
+            {
+                return "";
+            }
+
+            var jsonText = JsonConvert.SerializeXmlNode(rowDataNode, Newtonsoft.Json.Formatting.Indented, true);
+
+            var jsonObj = JObject.Parse(jsonText);
+            var rows = jsonObj["ROW"];
+            if (rows == null)
+                return "[]";
+            if (rows.Type == JTokenType.Object)
+            {
+                rows = new JArray(rows);
+            }
+
+            // Convert Row atts into key-value
+            foreach (var row in rows)
+            {
+                var propertiesToRename = row.Children<JProperty>().Where(p => p.Name.StartsWith("@")).ToList();
+                foreach (var prop in propertiesToRename)
+                    prop.Replace(new JProperty(prop.Name.TrimStart('@'), prop.Value));
+            }
+
+            return rows.ToString(Newtonsoft.Json.Formatting.Indented);
         }
     }
 }
