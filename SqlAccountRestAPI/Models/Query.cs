@@ -5,6 +5,6 @@ namespace SqlAccountRestAPI.Models
     {
         public string? Type { get; set; } = "ST_ITEM";
         public string? Where { get; set; } = "";
-        public string? OrderBy { get; set; } = "Code";
+        public string? OrderBy { get; set; } = "Dockey";
     }
 }
