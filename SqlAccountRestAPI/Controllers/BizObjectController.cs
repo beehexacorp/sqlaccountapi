@@ -19,6 +19,44 @@ namespace SqlAccountRestAPI.Controllers
         {
             app = comServer;
         }
+        [HttpGet("DaysToNow")]
+        public IActionResult GetByDaysToNow([FromQuery] string Type="ST_ITEM", int Days=0)
+        {
+            try
+            {
+                var ivHelper = new BizObject(app);
+                string jsonResult = ivHelper.LoadByDaysToNow(Type, Days);
+                return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
+        [HttpGet("AllDaysToNow")]
+        public IActionResult GetAllByDaysToNow([FromQuery] string Type="ST_ITEM", int Days=0)
+        {
+            try
+            {
+                var ivHelper = new BizObject(app);
+                string jsonResult = ivHelper.LoadAllByDaysToNow(Type, Days);
+                return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
         [HttpGet("Query")]
         public IActionResult GetByQuery([FromQuery] Query query)
         {
