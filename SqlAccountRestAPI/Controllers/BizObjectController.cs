@@ -12,10 +12,10 @@ namespace SqlAccountRestAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenericController : ControllerBase
+    public class BizObjectController : ControllerBase
     {
         private readonly SqlComServer app;
-        public GenericController(SqlComServer comServer)
+        public BizObjectController(SqlComServer comServer)
         {
             app = comServer;
         }
@@ -24,7 +24,7 @@ namespace SqlAccountRestAPI.Controllers
         {
             try
             {
-                var ivHelper = new Generic(app);
+                var ivHelper = new BizObject(app);
                 string jsonResult = ivHelper.LoadByQuery(query);
                 return Ok(jsonResult);
             }
@@ -36,8 +36,6 @@ namespace SqlAccountRestAPI.Controllers
                     code = 400
                 };
                 return BadRequest(errorResponse);
-
-                //return BadRequest(ex.ToString());
             }
         }
     }

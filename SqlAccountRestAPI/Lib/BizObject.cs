@@ -8,10 +8,10 @@ using Newtonsoft.Json.Linq;
 
 namespace SqlAccountRestAPI.Lib
 {
-    public class Generic
+    public class BizObject
     {
         private SqlComServer app;
-        public Generic(SqlComServer comServer)
+        public BizObject(SqlComServer comServer)
         {
             if (comServer == null) throw new Exception("Sql Accounting is not running");
             app = comServer;
@@ -20,7 +20,7 @@ namespace SqlAccountRestAPI.Lib
         {
             var IvBizObj = app.ComServer.BizObjects.Find(query.Type);
 
-            string xmlString = IvBizObj.Select("*", query.Where, "", "SX", ",", "");
+            string xmlString = IvBizObj.Select("*", query.Where, query.OrderBy, "SX", ",", "");
 
             // Convert XML to Json
             var doc = new XmlDocument();
