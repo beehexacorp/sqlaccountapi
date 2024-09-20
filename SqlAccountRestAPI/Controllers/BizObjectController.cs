@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -20,12 +21,12 @@ namespace SqlAccountRestAPI.Controllers
             app = comServer;
         }
         [HttpGet("DaysToNow")]
-        public IActionResult GetByDaysToNow([FromQuery] string Type="ST_ITEM", int Days=0)
+        public IActionResult GetByDaysToNow([FromQuery] string type="ST_ITEM", int days=0)
         {
             try
             {
                 var ivHelper = new BizObject(app);
-                string jsonResult = ivHelper.LoadByDaysToNow(Type, Days);
+                string jsonResult = ivHelper.LoadByDaysToNow(type, days);
                 return Ok(jsonResult);
             }
             catch (Exception ex)
@@ -39,12 +40,12 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("AllDaysToNow")]
-        public IActionResult GetAllByDaysToNow([FromQuery] string Type="ST_ITEM", int Days=0)
+        public IActionResult GetAllByDaysToNow([FromQuery] string type="ST_ITEM", int days=0)
         {
             try
             {
                 var ivHelper = new BizObject(app);
-                string jsonResult = ivHelper.LoadAllByDaysToNow(Type, Days);
+                string jsonResult = ivHelper.LoadAllByDaysToNow(type, days);
                 return Ok(jsonResult);
             }
             catch (Exception ex)
@@ -58,13 +59,32 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("Query")]
-        public IActionResult GetByQuery([FromQuery] Query query)
+        public IActionResult GetByQuery([FromQuery] string type="ST_ITEM", string where="", string orderBy="")
         {
             try
             {
                 var ivHelper = new BizObject(app);
-                string jsonResult = ivHelper.LoadByQuery(query);
+                string jsonResult = ivHelper.LoadByQuery(type, where, orderBy);
                 return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
+        [HttpPost("Add")]
+        public IActionResult Add([FromBody] JsonElement body){
+            try
+            {
+                JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
+                var ivHelper = new BizObject(app);
+                ivHelper.Add(jsonBody);
+                return Ok("OK");
             }
             catch (Exception ex)
             {

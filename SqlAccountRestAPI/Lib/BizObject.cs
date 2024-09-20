@@ -16,33 +16,33 @@ namespace SqlAccountRestAPI.Lib
             if (comServer == null) throw new Exception("Sql Accounting is not running");
             app = comServer;
         }
-        public string LoadByDaysToNow(string Type, int Days)
+        public string LoadByDaysToNow(string type, int days)
         {
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
-            long searchDayTimeStamp = todayTimeStamp - Days * 24 * 3600;
-            return LoadByQuery(new Query
-            {
-                Where = "LastModified>" + searchDayTimeStamp.ToString() + "AND LastModified<" + (searchDayTimeStamp + 24 * 3600).ToString(),
-                OrderBy = "LastModified"
-            });
+            long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
+            return LoadByQuery(
+                type,
+                "LastModified>" + searchDayTimeStamp.ToString() + "AND LastModified<" + (searchDayTimeStamp + 24 * 3600).ToString(),
+                "LastModified"
+            );
         }
 
-        public string LoadAllByDaysToNow(string Type, int Days)
+        public string LoadAllByDaysToNow(string type, int days)
         {
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
-            long searchDayTimeStamp = todayTimeStamp - Days * 24 * 3600;
-            return LoadByQuery(new Query
-            {
-                Where = "LastModified>" + searchDayTimeStamp.ToString(),
-                OrderBy = "LastModified"
-            });
+            long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
+            return LoadByQuery(
+                type,
+                "LastModified>" + searchDayTimeStamp.ToString(),
+                "LastModified"
+            );
         }
 
-        public string LoadByQuery(Query query)
+        public string LoadByQuery(string type, string where, string orderBy)
         {
-            var IvBizObj = app.ComServer.BizObjects.Find(query.Type);
+            var IvBizObj = app.ComServer.BizObjects.Find(type);
 
-            string xmlString = IvBizObj.Select("*", query.Where, query.OrderBy, "SX", ",", "");
+            string xmlString = IvBizObj.Select("*", where, orderBy, "SX", ",", "");
 
             // Convert XML to Json
             var doc = new XmlDocument();
@@ -69,6 +69,25 @@ namespace SqlAccountRestAPI.Lib
             }
 
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
+        }
+        public void Add(JObject jsonBody){
+            var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);
+            var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
+
+            IvBizObj.New();
+            
+            foreach (var prop in jsonBody["data"].ToObject<JObject>().Properties())
+            {
+                var fieldName = prop.Name; 
+                var fieldValue = prop.Value;  
+                Console.WriteLine(fieldValue.ToString());
+                var field = lMainDataSet.Findfield(fieldName);
+                if (field != null && fieldValue != null)
+                {
+                    field.value = fieldValue.ToString();
+                }
+            }
+            IvBizObj.Save();
         }
     }
 }

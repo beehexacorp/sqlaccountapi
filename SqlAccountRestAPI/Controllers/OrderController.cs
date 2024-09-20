@@ -71,7 +71,12 @@ namespace SqlAccountRestAPI.Controllers
             }             
             catch (Exception ex)
             {
-                return BadRequest(ex.ToString());
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
             }
         }
 
