@@ -72,7 +72,9 @@ namespace SqlAccountRestAPI.Lib
         }
         public void Add(JObject jsonBody){
             var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);
-            var lMainDataSet = IvBizObj.DataSets.Find(jsonBody["dataset"]);
+            var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
+            if(jsonBody["dataset"] != null)
+                lMainDataSet = IvBizObj.DataSets.Find(jsonBody["dataset"]);
 
             IvBizObj.New();
             
