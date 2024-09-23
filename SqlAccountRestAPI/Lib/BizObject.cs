@@ -40,13 +40,21 @@ namespace SqlAccountRestAPI.Lib
                 "LastModified"
             );
         }
+        public string LoadAllByDaysToNowDetail(JObject query)
+        {
+            long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
+            long searchDayTimeStamp = todayTimeStamp - int.Parse(query["days"].ToString()) * 24 * 3600;
+            query["where"] = "LastModified>" + searchDayTimeStamp.ToString();
+            return LoadByQueryDetail(query);
+        }
         public string LoadByQueryDetail(JObject query)
         {
             var IvBizObj = app.ComServer.BizObjects.Find(query["type"]);
 
             var fields = IvBizObj.DataSets.Find(query["dataset"]).Fields;
 
-            string xmlString = IvBizObj.Select("*", "", "", "SX", ",", "");
+            var queryWhere = query.ContainsKey("where") ? query["where"] : "";
+            string xmlString = IvBizObj.Select("*", queryWhere.ToString(), "", "SX", ",", "");
 
             // Convert XML to Json
             var doc = new XmlDocument();

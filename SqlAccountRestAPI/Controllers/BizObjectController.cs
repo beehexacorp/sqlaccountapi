@@ -58,6 +58,31 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
+        [HttpGet("AllDaysToNowDetail")]
+        public IActionResult GetAllByDaysToNowDetail([FromQuery] string type="ST_AJ", int days=0, string dataset="cdsDocDetail", string key="DOCNO", string param="DOCKEY")
+        {
+            try
+            {
+                var ivHelper = new BizObject(app);
+                string jsonResult = ivHelper.LoadByQueryDetail(new JObject{
+                    {"type",type},
+                    {"days",days},
+                    {"dataset",dataset},
+                    {"key",key},
+                    {"param",param}
+                });
+                return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
         [HttpGet("QueryDetail")]
         public IActionResult GetByQueryV2([FromQuery] string type="ST_AJ", string dataset="cdsDocDetail", string key="DOCNO", string param="DOCKEY")
         {
