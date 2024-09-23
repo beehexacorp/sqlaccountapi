@@ -58,13 +58,18 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
-        [HttpGet("Query")]
-        public IActionResult GetByQuery([FromQuery] string type="ST_ITEM", string where="", string orderBy="")
+        [HttpGet("QueryDetail")]
+        public IActionResult GetByQueryV2([FromQuery] string type="ST_AJ", string dataset="cdsDocDetail", string key="DOCNO", string param="DOCKEY")
         {
             try
             {
                 var ivHelper = new BizObject(app);
-                string jsonResult = ivHelper.LoadByQuery(type, where, orderBy);
+                string jsonResult = ivHelper.LoadByQueryDetail(new JObject{
+                    {"type",type},
+                    {"dataset",dataset},
+                    {"key",key},
+                    {"param",param}
+                });
                 return Ok(jsonResult);
             }
             catch (Exception ex)
@@ -77,6 +82,26 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
+        [HttpGet("Query")]
+        public IActionResult GetByQuery([FromQuery] string type="ST_ITEM", string where="", string orderBy="", string dataset="MainDataSet")
+        {
+            try
+            {
+                var ivHelper = new BizObject(app);
+                string jsonResult = ivHelper.LoadByQuery(type, where, orderBy, dataset);
+                return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
+
         [HttpPost("Add")]
         public IActionResult Add([FromBody] JsonElement body){
             try

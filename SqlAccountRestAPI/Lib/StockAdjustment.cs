@@ -40,7 +40,7 @@ namespace SqlAccountRestAPI.Lib
             {
                 var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
                 var lDetailDataSet = IvBizObj.DataSets.Find("cdsDocDetail");
-
+                
                 IvBizObj.Open();
 
                 if (Stock == null) Stock = new Stock();
