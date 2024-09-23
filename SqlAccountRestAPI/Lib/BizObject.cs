@@ -84,7 +84,6 @@ namespace SqlAccountRestAPI.Lib
 
                 IvBizObj = app.ComServer.BizObjects.Find(query["type"]);
                 IvBizObj.New();
-                Console.WriteLine(row["DOCNO"]);
                 var key = IvBizObj.FindKeyByRef(query["key"], row[query["key"].ToString()]);
                 IvBizObj.Params.Find(query["param"]).Value = key;
                 var lDataset = IvBizObj.DataSets.Find(query["dataset"]);
@@ -118,10 +117,6 @@ namespace SqlAccountRestAPI.Lib
             var IvBizObj = app.ComServer.BizObjects.Find(type);
 
             var fields = IvBizObj.DataSets.Find(dataset).Fields;
-            for (int i = 0; i < fields.Count; i++)
-            {
-                Console.WriteLine(fields.Items(i).FieldName);
-            }
 
             string xmlString = IvBizObj.Select("*", where, orderBy, "SX", ",", "");
 
@@ -164,7 +159,6 @@ namespace SqlAccountRestAPI.Lib
             {
                 var fieldName = prop.Name;
                 var fieldValue = prop.Value;
-                Console.WriteLine(fieldValue.ToString());
                 var field = lMainDataSet.Findfield(fieldName);
                 if (field != null && fieldValue != null)
                 {
