@@ -53,7 +53,7 @@ namespace SqlAccountRestAPI.Lib
 
             var fields = IvBizObj.DataSets.Find(query["dataset"]).Fields;
 
-            var queryWhere = query.ContainsKey("where") ? query["where"] : "";
+            var queryWhere = query.ContainsKey("days") ? query["where"] : "";
             string xmlString = IvBizObj.Select("*", queryWhere.ToString(), "", "SX", ",", "");
 
             // Convert XML to Json
