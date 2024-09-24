@@ -25,7 +25,7 @@ namespace SqlAccountRestAPI.Lib
             long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
             return LoadByQuery(
                 type,
-                "LastModified>" + searchDayTimeStamp.ToString() + "AND LastModified<" + (searchDayTimeStamp + 24 * 3600).ToString(),
+                "LastModified>=" + searchDayTimeStamp.ToString() + "AND LastModified<" + (searchDayTimeStamp + 24 * 3600).ToString(),
                 "LastModified"
             );
         }
@@ -36,7 +36,7 @@ namespace SqlAccountRestAPI.Lib
             long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
             return LoadByQuery(
                 type,
-                "LastModified>" + searchDayTimeStamp.ToString(),
+                "LastModified>=" + searchDayTimeStamp.ToString(),
                 "LastModified"
             );
         }
@@ -44,7 +44,7 @@ namespace SqlAccountRestAPI.Lib
         {
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
             long searchDayTimeStamp = todayTimeStamp - int.Parse(query["days"].ToString()) * 24 * 3600;            
-            query["where"] = "LastModified>" + searchDayTimeStamp.ToString();
+            query["where"] = "LastModified>=" + searchDayTimeStamp.ToString();
             return LoadByQueryDetail(query);
         }
         public string LoadByQueryDetail(JObject query)
@@ -68,7 +68,7 @@ namespace SqlAccountRestAPI.Lib
             catch (Exception ex){
                 DateTime dateBeforeNDays = DateTime.Now.AddDays(-int.Parse(query["days"].ToString()));
                 string formattedDate = dateBeforeNDays.ToString("yyyy-MM-dd");
-                queryWhere = "DOCDATE>'" + formattedDate + "'";
+                queryWhere = "DOCDATE>='" + formattedDate + "'";
                 queryOrderBy = "DOCDATE";
                 xmlString = IvBizObj.Select("*", queryWhere, queryOrderBy, "SX", ",", "");
             }
