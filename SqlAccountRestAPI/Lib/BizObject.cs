@@ -43,7 +43,7 @@ namespace SqlAccountRestAPI.Lib
         public string LoadAllByDaysToNowDetail(JObject query)
         {
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
-            long searchDayTimeStamp = todayTimeStamp - int.Parse(query["days"].ToString()) * 24 * 3600;
+            long searchDayTimeStamp = todayTimeStamp - int.Parse(query["days"].ToString()) * 24 * 3600;            
             query["where"] = "LastModified>" + searchDayTimeStamp.ToString();
             return LoadByQueryDetail(query);
         }
@@ -53,8 +53,25 @@ namespace SqlAccountRestAPI.Lib
 
             var fields = IvBizObj.DataSets.Find(query["dataset"]).Fields;
 
-            var queryWhere = query.ContainsKey("days") ? query["where"] : "";
-            string xmlString = IvBizObj.Select("*", queryWhere.ToString(), "", "SX", ",", "");
+            string queryWhere = "";
+            string queryOrderBy = "";
+            string xmlString = "";
+            if(query.ContainsKey("days")){
+                queryOrderBy = "LastModified";
+            }
+            if(query.ContainsKey("where")){
+                queryWhere = query["where"].ToString();
+            }
+            try{
+                xmlString = IvBizObj.Select("*", queryWhere, queryOrderBy, "SX", ",", "");
+            }
+            catch (Exception ex){
+                DateTime dateBeforeNDays = DateTime.Now.AddDays(-int.Parse(query["days"].ToString()));
+                string formattedDate = dateBeforeNDays.ToString("yyyy-MM-dd");
+                queryWhere = "DOCDATE>'" + formattedDate + "'";
+                queryOrderBy = "DOCDATE";
+                xmlString = IvBizObj.Select("*", queryWhere, queryOrderBy, "SX", ",", "");
+            }
 
             // Convert XML to Json
             var doc = new XmlDocument();
