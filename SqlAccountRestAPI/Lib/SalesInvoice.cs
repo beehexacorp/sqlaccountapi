@@ -76,8 +76,12 @@ namespace SqlAccountRestAPI.Lib
                 lDetailDataSet.FindField("Qty").value = item.Quantity;
                 lDetailDataSet.FindField("UOM").value = item.UOM;
                 lDetailDataSet.FindField("UnitPrice").value = item.UniPrice;
-                lDetailDataSet.FindField("Disc").value = item.Disc;
+                //lDetailDataSet.FindField("Disc").value = item.Disc;
                 lDetailDataSet.FindField("Amount").value = item.Amount;
+                lDetailDataSet.FindField("Tax").value = item.Tax;
+                lDetailDataSet.FindField("TaxRate").value = item.TaxRate;
+                lDetailDataSet.FindField("TaxAmt").value = item.TaxAmt;
+                //lDetailDataSet.FindField("Amount").value = item.Amount;
                 lDetailDataSet.Post();
             }
 
@@ -147,10 +151,14 @@ namespace SqlAccountRestAPI.Lib
                     orderItem.Quantity = double.Parse(lDetailDataSet.FindField("Qty").AsString);
                     orderItem.UOM = lDetailDataSet.FindField("UOM").value;
                     orderItem.UniPrice = double.Parse(lDetailDataSet.FindField("UnitPrice").AsString);
-                    //orderItem.Disc = double.Parse(lDetailDataSet.FindField("Disc").AsString);
+                    //orderItem.Disc = double.Parse(lDetailDataSet.FindField("Disc")?.AsString);
                     orderItem.Amount = double.Parse(lDetailDataSet.FindField("Amount").AsString);
-                    
-                    if(Order.Items == null) Order.Items = new List<OrderItem>(); 
+                    orderItem.Tax = lDetailDataSet.FindField("Tax")?.value;
+                    orderItem.TaxRate = lDetailDataSet.FindField("TaxRate")?.value;
+                    orderItem.TaxAmt = double.Parse(lDetailDataSet.FindField("TaxAmt")?.AsString);
+                    orderItem.TaxInclusive = double.Parse(lDetailDataSet.FindField("TaxInclusive")?.AsString);
+
+                    if (Order.Items == null) Order.Items = new List<OrderItem>(); 
 
                     Order.Items.Add(orderItem);
 

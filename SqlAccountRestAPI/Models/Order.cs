@@ -33,12 +33,15 @@
     {
         public string ItemCode { get; set; } = "MPCT";
         public string Description { get; set; } = "MPCT";
-        public double Quantity { get; set; } = 99;
+        public double Quantity { get; set; } = 0;
         public string Location { get; set; } = "KL";
         public string UOM { get; set; } = "UNIT";
-        public double UniPrice { get; set; } = 1999;
-        public double Amount { get; set; } = 5005;
-        public double Disc { get; set; } = 1500;
-        //public double Tax { get; set; } = 0;
+        public double UniPrice { get; set; } = 0;
+        public double Amount { get; set; } = 0;
+        //public double? Disc { get; set; } = 0;
+        public string Tax { get; set; } = "0";
+        public string TaxRate { get; set; } = "0";
+        public double TaxAmt { get; set; } = 0;
+        public double? TaxInclusive { get; set; } = 0;
     }
 }
