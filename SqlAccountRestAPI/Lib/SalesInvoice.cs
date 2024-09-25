@@ -153,10 +153,10 @@ namespace SqlAccountRestAPI.Lib
                     orderItem.UniPrice = double.Parse(lDetailDataSet.FindField("UnitPrice").AsString);
                     //orderItem.Disc = double.Parse(lDetailDataSet.FindField("Disc")?.AsString);
                     orderItem.Amount = double.Parse(lDetailDataSet.FindField("Amount").AsString);
-                    orderItem.Tax = lDetailDataSet.FindField("Tax")?.value;
-                    orderItem.TaxRate = lDetailDataSet.FindField("TaxRate")?.value;
-                    orderItem.TaxAmt = double.Parse(lDetailDataSet.FindField("TaxAmt")?.AsString);
-                    orderItem.TaxInclusive = double.Parse(lDetailDataSet.FindField("TaxInclusive")?.AsString);
+                    //orderItem.Tax = lDetailDataSet.FindField("Tax")?.value;
+                    //orderItem.TaxRate = lDetailDataSet.FindField("TaxRate")?.value;
+                    //orderItem.TaxAmt = double.Parse(lDetailDataSet.FindField("TaxAmt")?.AsString);
+                    //orderItem.TaxInclusive = double.Parse(lDetailDataSet.FindField("TaxInclusive")?.AsString);
 
                     if (Order.Items == null) Order.Items = new List<OrderItem>(); 
 
