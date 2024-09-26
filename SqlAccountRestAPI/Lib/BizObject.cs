@@ -23,6 +23,17 @@ namespace SqlAccountRestAPI.Lib
         {
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
             long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
+            if(app.ComServer.BizObjects.Find(type).DataSets.Find("MainDataSet").FindField("LastModified")==null)
+            {
+                DateTime dateBeforeNDays = DateTime.Now.AddDays(-days);
+                string formattedDate = dateBeforeNDays.ToString("yyyy-MM-dd");
+                string queryWhere = "DOCDATE>='" + formattedDate + "' AND DOCDATE<'"+DateTime.Now.AddDays(-days+1).ToString("yyyy-MM-dd")+"'";
+                return LoadByQuery(
+                    type,
+                    queryWhere,
+                    "DOCDATE"
+                );
+            }
             return LoadByQuery(
                 type,
                 "LastModified>=" + searchDayTimeStamp.ToString() + "AND LastModified<" + (searchDayTimeStamp + 24 * 3600).ToString(),
@@ -34,6 +45,18 @@ namespace SqlAccountRestAPI.Lib
         {
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
             long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
+            if(app.ComServer.BizObjects.Find(type).DataSets.Find("MainDataSet").FindField("LastModified")==null)
+            {
+                DateTime dateBeforeNDays = DateTime.Now.AddDays(-days);
+                string formattedDate = dateBeforeNDays.ToString("yyyy-MM-dd");
+                string queryWhere = "DOCDATE>='" + formattedDate + "'";
+                return LoadByQuery(
+                    type,
+                    queryWhere,
+                    "DOCDATE"
+                );
+            }
+           
             return LoadByQuery(
                 type,
                 "LastModified>=" + searchDayTimeStamp.ToString(),
