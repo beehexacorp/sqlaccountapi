@@ -84,7 +84,7 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("QueryDetail")]
-        public IActionResult GetByQueryV2([FromQuery] string type="ST_AJ", string dataset="cdsDocDetail", string key="DOCNO", string param="DOCKEY")
+        public IActionResult GetByQueryDetail([FromQuery] string type="AR_CUSTOMER", string dataset="cdsBranch", string key="CODE", string param="CODE")
         {
             try
             {

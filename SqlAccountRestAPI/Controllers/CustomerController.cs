@@ -1,0 +1,43 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SqlAccountRestAPI.Lib;
+using SqlAccountRestAPI.Models;
+using StockItem = SqlAccountRestAPI.Lib.StockItem;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace SqlAccountRestAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CustomerController : ControllerBase
+    {
+        private readonly SqlComServer app;
+        public CustomerController(SqlComServer comServer)
+        {
+            app = comServer;
+        }
+        [HttpGet("AllDaysToNow")]
+        public IActionResult GetByDaysToNow([FromQuery] int days=0)
+        {
+            try
+            {
+                var ivHelper = new Customer(app);
+                string jsonResult = ivHelper.LoadAllByDaysToNow(days);
+                return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
+    }
+}
