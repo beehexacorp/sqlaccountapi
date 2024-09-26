@@ -129,11 +129,9 @@ namespace SqlAccountRestAPI.Lib
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
 
         }
-        public string LoadByQuery(string type, string where, string orderBy, string dataset = "MainDataSet")
+        public string LoadByQuery(string type, string where, string orderBy)
         {
             var IvBizObj = app.ComServer.BizObjects.Find(type);
-
-            var fields = IvBizObj.DataSets.Find(dataset).Fields;
 
             string xmlString = IvBizObj.Select("*", where, orderBy, "SX", ",", "");
 
