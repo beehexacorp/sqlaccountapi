@@ -39,5 +39,24 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
+        [HttpGet("Email")]
+        public IActionResult GetByEmail([FromQuery] string email="")
+        {
+            try
+            {
+                var ivHelper = new Customer(app);
+                string jsonResult = ivHelper.LoadByEmail(email);
+                return Ok(jsonResult);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
     }
 }
