@@ -51,20 +51,17 @@ namespace SqlAccountRestAPI.Lib
                 var fields = lJoinDataset.Fields;
                 
                 if(mark != fields.FindField("CODE").value.ToString()){
-                    if(mark != ""){
-                        row["cdsBranch"] = new JArray();
-                        rows.Add(row);
-                    }
-                    row["cdsBranch"] = subRowArray;
-                    
-
+                    subRowArray = new JArray();
                     row = new JObject();
+                    rows.Add(row);
+                    
                     mark = fields.FindField("CODE").value.ToString();
 
                     foreach(string mainField in mainFieldsArray){
                         if (fields.FindField(mainField).value is string)
                             row[mainField] = fields.FindField(mainField).value;
                     }
+                    row["cdsBranch"] = subRowArray;
                 }   
 
                 JObject subRow = new JObject();
