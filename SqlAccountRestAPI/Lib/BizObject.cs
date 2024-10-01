@@ -226,8 +226,16 @@ namespace SqlAccountRestAPI.Lib
             foreach(var cdsItem in jsonBody["cds"]){
                 var lCdsDataSet = IvBizObj.DataSets.Find(cdsItem["type"].ToString());
                 var lDockey = IvBizObj.FindKeyByRef(cdsItem["key"], lMainDataSet.FindField(cdsItem["key"]).value);
+                var defaultSubDataSetExistFlag = false;
+                if(lCdsDataSet.RecordCount != 0)
+                    defaultSubDataSetExistFlag = true;
                 foreach(var dataItem in cdsItem["data"]){
-                    lCdsDataSet.Append();
+                    if(defaultSubDataSetExistFlag){
+                        lCdsDataSet.Edit();
+                        defaultSubDataSetExistFlag = false;
+                    }
+                    else
+                        lCdsDataSet.Append();
                     foreach (var prop in dataItem.ToObject<JObject>().Properties())
                     {
                         var fieldName = prop.Name;
