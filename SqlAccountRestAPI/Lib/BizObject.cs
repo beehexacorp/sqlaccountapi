@@ -124,11 +124,9 @@ namespace SqlAccountRestAPI.Lib
 
                 IvBizObj = app.ComServer.BizObjects.Find(query["type"]);
                 // IvBizObj.New();
-                string mappingKey = "DOCKEY";
-                if(IvBizObj.DataSets.Find("MainDataSet").FindField("DOCKEY") == null)
-                    mappingKey = "CODE";
-                var key = IvBizObj.FindKeyByRef(mappingKey, row[mappingKey]);
-                IvBizObj.Params.Find(mappingKey).Value = key;
+                
+                var key = IvBizObj.FindKeyByRef(query["key"], row[query["key"].ToString()]);
+                IvBizObj.Params.Find(query["param"]).Value = key;
                 var lDataset = IvBizObj.DataSets.Find(query["dataset"]);
                 IvBizObj.Open();
                 var jsonArray = new JArray();

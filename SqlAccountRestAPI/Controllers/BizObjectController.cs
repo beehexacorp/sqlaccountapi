@@ -59,7 +59,7 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("AllDaysToNowDetail")]
-        public IActionResult GetAllByDaysToNowDetail([FromQuery] string type="ST_AJ", int days=0, string dataset="cdsDocDetail")
+        public IActionResult GetAllByDaysToNowDetail([FromQuery] string type="ST_AJ", int days=0, string dataset="cdsDocDetail", string key="DOCKEY", string param="DOCKEY")
         {
             try
             {
@@ -67,7 +67,9 @@ namespace SqlAccountRestAPI.Controllers
                 string jsonResult = ivHelper.LoadAllByDaysToNowDetail(new JObject{
                     {"type",type},
                     {"days",days},
-                    {"dataset",dataset}
+                    {"dataset",dataset},
+                    {"key",key},
+                    {"param",param}
                 });
                 return Ok(jsonResult);
             }
@@ -82,14 +84,16 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("QueryDetail")]
-        public IActionResult GetByQueryDetail([FromQuery] string type="AR_CUSTOMER", string dataset="cdsBranch")
+        public IActionResult GetByQueryDetail([FromQuery] string type="AR_CUSTOMER", string dataset="cdsBranch", string key="CODE", string param="CODE")
         {
             try
             {
                 var ivHelper = new BizObject(app);
                 string jsonResult = ivHelper.LoadByQueryDetail(new JObject{
                     {"type",type},
-                    {"dataset",dataset}
+                    {"dataset",dataset},
+                    {"key",key},
+                    {"param",param}
                 });
                 return Ok(jsonResult);
             }
