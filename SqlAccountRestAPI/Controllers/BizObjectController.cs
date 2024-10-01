@@ -59,7 +59,7 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("AllDaysToNowDetail")]
-        public IActionResult GetAllByDaysToNowDetail([FromQuery] string type="ST_AJ", int days=0, string dataset="cdsDocDetail", string key="DOCNO", string param="DOCKEY")
+        public IActionResult GetAllByDaysToNowDetail([FromQuery] string type="ST_AJ", int days=0, string dataset="cdsDocDetail")
         {
             try
             {
@@ -67,9 +67,7 @@ namespace SqlAccountRestAPI.Controllers
                 string jsonResult = ivHelper.LoadAllByDaysToNowDetail(new JObject{
                     {"type",type},
                     {"days",days},
-                    {"dataset",dataset},
-                    {"key",key},
-                    {"param",param}
+                    {"dataset",dataset}
                 });
                 return Ok(jsonResult);
             }
@@ -84,16 +82,14 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("QueryDetail")]
-        public IActionResult GetByQueryDetail([FromQuery] string type="AR_CUSTOMER", string dataset="cdsBranch", string key="CODE", string param="CODE")
+        public IActionResult GetByQueryDetail([FromQuery] string type="AR_CUSTOMER", string dataset="cdsBranch")
         {
             try
             {
                 var ivHelper = new BizObject(app);
                 string jsonResult = ivHelper.LoadByQueryDetail(new JObject{
                     {"type",type},
-                    {"dataset",dataset},
-                    {"key",key},
-                    {"param",param}
+                    {"dataset",dataset}
                 });
                 return Ok(jsonResult);
             }
@@ -134,7 +130,7 @@ namespace SqlAccountRestAPI.Controllers
                 JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
                 var ivHelper = new BizObject(app);
                 ivHelper.Add(jsonBody);
-                return Ok("OK");
+                return Ok(jsonBody.ToString());
             }
             catch (Exception ex)
             {
@@ -153,7 +149,8 @@ namespace SqlAccountRestAPI.Controllers
                 JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
                 var ivHelper = new BizObject(app);
                 var result = ivHelper.AddDetail(jsonBody);
-                return Ok(result);
+                jsonBody["CODE"] = result;
+                return Ok(jsonBody.ToString());
             }
             catch (Exception ex)
             {
