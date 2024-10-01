@@ -229,12 +229,12 @@ namespace SqlAccountRestAPI.Lib
                     field.value = fieldValue.ToString();
                 }
             }
-            IvBizObj.Save();
 
             foreach(var cdsItem in jsonBody["cds"]){
                 var lCdsDataSet = IvBizObj.DataSets.Find(cdsItem["type"].ToString());
                 var lDockey = IvBizObj.FindKeyByRef(cdsItem["key"], lMainDataSet.FindField(cdsItem["key"]).value);
                 var defaultSubDataSetExistFlag = false;
+                if(lCdsDataSet == null) Console.WriteLine("hello");
                 if(lCdsDataSet.RecordCount != 0)
                     defaultSubDataSetExistFlag = true;
                 foreach(var dataItem in cdsItem["data"]){
