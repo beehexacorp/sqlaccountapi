@@ -129,7 +129,8 @@ namespace SqlAccountRestAPI.Controllers
             {
                 JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
                 var ivHelper = new BizObject(app);
-                ivHelper.Add(jsonBody);
+                string result = ivHelper.Add(jsonBody);
+                jsonBody["CODE"] = result;
                 return Ok(jsonBody.ToString());
             }
             catch (Exception ex)

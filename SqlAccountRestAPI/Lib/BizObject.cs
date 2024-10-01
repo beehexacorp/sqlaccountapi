@@ -189,7 +189,7 @@ namespace SqlAccountRestAPI.Lib
 
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
         }
-        public void Add(JObject jsonBody)
+        public string Add(JObject jsonBody)
         {
             var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);
             var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
@@ -207,6 +207,9 @@ namespace SqlAccountRestAPI.Lib
                 }
             }
             IvBizObj.Save();
+            if(lMainDataSet.FindField("CODE") != null)
+                return lMainDataSet.FindField("CODE").value.ToString();
+            return lMainDataSet.FindField("DOCNO").value.ToString();
            
         }
         public string AddDetail(JObject jsonBody)
