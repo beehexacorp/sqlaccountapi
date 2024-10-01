@@ -138,11 +138,13 @@ namespace SqlAccountRestAPI.Lib
                     for (int i = 0; i < fields.Count; i++)
                     {
                         var lField = fields.Items(i);
-                        var keyDetail = lField.FieldName;
-                        var valueDetail = lField.value;
-
-                        if (keyDetail is string && valueDetail is string)
-                            jsonData[keyDetail] = valueDetail;
+                        if(lField!=null){
+                            var keyDetail = lField.FieldName;
+                            var valueDetail = lField.value;
+                            if (valueDetail != null && valueDetail.ToString() != null)
+                                jsonData[keyDetail] = valueDetail.ToString();
+                        }
+                        
                     }
                     jsonArray.Add(jsonData);
                     lDataset.Next();

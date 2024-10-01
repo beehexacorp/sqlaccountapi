@@ -23,15 +23,17 @@ namespace SqlAccountRestAPI.Lib
         public string run(string sql)
         {
             var dFields = app.ComServer.BizObjects;
-            for(int i=0;i<dFields.Count;i++){
-                Console.WriteLine(dFields.Items(i));
-            }
 
             dynamic lMain = app.ComServer.DBManager.NewDataSet(sql);
 
             Console.WriteLine("----------------------------");
             JArray jsonArray = new JArray();
             lMain.First();
+
+            for (int i=0; i<lMain.Fields.Count; i++){
+                Console.WriteLine(lMain.Fields.Items(i).FieldName);
+            }
+
             while (!lMain.eof)
             {
                 var Fields = lMain.Fields;
@@ -41,11 +43,13 @@ namespace SqlAccountRestAPI.Lib
                 {
 
                     var lField = Fields.Items(i);
-                    var key = lField.FieldName;
-                    Console.WriteLine(key);
-                    var value = lField.value;
-                    if (value is string)
-                        jsonObject[key] = value;
+                    if(lField != null){
+                        var key = lField.FieldName;
+                        var value = lField.value;
+                        if (value != null && value.ToString() != null)
+                            jsonObject[key] = value.ToString();
+                    }
+                    
                 }
                 jsonArray.Add(jsonObject);
                 lMain.Next();
