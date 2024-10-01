@@ -13,24 +13,20 @@ namespace SqlAccountRestAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class _TestCustomerController : ControllerBase
+    public class _TestSQLController : ControllerBase
     {
         private readonly SqlComServer app;
-        public _TestCustomerController(SqlComServer comServer)
+        public _TestSQLController(SqlComServer comServer)
         {
             app = comServer;
         }
         [HttpGet]
-        public IActionResult test(string type="AR_CUSTOMER", string dataset="MainDataSet", string query="SELECT * FROM AR_CUSTOMER"){
+        public IActionResult test(string sql){
             try
             {
-                var ivHelper = new TestCustomer(app);
-                ivHelper.run(new JObject{
-                    {"type",type},
-                    {"dataset",dataset},
-                    {"query",query}
-                });
-                return Ok("OK");
+                var ivHelper = new _TestSQL(app);
+                string result = ivHelper.run(sql);
+                return Ok(result);
             }
             catch (Exception ex)
             {

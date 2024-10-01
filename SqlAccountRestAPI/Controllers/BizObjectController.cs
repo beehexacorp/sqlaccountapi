@@ -146,5 +146,24 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
+        [HttpPost("AddDetail")]
+        public IActionResult AddDetail([FromBody] JsonElement body){
+            try
+            {
+                JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
+                var ivHelper = new BizObject(app);
+                ivHelper.AddDetail(jsonBody);
+                return Ok("OK");
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
     }
 }

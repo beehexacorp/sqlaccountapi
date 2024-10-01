@@ -188,8 +188,6 @@ namespace SqlAccountRestAPI.Lib
         {
             var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);
             var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
-            if (jsonBody["dataset"] != null)
-                lMainDataSet = IvBizObj.DataSets.Find(jsonBody["dataset"]);
 
             IvBizObj.New();
 
@@ -201,6 +199,46 @@ namespace SqlAccountRestAPI.Lib
                 if (field != null && fieldValue != null)
                 {
                     field.value = fieldValue.ToString();
+                }
+            }
+            IvBizObj.Save();
+           
+        }
+        public void AddDetail(JObject jsonBody)
+        {
+            var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);
+            var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
+                        
+            IvBizObj.New();
+
+            foreach (var prop in jsonBody["data"].ToObject<JObject>().Properties())
+            {
+                var fieldName = prop.Name;
+                var fieldValue = prop.Value;
+                var field = lMainDataSet.Findfield(fieldName);
+                if (field != null && fieldValue != null)
+                {
+                    field.value = fieldValue.ToString();
+                }
+            }
+            IvBizObj.Save();
+
+            foreach(var cdsItem in jsonBody["cds"]){
+                var lCdsDataSet = IvBizObj.DataSets.Find(cdsItem["type"].ToString());
+                var lDockey = IvBizObj.FindKeyByRef(cdsItem["key"], lMainDataSet.FindField(cdsItem["key"]).value);
+                foreach(var dataItem in cdsItem["data"]){
+                    lCdsDataSet.Append();
+                    foreach (var prop in dataItem.ToObject<JObject>().Properties())
+                    {
+                        var fieldName = prop.Name;
+                        var fieldValue = prop.Value;
+                        var field = lCdsDataSet.Findfield(fieldName);
+                        if (field != null && fieldValue != null)
+                        {
+                            field.value = fieldValue.ToString();
+                        }
+                    }
+                    lCdsDataSet.Post();
                 }
             }
             IvBizObj.Save();
