@@ -205,6 +205,7 @@ namespace SqlAccountRestAPI.Lib
                 }
             }
             IvBizObj.Save();
+            IvBizObj.Close();
             if(lMainDataSet.FindField("CODE") != null)
                 return lMainDataSet.FindField("CODE").value.ToString();
             return lMainDataSet.FindField("DOCNO").value.ToString();
@@ -256,6 +257,7 @@ namespace SqlAccountRestAPI.Lib
                 }
             }
             IvBizObj.Save();
+            IvBizObj.Close();
             if(lMainDataSet.FindField("CODE") != null)
                 return lMainDataSet.FindField("CODE").value.ToString();
             return lMainDataSet.FindField("DOCNO").value.ToString();
