@@ -123,7 +123,6 @@ namespace SqlAccountRestAPI.Lib
                 }
 
                 IvBizObj = app.ComServer.BizObjects.Find(query["type"]);
-                // IvBizObj.New();
                 
                 var key = IvBizObj.FindKeyByRef(query["key"], row[query["key"].ToString()]);
                 IvBizObj.Params.Find(query["param"]).Value = key;
@@ -151,7 +150,11 @@ namespace SqlAccountRestAPI.Lib
                     lDataset.Next();
                 }
                 row[query["dataset"].ToString()] = jsonArray;
+                IvBizObj.Close();
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
+
             }
+            
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
 
         }
@@ -184,7 +187,7 @@ namespace SqlAccountRestAPI.Lib
                 foreach (var prop in propertiesToRename)
                     prop.Replace(new JProperty(prop.Name.TrimStart('@'), prop.Value));
             }
-
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
         }
         public string Add(JObject jsonBody)
@@ -206,6 +209,7 @@ namespace SqlAccountRestAPI.Lib
             }
             IvBizObj.Save();
             IvBizObj.Close();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if(lMainDataSet.FindField("CODE") != null)
                 return lMainDataSet.FindField("CODE").value.ToString();
             return lMainDataSet.FindField("DOCNO").value.ToString();
@@ -258,6 +262,7 @@ namespace SqlAccountRestAPI.Lib
             }
             IvBizObj.Save();
             IvBizObj.Close();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if(lMainDataSet.FindField("CODE") != null)
                 return lMainDataSet.FindField("CODE").value.ToString();
             return lMainDataSet.FindField("DOCNO").value.ToString();
