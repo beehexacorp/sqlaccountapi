@@ -154,7 +154,7 @@ namespace SqlAccountRestAPI.Lib
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
 
             }
-            
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
 
         }
@@ -209,7 +209,7 @@ namespace SqlAccountRestAPI.Lib
             }
             IvBizObj.Save();
             IvBizObj.Close();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
+            // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if(lMainDataSet.FindField("CODE") != null)
                 return lMainDataSet.FindField("CODE").value.ToString();
             return lMainDataSet.FindField("DOCNO").value.ToString();
@@ -262,7 +262,7 @@ namespace SqlAccountRestAPI.Lib
             }
             IvBizObj.Save();
             IvBizObj.Close();
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
+            // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if(lMainDataSet.FindField("CODE") != null)
                 return lMainDataSet.FindField("CODE").value.ToString();
             return lMainDataSet.FindField("DOCNO").value.ToString();
