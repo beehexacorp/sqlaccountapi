@@ -158,38 +158,40 @@ namespace SqlAccountRestAPI.Lib
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
 
         }
-        public string LoadByQuery(string type, string where, string orderBy)
+        public string LoadByQuery(string type="", string where="", string orderBy="", int offset=0, int limit=0)
         {
-            var IvBizObj = app.ComServer.BizObjects.Find(type);
-
-            string xmlString = IvBizObj.Select("*", where, orderBy, "SX", ",", "");
-
-            // Convert XML to Json
-            var doc = new XmlDocument();
-            doc.LoadXml(xmlString);
-            var rowDataNode = doc.SelectSingleNode("//ROWDATA");
-            if (rowDataNode == null)
-                return "[]";
-            var jsonText = JsonConvert.SerializeXmlNode(rowDataNode, Newtonsoft.Json.Formatting.Indented, true);
-            if (jsonText == "null")
-                return "[]";
-            var jsonObj = JObject.Parse(jsonText);
-            var rows = jsonObj["ROW"];
-            if (rows == null)
-                return "[]";
-            if (rows.Type == JTokenType.Object)
-                rows = new JArray(rows);
-
-            // Convert Row atts into key-value
-            foreach (var row in rows)
+            var lSQL = "SELECT * FROM "+type;
+            if(where != "") lSQL +=  " WHERE "+where;
+            if(orderBy != "") lSQL += " ORDER BY "+orderBy;
+            lSQL += " OFFSET "+offset.ToString()+" ROWS ";
+            if(limit != 0) lSQL += " FETCH NEXT "+limit.ToString()+" ROWS ONLY ";
+           
+            Console.WriteLine(lSQL);
+            var lMain = app.ComServer.DBManager.NewDataSet(lSQL);
+            JArray jsonArray = new JArray();
+            lMain.First();
+            while (!lMain.eof)
             {
-                var propertiesToRename = row.Children<JProperty>().Where(p => p.Name.StartsWith("@")).ToList();
-                foreach (var prop in propertiesToRename)
-                    prop.Replace(new JProperty(prop.Name.TrimStart('@'), prop.Value));
+                var Fields = lMain.Fields;
+
+                JObject jsonObject = new JObject();
+                for (int i = 0; i < Fields.Count; i++)
+                {
+
+                    var lField = Fields.Items(i);
+                    if(lField != null){
+                        var key = lField.FieldName;
+                        var value = lField.value;
+                        if (value != null && value.ToString() != null)
+                            jsonObject[key] = value.ToString();
+                    }
+                    
+                }
+                jsonArray.Add(jsonObject);
+                lMain.Next();
             }
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
-            return rows.ToString(Newtonsoft.Json.Formatting.Indented);
-        }
+            return jsonArray.ToString();            
+        }   
         public string Add(JObject jsonBody)
         {
             var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);

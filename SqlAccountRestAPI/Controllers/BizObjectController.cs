@@ -108,12 +108,12 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("Query")]
-        public IActionResult GetByQuery([FromQuery] string type="ST_ITEM", string where="", string orderBy="")
+        public IActionResult GetByQuery([FromQuery] string type="ST_ITEM", string where="", string orderBy="", int offset=0, int limit=0)
         {
             try
             {
                 var ivHelper = new BizObject(app);
-                string jsonResult = ivHelper.LoadByQuery(type, where, orderBy);
+                string jsonResult = ivHelper.LoadByQuery(type, where, orderBy, offset, limit);
                 return Ok(jsonResult);
             }
             catch (Exception ex)
