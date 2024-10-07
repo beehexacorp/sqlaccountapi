@@ -128,16 +128,16 @@ namespace SqlAccountRestAPI.Lib
                     mark = fields.FindField(query["key"]).value.ToString();
 
                     foreach(string mainField in listMainFields){
-                        if (fields.FindField(mainField)!=null && fields.FindField(mainField).value is string)
-                            row[mainField] = fields.FindField(mainField).value;
+                        if (fields.FindField(mainField)!=null && fields.FindField(mainField).value != null && fields.FindField(mainField).ToString() != null)
+                            row[mainField] = fields.FindField(mainField).value.ToString();
                     }
                     row[query["dataset"].ToString()] = subRowArray;
                 }   
 
                 JObject subRow = new JObject();
                 foreach(string subDataSetField in listSubFields){
-                    if (fields.FindField(subDataSetField).value is string)
-                        subRow[subDataSetField] = fields.FindField(subDataSetField).value;
+                    if (fields.FindField(subDataSetField)!=null && fields.FindField(subDataSetField).value != null && fields.FindField(subDataSetField).ToString() != null)
+                        subRow[subDataSetField] = fields.FindField(subDataSetField).value.ToString();
                 }
                 subRowArray.Add(subRow);
                 lMain.Next();
@@ -200,9 +200,9 @@ namespace SqlAccountRestAPI.Lib
             IvBizObj.Save();
             // IvBizObj.Close();
             // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
-            if (lMainDataSet.FindField("CODE") != null)
-                return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
-            return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
+            if (lMainDataSet.FindField("DOCNO") != null)
+                return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
+            return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
 
         }
         public JObject AddDetail(JObject jsonBody)
@@ -226,9 +226,8 @@ namespace SqlAccountRestAPI.Lib
             foreach (var cdsItem in jsonBody["cds"])
             {
                 var lCdsDataSet = IvBizObj.DataSets.Find(cdsItem["type"].ToString());
-                var lDockey = IvBizObj.FindKeyByRef(cdsItem["key"], lMainDataSet.FindField(cdsItem["key"]).value);
+                // var lDockey = IvBizObj.FindKeyByRef(cdsItem["key"], lMainDataSet.FindField(cdsItem["key"]).value);
                 var defaultSubDataSetExistFlag = false;
-                if (lCdsDataSet == null) Console.WriteLine("hello");
                 if (lCdsDataSet.RecordCount != 0)
                     defaultSubDataSetExistFlag = true;
                 foreach (var dataItem in cdsItem["data"])
@@ -256,9 +255,9 @@ namespace SqlAccountRestAPI.Lib
             IvBizObj.Save();
             // IvBizObj.Close();
             // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
-            if (lMainDataSet.FindField("CODE") != null)
-                return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
-            return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
+            if (lMainDataSet.FindField("DOCNO") != null)
+                return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
+            return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
         }
     }
 }
