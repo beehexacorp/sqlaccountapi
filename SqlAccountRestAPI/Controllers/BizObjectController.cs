@@ -21,12 +21,12 @@ namespace SqlAccountRestAPI.Controllers
             app = comServer;
         }
         [HttpGet("DaysToNow")]
-        public IActionResult GetByDaysToNow([FromQuery] string type="ST_ITEM", int days=0)
+        public IActionResult GetByDaysToNow([FromQuery] string type="ST_ITEM", int days=0, int offset=0, int limit=0)
         {
             try
             {
                 var ivHelper = new BizObject(app);
-                string jsonResult = ivHelper.LoadByDaysToNow(type, days);
+                string jsonResult = ivHelper.LoadByDaysToNow(type, days, offset, limit);
                 return Ok(jsonResult);
             }
             catch (Exception ex)
@@ -40,12 +40,12 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("AllDaysToNow")]
-        public IActionResult GetAllByDaysToNow([FromQuery] string type="ST_ITEM", int days=0)
+        public IActionResult GetAllByDaysToNow([FromQuery] string type="ST_ITEM", int days=0, int offset=0, int limit=0)
         {
             try
             {
                 var ivHelper = new BizObject(app);
-                string jsonResult = ivHelper.LoadAllByDaysToNow(type, days);
+                string jsonResult = ivHelper.LoadAllByDaysToNow(type, days, offset, limit);
                 return Ok(jsonResult);
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("AllDaysToNowDetail")]
-        public IActionResult GetAllByDaysToNowDetail([FromQuery] string type="ST_AJ", int days=0, string dataset="cdsDocDetail", string key="DOCKEY", string param="DOCKEY")
+        public IActionResult GetAllByDaysToNowDetail([FromQuery] string type="ST_AJ", int days=0, string dataset="cdsDocDetail", string key="DOCKEY", string param="DOCKEY", int offset=0, int limit=0)
         {
             try
             {
@@ -69,7 +69,9 @@ namespace SqlAccountRestAPI.Controllers
                     {"days",days},
                     {"dataset",dataset},
                     {"key",key},
-                    {"param",param}
+                    {"param",param},
+                    {"offset",offset},
+                    {"limit",limit}
                 });
                 return Ok(jsonResult);
             }
@@ -84,7 +86,7 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("QueryDetail")]
-        public IActionResult GetByQueryDetail([FromQuery] string type="AR_CUSTOMER", string dataset="cdsBranch", string key="CODE", string param="CODE")
+        public IActionResult GetByQueryDetail([FromQuery] string type="AR_CUSTOMER", string dataset="cdsBranch", string key="CODE", string param="CODE", int offset=0, int limit=0)
         {
             try
             {
@@ -93,7 +95,10 @@ namespace SqlAccountRestAPI.Controllers
                     {"type",type},
                     {"dataset",dataset},
                     {"key",key},
-                    {"param",param}
+                    {"param",param},
+                    {"where",""},
+                    {"offset", offset},
+                    {"limit", limit}
                 });
                 return Ok(jsonResult);
             }
