@@ -74,6 +74,7 @@ namespace SqlAccountRestAPI.Lib
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
             long searchDayTimeStamp = todayTimeStamp - query["days"].Value<int>() * 24 * 3600;
             string queryWhere = "LastModified>=" + searchDayTimeStamp.ToString();
+            query["where"] = queryWhere;
             if (app.ComServer.BizObjects.Find(query["type"]).DataSets.Find("MainDataSet").FindField("LastModified") == null)
             {
                 DateTime dateBeforeNDays = DateTime.Now.AddDays(-query["days"].Value<int>());
