@@ -180,7 +180,7 @@ namespace SqlAccountRestAPI.Lib
             }
             return jsonArray.ToString();
         }
-        public string Add(JObject jsonBody)
+        public JObject Add(JObject jsonBody)
         {
             var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);
             var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
@@ -198,14 +198,14 @@ namespace SqlAccountRestAPI.Lib
                 }
             }
             IvBizObj.Save();
-            IvBizObj.Close();
+            // IvBizObj.Close();
             // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if (lMainDataSet.FindField("CODE") != null)
-                return lMainDataSet.FindField("CODE").value.ToString();
-            return lMainDataSet.FindField("DOCNO").value.ToString();
+                return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
+            return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
 
         }
-        public string AddDetail(JObject jsonBody)
+        public JObject AddDetail(JObject jsonBody)
         {
             var IvBizObj = app.ComServer.BizObjects.Find(jsonBody["type"]);
             var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
@@ -254,11 +254,11 @@ namespace SqlAccountRestAPI.Lib
                 }
             }
             IvBizObj.Save();
-            IvBizObj.Close();
+            // IvBizObj.Close();
             // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if (lMainDataSet.FindField("CODE") != null)
-                return lMainDataSet.FindField("CODE").value.ToString();
-            return lMainDataSet.FindField("DOCNO").value.ToString();
+                return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
+            return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
         }
     }
 }

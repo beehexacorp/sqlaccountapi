@@ -138,8 +138,8 @@ namespace SqlAccountRestAPI.Controllers
             {
                 JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
                 var ivHelper = new BizObject(app);
-                string result = ivHelper.Add(jsonBody);
-                jsonBody["CODE"] = result;
+                JObject result = ivHelper.Add(jsonBody);
+                jsonBody["Result"] = result;
                 return Ok(jsonBody.ToString());
             }
             catch (Exception ex)
@@ -158,8 +158,8 @@ namespace SqlAccountRestAPI.Controllers
             {
                 JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
                 var ivHelper = new BizObject(app);
-                var result = ivHelper.AddDetail(jsonBody);
-                jsonBody["CODE"] = result;
+                JObject result = ivHelper.Add(jsonBody);
+                jsonBody["Result"] = result;
                 return Ok(jsonBody.ToString());
             }
             catch (Exception ex)
