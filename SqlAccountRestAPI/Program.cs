@@ -4,9 +4,9 @@ using SqlAccountRestAPI.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure logging
-builder.Logging.ClearProviders(); // Xoá các provider mặc định (nếu cần)
-builder.Logging.AddConsole(); // Ghi log ra console (tùy chọn)
-builder.Logging.AddFile("Logs/myapp-{Date}.txt"); // Thêm logging vào file
+builder.Logging.ClearProviders(); 
+builder.Logging.AddConsole(); 
+builder.Logging.AddFile("Logs/Request-{Date}.txt"); 
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -25,7 +25,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Thêm middleware của bạn vào pipeline
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
 app.UseHttpsRedirection();
