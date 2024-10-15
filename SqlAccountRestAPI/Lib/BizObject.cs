@@ -89,7 +89,7 @@ namespace SqlAccountRestAPI.Lib
         {
             var lSQL = "SELECT * FROM (SELECT * FROM ";
             lSQL += query["type"];
-            if (query["where"].ToString() != "") lSQL += " WHERE "+query["where"];
+            if (query["where"].ToString() != "") lSQL += " WHERE " + query["where"];
             lSQL += " ORDER BY " + query["key"];
             lSQL += " OFFSET " + query["offset"] + " ROWS ";
             if (query["limit"].ToString() != "0") lSQL += " FETCH NEXT " + query["limit"].ToString() + " ROWS ONLY ";
@@ -98,17 +98,19 @@ namespace SqlAccountRestAPI.Lib
             lSQL += " ON MAINOBJECT." + query["key"] + "=" + query["dataset"] + "." + query["param"];
             var lMain = app.ComServer.DBManager.NewDataSet(lSQL);
             JArray jsonArray = new JArray();
-            
+
             var IvBizObj = app.ComServer.BizObjects.Find(query["type"]);
             var lMainFields = IvBizObj.DataSets.Find("MainDataSet").Fields;
-            List<string> listMainFields = new List<string>{};
-            for(int i=0; i<lMainFields.Count; i++){
+            List<string> listMainFields = new List<string> { };
+            for (int i = 0; i < lMainFields.Count; i++)
+            {
                 listMainFields.Add(lMainFields.Items(i).FieldName);
             }
-            List<string> listSubFields = new List<string>{};
-            for(int i=0; i<lMain.Fields.Count; i++){
+            List<string> listSubFields = new List<string> { };
+            for (int i = 0; i < lMain.Fields.Count; i++)
+            {
                 var fieldName = lMain.Fields.Items(i).FieldName;
-                if(!listMainFields.Contains(fieldName))
+                if (!listMainFields.Contains(fieldName))
                     listSubFields.Add(lMain.Fields.Items(i).FieldName);
             }
 
@@ -117,32 +119,37 @@ namespace SqlAccountRestAPI.Lib
             var mark = "";
             JObject row = new JObject();
             JArray subRowArray = new JArray();
-            while(!lMain.eof){
+            while (!lMain.eof)
+            {
                 var fields = lMain.Fields;
-                
-                if(mark != fields.FindField(query["key"]).value.ToString()){
+
+                if (mark != fields.FindField(query["key"]).value.ToString())
+                {
                     subRowArray = new JArray();
                     row = new JObject();
                     rows.Add(row);
-                    
+
                     mark = fields.FindField(query["key"]).value.ToString();
 
-                    foreach(string mainField in listMainFields){
-                        if (fields.FindField(mainField)!=null && fields.FindField(mainField).value != null && fields.FindField(mainField).ToString() != null)
+                    foreach (string mainField in listMainFields)
+                    {
+                        if (fields.FindField(mainField) != null && fields.FindField(mainField).value != null && fields.FindField(mainField).ToString() != null)
                             row[mainField] = fields.FindField(mainField).value.ToString();
                     }
                     row[query["dataset"].ToString()] = subRowArray;
-                }   
+                }
 
                 JObject subRow = new JObject();
-                foreach(string subDataSetField in listSubFields){
-                    if (fields.FindField(subDataSetField)!=null && fields.FindField(subDataSetField).value != null && fields.FindField(subDataSetField).ToString() != null)
+                foreach (string subDataSetField in listSubFields)
+                {
+                    if (fields.FindField(subDataSetField) != null && fields.FindField(subDataSetField).value != null && fields.FindField(subDataSetField).ToString() != null)
                         subRow[subDataSetField] = fields.FindField(subDataSetField).value.ToString();
                 }
                 subRowArray.Add(subRow);
                 lMain.Next();
-                
+
             }
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
 
         }
@@ -201,8 +208,8 @@ namespace SqlAccountRestAPI.Lib
             // IvBizObj.Close();
             // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if (lMainDataSet.FindField("DOCNO") != null)
-                return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
-            return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
+                return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
+            return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
 
         }
         public JObject AddDetail(JObject jsonBody)
@@ -256,8 +263,123 @@ namespace SqlAccountRestAPI.Lib
             // IvBizObj.Close();
             // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             if (lMainDataSet.FindField("DOCNO") != null)
-                return new JObject{{"DOCNO",lMainDataSet.FindField("DOCNO").value.ToString()}};
-            return new JObject{{"CODE",lMainDataSet.FindField("CODE").value.ToString()}};
+                return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
+            return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
+        }
+
+        public JObject Transfer(JObject jsonBody)
+        {
+            dynamic lSQL, lMain, IvBizObj, lDetail, Fields;
+            lSQL = "SELECT * FROM " + jsonBody["from"] + " WHERE DOCNO='" + jsonBody["docno"] + "'";
+            lMain = app.ComServer.DBManager.NewDataSet(lSQL);
+
+            lMain.First();
+
+            JObject MainObject = new JObject();
+            Fields = lMain.Fields;
+            for (int i = 0; i < Fields.Count; i++)
+            {
+                var lField = Fields.Items(i);
+                if (lField != null)
+                {
+                    var key = lField.FieldName;
+                    var value = lField.value;
+                    if (value != null && value.ToString() != null && value.ToString() != "")
+                        MainObject[key] = value.ToString();
+                }
+            }
+
+            lSQL = "SELECT * FROM " + jsonBody["from"] + "DTL WHERE DOCKEY=" + MainObject["DOCKEY"];
+            lDetail = app.ComServer.DBManager.NewDataSet(lSQL);
+
+            lDetail.First();
+            JArray DetailObjects = new JArray();
+            while (!lDetail.eof)
+            {
+                JObject DetailObject = new JObject();
+                Fields = lDetail.Fields;
+                for (int i = 0; i < Fields.Count; i++)
+                {
+                    var lField = Fields.Items(i);
+                    if (lField != null)
+                    {
+                        var key = lField.FieldName;
+                        var value = lField.value;
+                        if (value != null && value.ToString() != null && value.ToString() != "")
+                            DetailObject[key] = value.ToString();
+                    }
+                }
+                DetailObjects.Add(DetailObject);
+                lDetail.Next();
+            }
+
+            // ADD
+            IvBizObj = app.ComServer.BizObjects.Find(jsonBody["to"]);
+            var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
+
+            IvBizObj.New();
+
+            foreach (var prop in MainObject.Properties())
+            {
+                var fieldName = prop.Name;
+                var fieldValue = prop.Value;
+                var field = lMainDataSet.Findfield(fieldName);
+                if (field != null && fieldValue != null
+                    && !fieldName.ToString().Contains("DOCNO")
+                    && !fieldName.ToString().Contains("DOCKEY")
+                    && !fieldName.ToString().Contains("DESCRIPTION")
+                )
+                {
+                    field.value = fieldValue.ToString();
+                }
+            }
+
+            // Console.WriteLine(MainObject);
+            // Console.WriteLine(DetailObjects);
+            var lCdsDataSet = IvBizObj.DataSets.Find("cdsDocDetail");
+            var defaultSubDataSetExistFlag = false;
+            if (lCdsDataSet.RecordCount != 0)
+                defaultSubDataSetExistFlag = true;
+            foreach (var cdsItem in DetailObjects)
+            {
+                if (defaultSubDataSetExistFlag)
+                {
+                    lCdsDataSet.Edit();
+                    defaultSubDataSetExistFlag = false;
+                }
+                else
+                    lCdsDataSet.Append();
+                if (cdsItem is JObject jsonItem)
+                {
+                    foreach (var prop in jsonItem.Properties())
+                    {
+                        var fieldName = prop.Name;
+                        var fieldValue = prop.Value;
+                        var field = lCdsDataSet.Findfield(fieldName);
+                        if (field != null && fieldValue != null
+                            && !fieldName.ToString().Contains("DOCNO")
+                            && !fieldName.ToString().Contains("DLTKEY")
+                            && !fieldName.ToString().Contains("DOCKEY")
+                            // && !fieldName.ToString().Contains("QTY")
+                        )
+                        {
+                            Console.WriteLine(fieldName);
+                            field.value = fieldValue.ToString();
+                        }
+                    }
+                }
+
+                Console.WriteLine(MainObject["DOCKEY"]);
+                lCdsDataSet.Findfield("FROMDOCTYPE").value = string.Join("",jsonBody["from"].ToString().Split('_').Skip(1));
+                lCdsDataSet.Findfield("FROMDOCKEY").value = MainObject["DOCKEY"];
+                lCdsDataSet.Findfield("FROMDTLKEY").value = cdsItem["DTLKEY"];
+                lCdsDataSet.Post();
+            }
+
+            IvBizObj.Save();
+            if (lMainDataSet.FindField("DOCNO") != null)
+                return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
+            return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
         }
     }
 }

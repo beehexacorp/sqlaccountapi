@@ -172,5 +172,25 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
+        [HttpPost("Transfer")]
+        public IActionResult Transfer([FromBody] JsonElement body){
+            try
+            {
+                JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
+                var ivHelper = new BizObject(app);
+                JObject result = ivHelper.Transfer(jsonBody);
+                jsonBody["Result"] = result;
+                return Ok(jsonBody.ToString());
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
     }
 }
