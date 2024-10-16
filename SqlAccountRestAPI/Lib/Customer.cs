@@ -178,7 +178,7 @@ namespace SqlAccountRestAPI.Lib
             var lCdsDataSet = IvBizObj.DataSets.Find("cdsKnockOff");
             lCdsDataSet.Edit();
             dynamic field;
-            field = lCdsDataSet.Findfield("FROMDOCTYPE");
+            field = lCdsDataSet.Findfield("DOCTYPE");
             if (field != null)
                 field.value = "PM";
 
@@ -186,11 +186,11 @@ namespace SqlAccountRestAPI.Lib
             if (field != null)
                 field.value = objectType;
 
-            field = lCdsDataSet.Findfield("FROMDOCKEY");
+            field = lCdsDataSet.Findfield("KNOCKOFFDOCKEY");
             if (field != null)
                 field.value = lMainDataSet.FindField("DOCKEY").value;
 
-            field = lCdsDataSet.Findfield("TODOCKEY");
+            field = lCdsDataSet.Findfield("REFDOCKEY");
             if (field != null)
                 field.value = lDockey;
 
