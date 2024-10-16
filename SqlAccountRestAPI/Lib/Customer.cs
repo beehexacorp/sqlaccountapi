@@ -147,9 +147,14 @@ namespace SqlAccountRestAPI.Lib
         public JObject Payment(JObject jsonBody)
         {
             dynamic lDockey, lSQL, lMain, IvBizObj, lKnockOff, Fields, objectType, lDocAmt;
-            objectType = jsonBody["TYPE"];
-            lSQL = "SELECT DOCAMT, DOCKEY FROM SL_" + objectType + " WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
+            
+            lSQL = "SELECT FROMDOCTYPE FROM AR_IV WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
             lMain = app.ComServer.DBManager.NewDataSet(lSQL);
+            objectType = lMain.FindField("FROMDOCTYPE").value;
+
+            lSQL = "SELECT DOCAMT, DOCKEY FROM SL_"+objectType+" WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
+            lMain = app.ComServer.DBManager.NewDataSet(lSQL);
+
             lDocAmt = lMain.FindField("DOCAMT").value;
             lDockey = lMain.FindField("DOCKEY").value;
 
