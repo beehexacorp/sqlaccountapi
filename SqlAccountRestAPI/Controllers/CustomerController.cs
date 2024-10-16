@@ -78,24 +78,5 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
-        [HttpPost("test")]
-        public IActionResult test([FromBody] JsonElement body){
-             try
-            {
-                JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
-                var ivHelper = new Customer(app);
-                ivHelper.Test(jsonBody);
-                return Ok(jsonBody.ToString());
-            }
-            catch (Exception ex)
-            {
-                var errorResponse = new
-                {
-                    error = ex.ToString(),
-                    code = 400
-                };
-                return BadRequest(errorResponse);
-            }
-        }
     }
 }

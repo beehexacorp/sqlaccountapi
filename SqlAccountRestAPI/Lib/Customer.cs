@@ -190,30 +190,7 @@ namespace SqlAccountRestAPI.Lib
                 return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
             return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
         }
-        public void Test(JObject jsonBody){
-            dynamic lDockey, lSQL, lMain, IvBizObj, lKnockOff, Fields, objectType, lDocAmt;
-            
-            IvBizObj = app.ComServer.BizObjects.Find("AR_PM");
-
-            //Step 3: Set Dataset
-            lMain = IvBizObj.DataSets.Find("MainDataSet"); //lMain contains master data
-            dynamic lDetail = IvBizObj.DataSets.Find("cdsKnockOff"); //lDetail contains Knock off data  
-
-            //Step 4 : Find CN Number
-            dynamic lDocNo = "OR-00071";
-            dynamic lDocKey = IvBizObj.FindKeyByRef("DOCNO", lDocNo);
-            IvBizObj.Params.Find("DOCKEY").Value = lDocKey;
-
-            Console.WriteLine("MAIN");
-            for(var i=0;i<lMain.Fields.Count;i++){
-                Console.WriteLine(lMain.Fields.Items(i).FieldName);
-                Console.WriteLine(lMain.Fields.Items(i).value.ToString());
-            }
-            Console.WriteLine("SUB");
-            for(var i=0;i<lDetail.Fields.Count;i++){
-                Console.WriteLine(lDetail.Fields.Items(i).FieldName+" "+lDetail.Fields.Items(i).value);
-            }
-        }
+        
     }
     
 }
