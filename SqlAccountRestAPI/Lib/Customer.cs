@@ -148,15 +148,10 @@ namespace SqlAccountRestAPI.Lib
         {
             dynamic lDockey, lSQL, lMain, IvBizObj, lKnockOff, Fields, objectType, lDocAmt;
             
-            lSQL = "SELECT FROMDOCTYPE FROM AR_IV WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
+            lSQL = "SELECT FROMDOCTYPE, DOCAMT FROM AR_IV WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
             lMain = app.ComServer.DBManager.NewDataSet(lSQL);
             objectType = lMain.FindField("FROMDOCTYPE").value;
-
-            lSQL = "SELECT DOCAMT, DOCKEY FROM SL_"+objectType+" WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
-            lMain = app.ComServer.DBManager.NewDataSet(lSQL);
-
             lDocAmt = lMain.FindField("DOCAMT").value;
-            lDockey = lMain.FindField("DOCKEY").value;
 
             // ADD
             IvBizObj = app.ComServer.BizObjects.Find("AR_PM");
@@ -164,55 +159,61 @@ namespace SqlAccountRestAPI.Lib
 
             IvBizObj.New();
 
+
             lMainDataSet.FindField("CODE").value = jsonBody["CODE"];
             lMainDataSet.FindField("PAYMENTMETHOD").value = jsonBody["PAYMENTMETHOD"];
             lMainDataSet.FindField("DOCAMT").value = lDocAmt;
             lMainDataSet.FindField("LOCALDOCAMT").value = lDocAmt;
-            lMainDataSet.FindField("FROMDOCTYPE").value = objectType;
             lMainDataSet.FindField("PROJECT").value = jsonBody["PROJECT"];
-            lMainDataSet.FindField("PAYMENTPROJECT").value = jsonBody["PROJECT"];
-            lMainDataSet.FindField("JOURNAL").value = "BANK";
-        
+            lMainDataSet.FindField("PAYMENTPROJECT").value = jsonBody["PROJECT"];        
+
+            var lDetail = IvBizObj.DataSets.Find("cdsKnockOff");
+            //Step 5: Knock Off IV
+            dynamic lIVNO = jsonBody["DOCNO"];
+            object[] V = new object[2];
+            V[0] = "IV";
+            V[1] = lIVNO;
+            Console.WriteLine(V);
+
+            if (lDetail.Locate("DocType;DocNo", V, false, false))
+            {
+                lDetail.Edit();
+                lDetail.FindField("KOAmt").AsFloat = lDocAmt; //Partial Knock off
+                // lDetail.FindField("KnockOff").AsString = "T";
+                lDetail.Post();
+            }
 
 
-            var lCdsDataSet = IvBizObj.DataSets.Find("cdsKnockOff");
-            lCdsDataSet.Edit();
-            dynamic field;
-            field = lCdsDataSet.Findfield("DOCTYPE");
-            if (field != null)
-                field.value = "PM";
-
-            field = lCdsDataSet.Findfield("TODOCTYPE");
-            if (field != null)
-                field.value = objectType;
-
-            field = lCdsDataSet.Findfield("KNOCKOFFDOCKEY");
-            if (field != null)
-                field.value = lMainDataSet.FindField("DOCKEY").value;
-
-            field = lCdsDataSet.Findfield("REFDOCKEY");
-            if (field != null)
-                field.value = lDockey;
-
-            field = lCdsDataSet.Findfield("LOCALKOAMT");
-            if (field != null)
-                field.value = lDocAmt;
-
-            field = lCdsDataSet.Findfield("KOAMT");
-            if (field != null)
-                field.value = lDocAmt;
-
-            field = lCdsDataSet.Findfield("ACTUALLOCALKOAMT");
-            if (field != null)
-                field.value = lDocAmt;
-
-
-            lCdsDataSet.Post();
 
             IvBizObj.Save();
             if (lMainDataSet.FindField("DOCNO") != null)
                 return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
             return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
         }
+        public void Test(JObject jsonBody){
+            dynamic lDockey, lSQL, lMain, IvBizObj, lKnockOff, Fields, objectType, lDocAmt;
+            
+            IvBizObj = app.ComServer.BizObjects.Find("AR_PM");
+
+            //Step 3: Set Dataset
+            lMain = IvBizObj.DataSets.Find("MainDataSet"); //lMain contains master data
+            dynamic lDetail = IvBizObj.DataSets.Find("cdsKnockOff"); //lDetail contains Knock off data  
+
+            //Step 4 : Find CN Number
+            dynamic lDocNo = "OR-00071";
+            dynamic lDocKey = IvBizObj.FindKeyByRef("DOCNO", lDocNo);
+            IvBizObj.Params.Find("DOCKEY").Value = lDocKey;
+
+            Console.WriteLine("MAIN");
+            for(var i=0;i<lMain.Fields.Count;i++){
+                Console.WriteLine(lMain.Fields.Items(i).FieldName);
+                Console.WriteLine(lMain.Fields.Items(i).value.ToString());
+            }
+            Console.WriteLine("SUB");
+            for(var i=0;i<lDetail.Fields.Count;i++){
+                Console.WriteLine(lDetail.Fields.Items(i).FieldName+" "+lDetail.Fields.Items(i).value);
+            }
+        }
     }
+    
 }
