@@ -94,7 +94,7 @@ namespace SqlAccountRestAPI.Lib
             lSQL += " OFFSET " + query["offset"] + " ROWS ";
             if (query["limit"].ToString() != "0") lSQL += " FETCH NEXT " + query["limit"].ToString() + " ROWS ONLY ";
             lSQL += " ) AS MAINOBJECT";
-            lSQL += " JOIN " + query["dataset"];
+            lSQL += " LEFT JOIN " + query["dataset"];
             lSQL += " ON MAINOBJECT." + query["key"] + "=" + query["dataset"] + "." + query["param"];
             var lMain = app.ComServer.DBManager.NewDataSet(lSQL);
             JArray jsonArray = new JArray();

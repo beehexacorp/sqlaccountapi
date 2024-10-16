@@ -58,5 +58,25 @@ namespace SqlAccountRestAPI.Controllers
                 return BadRequest(errorResponse);
             }
         }
+        [HttpPost("Payment")]
+        public IActionResult Payment([FromBody] JsonElement body){
+             try
+            {
+                JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
+                var ivHelper = new Customer(app);
+                JObject result = ivHelper.Payment(jsonBody);
+                jsonBody["Result"] = result;
+                return Ok(jsonBody.ToString());
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new
+                {
+                    error = ex.ToString(),
+                    code = 400
+                };
+                return BadRequest(errorResponse);
+            }
+        }
     }
 }

@@ -24,21 +24,23 @@ namespace SqlAccountRestAPI.Lib
             long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
             long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
             dynamic lSQL = "SELECT * FROM "
-                +"AR_CUSTOMER JOIN AR_CUSTOMERBRANCH "
-                +"ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE "
-                +"WHERE AR_CUSTOMER.LASTMODIFIED > "+searchDayTimeStamp.ToString()
-                +" ORDER BY AR_CUSTOMER.LASTMODIFIED";
+                + "AR_CUSTOMER JOIN AR_CUSTOMERBRANCH "
+                + "ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE "
+                + "WHERE AR_CUSTOMER.LASTMODIFIED > " + searchDayTimeStamp.ToString()
+                + " ORDER BY AR_CUSTOMER.LASTMODIFIED";
             dynamic lJoinDataset = app.ComServer.DBManager.NewDataSet(lSQL);
-            
+
             dynamic lMainFields = app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
             dynamic lSubDataSetFields = app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMERBRANCH").Fields;
-            
-            List<string> mainFieldsArray = new List<string>{};
-            for(int i=0; i<lMainFields.Count; i++){
+
+            List<string> mainFieldsArray = new List<string> { };
+            for (int i = 0; i < lMainFields.Count; i++)
+            {
                 mainFieldsArray.Add(lMainFields.Items(i).FieldName);
             }
-            List<string> subDataSetFieldsArray = new List<string>{};
-            for(int i=0; i<lSubDataSetFields.Count; i++){
+            List<string> subDataSetFieldsArray = new List<string> { };
+            for (int i = 0; i < lSubDataSetFields.Count; i++)
+            {
                 subDataSetFieldsArray.Add(lSubDataSetFields.Items(i).FieldName);
             }
 
@@ -47,51 +49,58 @@ namespace SqlAccountRestAPI.Lib
             var mark = "";
             JObject row = new JObject();
             JArray subRowArray = new JArray();
-            while(!lJoinDataset.eof){
+            while (!lJoinDataset.eof)
+            {
                 var fields = lJoinDataset.Fields;
-                
-                if(mark != fields.FindField("CODE").value.ToString()){
+
+                if (mark != fields.FindField("CODE").value.ToString())
+                {
                     subRowArray = new JArray();
                     row = new JObject();
                     rows.Add(row);
-                    
+
                     mark = fields.FindField("CODE").value.ToString();
 
-                    foreach(string mainField in mainFieldsArray){
+                    foreach (string mainField in mainFieldsArray)
+                    {
                         if (fields.FindField(mainField).value is string)
                             row[mainField] = fields.FindField(mainField).value;
                     }
                     row["cdsBranch"] = subRowArray;
-                }   
+                }
 
                 JObject subRow = new JObject();
-                foreach(string subDataSetField in subDataSetFieldsArray){
+                foreach (string subDataSetField in subDataSetFieldsArray)
+                {
                     if (fields.FindField(subDataSetField).value is string)
                         subRow[subDataSetField] = fields.FindField(subDataSetField).value;
                 }
                 subRowArray.Add(subRow);
                 lJoinDataset.Next();
-                
+
             }
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
-            
+
         }
-        public string LoadByEmail(string email){
+        public string LoadByEmail(string email)
+        {
             dynamic lSQL = "SELECT * FROM "
-                +"AR_CUSTOMER JOIN AR_CUSTOMERBRANCH "
-                +"ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE WHERE AR_CUSTOMER.CODE IN (SELECT CODE FROM AR_CUSTOMERBRANCH WHERE AR_CUSTOMERBRANCH.EMAIL='"+email+"')";
+                + "AR_CUSTOMER JOIN AR_CUSTOMERBRANCH "
+                + "ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE WHERE AR_CUSTOMER.CODE IN (SELECT CODE FROM AR_CUSTOMERBRANCH WHERE AR_CUSTOMERBRANCH.EMAIL='" + email + "')";
 
             dynamic lJoinDataset = app.ComServer.DBManager.NewDataSet(lSQL);
-            
+
             dynamic lMainFields = app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
             dynamic lSubDataSetFields = app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMERBRANCH").Fields;
-            
-            List<string> mainFieldsArray = new List<string>{};
-            for(int i=0; i<lMainFields.Count; i++){
+
+            List<string> mainFieldsArray = new List<string> { };
+            for (int i = 0; i < lMainFields.Count; i++)
+            {
                 mainFieldsArray.Add(lMainFields.Items(i).FieldName);
             }
-            List<string> subDataSetFieldsArray = new List<string>{};
-            for(int i=0; i<lSubDataSetFields.Count; i++){
+            List<string> subDataSetFieldsArray = new List<string> { };
+            for (int i = 0; i < lSubDataSetFields.Count; i++)
+            {
                 subDataSetFieldsArray.Add(lSubDataSetFields.Items(i).FieldName);
             }
 
@@ -100,35 +109,105 @@ namespace SqlAccountRestAPI.Lib
             var mark = "";
             JObject row = new JObject();
             JArray subRowArray = new JArray();
-            while(!lJoinDataset.eof){
+            while (!lJoinDataset.eof)
+            {
                 var fields = lJoinDataset.Fields;
-                
+
                 // new customer
-                if(mark != fields.FindField("CODE").value.ToString()){
+                if (mark != fields.FindField("CODE").value.ToString())
+                {
                     subRowArray = new JArray();
                     row = new JObject();
                     rows.Add(row);
-    
+
                     mark = fields.FindField("CODE").value.ToString();
-                    foreach(string mainField in mainFieldsArray){
-                        if (fields.FindField(mainField).value is string){
+                    foreach (string mainField in mainFieldsArray)
+                    {
+                        if (fields.FindField(mainField).value is string)
+                        {
                             row[mainField] = fields.FindField(mainField).value;
                         }
                     }
                     row["cdsBranch"] = subRowArray;
 
-                }   
+                }
 
                 JObject subRow = new JObject();
-                foreach(string subDataSetField in subDataSetFieldsArray){
+                foreach (string subDataSetField in subDataSetFieldsArray)
+                {
                     if (fields.FindField(subDataSetField).value is string)
                         subRow[subDataSetField] = fields.FindField(subDataSetField).value;
                 }
                 subRowArray.Add(subRow);
                 lJoinDataset.Next();
-                
+
             }
             return rows.ToString(Newtonsoft.Json.Formatting.Indented);
+        }
+        public JObject Payment(JObject jsonBody)
+        {
+            dynamic lDockey, lSQL, lMain, IvBizObj, lKnockOff, Fields, objectType, lDocAmt;
+            objectType = jsonBody["DOCNO"].ToString().Split('-')[0];
+            lSQL = "SELECT DOCAMT, DOCKEY FROM SL_" + objectType + " WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
+            lMain = app.ComServer.DBManager.NewDataSet(lSQL);
+            lDocAmt = lMain.FindField("DOCAMT").value;
+            lDockey = lMain.FindField("DOCKEY").value;
+
+            // ADD
+            IvBizObj = app.ComServer.BizObjects.Find("AR_PM");
+            var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
+
+            IvBizObj.New();
+
+            lMainDataSet.FindField("CODE").value = jsonBody["CODE"];
+            lMainDataSet.FindField("PAYMENTMETHOD").value = jsonBody["PAYMENTMETHOD"];
+            lMainDataSet.FindField("DOCAMT").value = lDocAmt;
+            lMainDataSet.FindField("LOCALDOCAMT").value = lDocAmt;
+            lMainDataSet.FindField("FROMDOCTYPE").value = objectType;
+            lMainDataSet.FindField("PROJECT").value = jsonBody["PROJECT"];
+            lMainDataSet.FindField("PAYMENTPROJECT").value = jsonBody["PROJECT"];
+            lMainDataSet.FindField("JOURNAL").value = "BANK";
+        
+
+
+            var lCdsDataSet = IvBizObj.DataSets.Find("cdsKnockOff");
+            lCdsDataSet.Edit();
+            dynamic field;
+            field = lCdsDataSet.Findfield("FROMDOCTYPE");
+            if (field != null)
+                field.value = "PM";
+
+            field = lCdsDataSet.Findfield("TODOCTYPE");
+            if (field != null)
+                field.value = objectType;
+
+            field = lCdsDataSet.Findfield("FROMDOCKEY");
+            if (field != null)
+                field.value = lMainDataSet.FindField("DOCKEY").value;
+
+            field = lCdsDataSet.Findfield("TODOCKEY");
+            if (field != null)
+                field.value = lDockey;
+
+            field = lCdsDataSet.Findfield("LOCALKOAMT");
+            if (field != null)
+                field.value = lDocAmt;
+
+            field = lCdsDataSet.Findfield("KOAMT");
+            if (field != null)
+                field.value = lDocAmt;
+
+            field = lCdsDataSet.Findfield("ACTUALLOCALKOAMT");
+            if (field != null)
+                field.value = lDocAmt;
+
+
+            lCdsDataSet.Post();
+
+            IvBizObj.Save();
+            if (lMainDataSet.FindField("DOCNO") != null)
+                return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
+            return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
         }
     }
 }
