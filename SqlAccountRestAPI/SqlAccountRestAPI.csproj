@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <Nullable>enable</Nullable>
+    <PreserveCompilationContext>false</PreserveCompilationContext> <!-- Chỉ giữ lại những gì cần thiết -->
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 

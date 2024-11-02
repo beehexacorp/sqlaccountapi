@@ -5,3 +5,4 @@
 /SqlAccountRestAPI/.vs/*
 /SqlAccountRestAPI/bin/*
 /SqlAccountRestAPI/obj/*
+/SqlAccountRestAPI/Logs/*
