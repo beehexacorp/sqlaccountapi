@@ -1,8 +1,7 @@
-/docs/AccountinglinkC/AccountinglinkC/bin/*
-/docs/AccountinglinkC/AccountinglinkC/obj/*
-/docs/AccountinglinkC/.vs/*
 /docs/AccountinglinkC/packages/*
-/SqlAccountRestAPI/.vs/*
-/SqlAccountRestAPI/bin/*
-/SqlAccountRestAPI/obj/*
-/SqlAccountRestAPI/Logs/*
+
+bin/
+obj/
+.vs/
+.vscode
+Logs/
