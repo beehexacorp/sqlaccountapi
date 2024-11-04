@@ -12,7 +12,7 @@ public class SqlAccountingApp : IDisposable
     public SqlAccountingApp(SqlAccountingBizAppFactory factory)
     {
         _appFactory = factory;
-        _sqlAccountingBizApp = factory.Create();
+        _sqlAccountingBizApp = factory.CreateApp();
     }
 
     public bool IsLoggedIn => _sqlAccountingBizApp.IsLogin;
@@ -28,7 +28,7 @@ public class SqlAccountingApp : IDisposable
         if (_sqlAccountingBizApp.IsLogin)
         {
             System.Runtime.InteropServices.Marshal.ReleaseComObject(_sqlAccountingBizApp);
-            _sqlAccountingBizApp = _appFactory.Create();
+            _sqlAccountingBizApp = _appFactory.CreateApp();
         }
 
         _sqlAccountingBizApp.Login(username, username);
@@ -110,34 +110,38 @@ public class SqlAccountingApp : IDisposable
 
     public SqlAccountingBizObject FindBizObject(string name)
     {
-
         var result = new SqlAccountingBizObject(_sqlAccountingBizApp.BizObjects.Find(name));
         return result;
     }
 
-    public dynamic CreateDataset(string sql)
+
+    public dynamic CreateDataset(string sql, IDictionary<string, object> @params)
     {
+        // TODO: use params
         return _sqlAccountingBizApp.DBManager.NewDataSet(sql);
     }
 
-    public IDictionary<string, object> QueryFirstOrDefault(string sql, IDictionary<string, object> @params)
+    public IDictionary<string, object>? QueryFirstOrDefault(string sql, IDictionary<string, object> @params)
     {
         // TODO: TEST THIS
         sql = $@"{sql}
 OFFSET 0 ROWS
 FETCH NEXT 1 ROWS ONLY";
-        var dataset = CreateDataset(sql);
+        var dataset = CreateDataset(sql, @params);
         try
         {
-            // TODO: what if there is no data found? please add if/else check to return null
             dataset.First();
+            if (dataset.eof) // TODO: is this there is no data?
+            {
+                return null;
+            }
             var fields = dataset.Fields;
 
             var item = new Dictionary<string, object>();
             for (int i = 0; i < fields.Count; i++)
             {
-                var lField = fields.Items(i);
-                item[lField.FieldName] = lField.value;
+                var datasetField = fields.Items(i);
+                item[datasetField.FieldName] = datasetField.value;
             }
 
             return item;
@@ -156,20 +160,20 @@ FETCH NEXT 1 ROWS ONLY";
         sql = $@"{sql}
 OFFSET {offset} ROWS
 FETCH NEXT {limit} ROWS ONLY";
-        var dataset = CreateDataset(sql);
+        var dataset = CreateDataset(sql, @params);
         try
         {
             var results = new List<IDictionary<string, object>>();
             dataset.First();
-            while (!dataset.eof)
+            while (!dataset.eof) // TODO: what if the dataset has only 1 item?
             {
                 var fields = dataset.Fields;
 
                 var item = new Dictionary<string, object>();
                 for (int i = 0; i < fields.Count; i++)
                 {
-                    var lField = fields.Items(i);
-                    item[lField.FieldName] = lField.value;
+                    var datasetField = fields.Items(i);
+                    item[datasetField.FieldName] = datasetField.value;
                 }
                 results.Add(item);
                 dataset.Next();

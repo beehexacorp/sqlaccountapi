@@ -121,6 +121,7 @@ namespace SqlAccountRestAPI.Lib
 
         public IDictionary<string, object> Transfer(string fromEntityType, string toEntityType, string docNo)
         {
+            // TODO: what if the entity does not have the DOCNO, but CODE instead?
             var mainObject = _app.QueryFirstOrDefault(
                 "SELECT * FROM " + fromEntityType + " WHERE DOCNO='" + docNo + "'",
                 new Dictionary<string, object>());

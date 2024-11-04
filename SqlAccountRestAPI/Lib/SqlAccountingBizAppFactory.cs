@@ -2,8 +2,13 @@ namespace SqlAccountRestAPI.Lib;
 
 public class SqlAccountingBizAppFactory
 {
-    public dynamic Create()
+    private dynamic? _app;
+    public dynamic CreateApp()
     {
+        if (_app != null)
+        {
+            return _app;
+        }
 
         var lBizType = Type.GetTypeFromProgID("SQLAcc.BizApp");
 
@@ -12,12 +17,12 @@ public class SqlAccountingBizAppFactory
             throw new Exception("Cannot load SQLAcc.BizApp Assembly");
         }
 
-        var app = Activator.CreateInstance(lBizType);
+        _app = Activator.CreateInstance(lBizType);
 
-        if (app == null)
+        if (_app == null)
         {
             throw new Exception("Cannot create instance of SQLAcc.BizApp");
         }
-        return app;
+        return _app!;
     }
 }
