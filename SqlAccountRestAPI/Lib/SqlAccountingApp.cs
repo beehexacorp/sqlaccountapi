@@ -4,28 +4,6 @@ using SqlAccountRestAPI.ViewModels;
 
 namespace SqlAccountRestAPI.Lib;
 
-public class SqlAccountingBizAppFactory
-{
-    public dynamic Create()
-    {
-
-        var lBizType = Type.GetTypeFromProgID("SQLAcc.BizApp");
-
-        if (lBizType == null)
-        {
-            throw new Exception("Cannot load SQLAcc.BizApp Assembly");
-        }
-
-        var app = Activator.CreateInstance(lBizType);
-
-        if (app == null)
-        {
-            throw new Exception("Cannot create instance of SQLAcc.BizApp");
-        }
-        return app;
-    }
-}
-
 public class SqlAccountingApp : IDisposable
 {
     private dynamic _sqlAccountingBizApp;
@@ -116,6 +94,20 @@ public class SqlAccountingApp : IDisposable
         System.Runtime.InteropServices.Marshal.ReleaseComObject(_sqlAccountingBizApp);
     }
 
+    public object? GetBizObjectInfo(string name)
+    {
+        /**
+        TODO: implement this function
+        {
+          "name": "...",
+          "description": "...",
+          "fields": Array<string>
+          "cds": ...
+        }
+        */
+        throw new NotImplementedException();
+    }
+
     public SqlAccountingBizObject FindBizObject(string name)
     {
 
@@ -192,54 +184,5 @@ FETCH NEXT {limit} ROWS ONLY";
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(dataset);
             }
         }
-    }
-
-    public object? GetBizObjectInfo(string name)
-    {
-        /**
-        TODO: implement this function
-        {
-          "name": "...",
-          "description": "...",
-          "fields": Array<string>
-          "cds": ...
-        }
-        */
-        throw new NotImplementedException();
-    }
-}
-
-public class SqlAccountingBizObject : IDisposable
-{
-    private dynamic _bizObject;
-
-    public SqlAccountingBizObject(dynamic bizObject)
-    {
-        this._bizObject = bizObject;
-    }
-
-    public void Dispose()
-    {
-
-        if (_bizObject == null)
-        {
-            return;
-        }
-        System.Runtime.InteropServices.Marshal.ReleaseComObject(_bizObject);
-    }
-
-    public dynamic FindDataset(string datasetName)
-    {
-        return _bizObject.DataSets.Find("MainDataSet");
-    }
-
-    public void New()
-    {
-        _bizObject.New();
-    }
-
-    public void Save()
-    {
-        _bizObject.Save();
     }
 }
