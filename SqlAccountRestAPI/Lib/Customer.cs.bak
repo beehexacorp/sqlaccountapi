@@ -13,8 +13,8 @@ namespace SqlAccountRestAPI.Lib
 {
     public class Customer
     {
-        private SqlComServer app;
-        public Customer(SqlComServer comServer)
+        private SqlAccountingApp app;
+        public Customer(SqlAccountingApp comServer)
         {
             if (comServer == null) throw new Exception("Sql Accounting is not running");
             app = comServer;
@@ -147,14 +147,14 @@ namespace SqlAccountRestAPI.Lib
         public JObject Payment(JObject jsonBody)
         {
             dynamic lDockey, lSQL, lMain, IvBizObj, lKnockOff, Fields, objectType, lDocAmt;
-            
+
             lSQL = "SELECT FROMDOCTYPE, DOCAMT FROM AR_IV WHERE DOCNO='" + jsonBody["DOCNO"] + "'";
             lMain = app.ComServer.DBManager.NewDataSet(lSQL);
             objectType = lMain.FindField("FROMDOCTYPE").value;
             lDocAmt = lMain.FindField("DOCAMT").value;
 
             // ADD
-            IvBizObj = app.ComServer.BizObjects.Find("AR_PM");
+            IvBizObj = app.FindBizObject("AR_PM");
             var lMainDataSet = IvBizObj.DataSets.Find("MainDataSet");
 
             IvBizObj.New();
@@ -165,7 +165,7 @@ namespace SqlAccountRestAPI.Lib
             lMainDataSet.FindField("DOCAMT").value = lDocAmt;
             lMainDataSet.FindField("LOCALDOCAMT").value = lDocAmt;
             lMainDataSet.FindField("PROJECT").value = jsonBody["PROJECT"];
-            lMainDataSet.FindField("PAYMENTPROJECT").value = jsonBody["PROJECT"];        
+            lMainDataSet.FindField("PAYMENTPROJECT").value = jsonBody["PROJECT"];
 
             var lDetail = IvBizObj.DataSets.Find("cdsKnockOff");
             //Step 5: Knock Off IV
@@ -190,7 +190,7 @@ namespace SqlAccountRestAPI.Lib
                 return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
             return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
         }
-        
+
     }
-    
+
 }

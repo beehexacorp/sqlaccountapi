@@ -15,13 +15,13 @@ namespace SqlAccountRestAPI.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly SqlComServer app;
-        public CustomerController(SqlComServer comServer)
+        private readonly SqlAccountingApp app;
+        public CustomerController(SqlAccountingApp comServer)
         {
             app = comServer;
         }
         [HttpGet("AllDaysToNow")]
-        public IActionResult GetByDaysToNow([FromQuery] int days=0)
+        public IActionResult GetByDaysToNow([FromQuery] int days = 0)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpGet("Email")]
-        public IActionResult GetByEmail([FromQuery] string email="")
+        public IActionResult GetByEmail([FromQuery] string email = "")
         {
             try
             {
@@ -59,8 +59,9 @@ namespace SqlAccountRestAPI.Controllers
             }
         }
         [HttpPost("Payment")]
-        public IActionResult Payment([FromBody] JsonElement body){
-             try
+        public IActionResult Payment([FromBody] JsonElement body)
+        {
+            try
             {
                 JObject jsonBody = Newtonsoft.Json.Linq.JObject.Parse(body.GetRawText());
                 var ivHelper = new Customer(app);

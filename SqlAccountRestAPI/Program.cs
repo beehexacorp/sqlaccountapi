@@ -4,9 +4,9 @@ using SqlAccountRestAPI.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure logging
-builder.Logging.ClearProviders(); 
-builder.Logging.AddConsole(); 
-builder.Logging.AddFile("Logs/Request-{Date}.txt"); 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddFile("Logs/Request-{Date}.txt");
 
 builder.WebHost.UseIISIntegration();  // Thêm dòng này
 
@@ -16,7 +16,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<SqlComServer>();
+builder.Services.AddSingleton<SqlAccountingBizAppFactory>();
+builder.Services.AddSingleton<SqlAccountingApp>();
+builder.Services.AddTransient<BizObject>();
 
 // builder.WebHost.UseKestrel(options =>
 // {
@@ -34,11 +36,24 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
+var applicationLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+applicationLifetime.ApplicationStopped.Register(() =>
+{
+    var sqlAccountingApp = app.Services.GetRequiredService<SqlAccountingApp>();
+    sqlAccountingApp.Dispose();
+});
+
+applicationLifetime.ApplicationStarted.Register(() =>
+{
+    // TODO: login with SQL accounting if there is a cached username & password
+});//
 // app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+// 
 
 app.Run();
 
