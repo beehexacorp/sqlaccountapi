@@ -25,6 +25,7 @@ namespace SqlAccountRestAPI.Lib
             int offset = 0,
             int limit = 100)
         {
+            // TODO: (later) add cursor-based query
             var results = _app.Query(sql, @params, offset, limit);
             return results;
         }
