@@ -6,16 +6,16 @@ namespace SqlAccountRestAPI.Lib;
 
 public class SqlAccountingApp : IDisposable
 {
-    private dynamic _sqlAccountingBizApp;
+    private dynamic _app;
     private readonly SqlAccountingBizAppFactory _appFactory;
 
     public SqlAccountingApp(SqlAccountingBizAppFactory factory)
     {
         _appFactory = factory;
-        _sqlAccountingBizApp = factory.CreateApp();
+        _app = factory.CreateApp();
     }
 
-    public bool IsLoggedIn => _sqlAccountingBizApp.IsLogin;
+    public bool IsLoggedIn => _app.IsLogin;
 
     public void Login(string username = "ADMIN", string password = "ADMIN")
     {
@@ -25,31 +25,30 @@ public class SqlAccountingApp : IDisposable
         2. Whenever an application is stopped and restarted, it must re-login using the cached Username & Password
         */
 
-        if (_sqlAccountingBizApp.IsLogin)
+        if (_app.IsLogin)
         {
-            System.Runtime.InteropServices.Marshal.ReleaseComObject(_sqlAccountingBizApp);
-            _sqlAccountingBizApp = _appFactory.CreateApp();
+            _app = _appFactory.CreateApp(true);
         }
 
-        _sqlAccountingBizApp.Login(username, username);
+        _app.Login(username, username);
     }
 
     public BizAppInfo GetInfo()
     {
         return new BizAppInfo
         {
-            Title = _sqlAccountingBizApp.Title,
-            ReleaseDate = _sqlAccountingBizApp.ReleaseDate,
-            BuildNo = _sqlAccountingBizApp.BuildNo
+            Title = _app.Title,
+            ReleaseDate = _app.ReleaseDate,
+            BuildNo = _app.BuildNo
         };
     }
 
     public IEnumerable<ModuleInfo> GetModules()
     {
         var result = new List<ModuleInfo>();
-        for (int i = 0; i < _sqlAccountingBizApp.Modules.Count; i++)
+        for (int i = 0; i < _app.Modules.Count; i++)
         {
-            var item = _sqlAccountingBizApp.Modules.Items(i);
+            var item = _app.Modules.Items(i);
             result.Add(new ModuleInfo
             {
                 Code = item.Code,
@@ -62,11 +61,11 @@ public class SqlAccountingApp : IDisposable
     public IEnumerable<ActionInfo> GetActions()
     {
         var results = new List<ActionInfo>();
-        for (int i = 0; i < _sqlAccountingBizApp.Actions.Count; i++)
+        for (int i = 0; i < _app.Actions.Count; i++)
         {
             results.Add(new ActionInfo
             {
-                Name = _sqlAccountingBizApp.Actions.Items(i).Name
+                Name = _app.Actions.Items(i).Name
             });
         }
         return results;
@@ -75,11 +74,11 @@ public class SqlAccountingApp : IDisposable
     public IEnumerable<BizObjectInfo> GetBizObjects()
     {
         var results = new List<BizObjectInfo>();
-        for (int i = 0; i < _sqlAccountingBizApp.BizObjects.Count; i++)
+        for (int i = 0; i < _app.BizObjects.Count; i++)
         {
             results.Add(new BizObjectInfo
             {
-                Name = _sqlAccountingBizApp.BizObjects.Items(i)
+                Name = _app.BizObjects.Items(i)
             });
         }
         return results;
@@ -87,11 +86,11 @@ public class SqlAccountingApp : IDisposable
 
     public void Dispose()
     {
-        if (_sqlAccountingBizApp == null)
+        if (_app == null)
         {
             return;
         }
-        System.Runtime.InteropServices.Marshal.ReleaseComObject(_sqlAccountingBizApp);
+        System.Runtime.InteropServices.Marshal.ReleaseComObject(_app);
     }
 
     public object? GetBizObjectInfo(string name)
@@ -110,7 +109,7 @@ public class SqlAccountingApp : IDisposable
 
     public SqlAccountingBizObject FindBizObject(string name)
     {
-        var result = new SqlAccountingBizObject(_sqlAccountingBizApp.BizObjects.Find(name));
+        var result = new SqlAccountingBizObject(_app.BizObjects.Find(name));
         return result;
     }
 
@@ -118,7 +117,7 @@ public class SqlAccountingApp : IDisposable
     public dynamic CreateDataset(string sql, IDictionary<string, object> @params)
     {
         // TODO: use params
-        return _sqlAccountingBizApp.DBManager.NewDataSet(sql);
+        return _app.DBManager.NewDataSet(sql);
     }
 
     public IDictionary<string, object>? QueryFirstOrDefault(string sql, IDictionary<string, object> @params)
