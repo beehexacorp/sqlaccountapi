@@ -1,26 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SqlAccountRestAPI.Lib;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using SqlAccountRestAPI.Core;
+using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers;
-
 [Route("api/[controller]")]
 [ApiController]
 public partial class AppController : ControllerBase
 {
 
-    private readonly SqlAccountingApp _app;
-    public AppController(SqlAccountingApp comServer)
+    private readonly SqlAccountingAppHelper _app;
+    private readonly SqlAccountingORM _microORM;
+
+    public AppController(SqlAccountingAppHelper app, SqlAccountingORM microORM)
     {
-        _app = comServer;
+        _app = app;
+        _microORM = microORM;
     }
 
-    // GET: api/<LoginController>
     [HttpGet("login")]
     public IActionResult GetLogin([FromBody] LoginRequest request)
     {
-        _app.Login(request.Username, request.Password);
+        _microORM.Login(request.Username, request.Password);
         return Ok(_app.GetInfo());
     }
 
@@ -30,31 +30,17 @@ public partial class AppController : ControllerBase
     {
         return Ok(_app.GetInfo());
     }
-
-    /// <summary>
-    /// Get Actions
-    /// </summary>
-    /// <returns></returns>
     [HttpGet("actions")]
     public IActionResult GetActions()
     {
         return Ok(_app.GetActions());
     }
 
-    /// <summary>
-    /// Get Modules
-    /// </summary>
-    /// <returns></returns>
     [HttpGet("modules")]
     public IActionResult GetModules()
     {
         return Ok(_app.GetModules());
     }
-
-    /// <summary>
-    /// Get Business Objects
-    /// </summary>
-    /// <returns></returns>
     [HttpGet("objects")]
     public IActionResult GetBizObjects()
     {

@@ -1,4 +1,5 @@
-using SqlAccountRestAPI.Lib;
+using SqlAccountRestAPI.Core;
+using SqlAccountRestAPI.Helpers;
 using SqlAccountRestAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,22 +9,19 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddFile("Logs/Request-{Date}.txt");
 
-builder.WebHost.UseIISIntegration();  // Thêm dòng này
+builder.WebHost.UseIISIntegration();
 
-// Add services to the container.
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<SqlAccountingBizAppFactory>();
-builder.Services.AddSingleton<SqlAccountingApp>();
-builder.Services.AddTransient<BizObject>();
-
-// builder.WebHost.UseKestrel(options =>
-// {
-//     options.ListenAnyIP(5280); // Cổng HTTP
-// });
+builder.Services.AddSingleton<SqlAccountingFactory>();
+builder.Services.AddSingleton<SqlAccountingORM>();
+builder.Services.AddTransient<SqlAccountingAppHelper>();
+builder.Services.AddTransient<SqlAccountingBizObjectHelper>();
+builder.Services.AddTransient<SqlAccountingCustomerHelper>();
 
 var app = builder.Build();
 
@@ -39,21 +37,18 @@ app.UseMiddleware<RequestResponseLoggingMiddleware>();
 var applicationLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 applicationLifetime.ApplicationStopped.Register(() =>
 {
-    var sqlAccountingApp = app.Services.GetRequiredService<SqlAccountingApp>();
-    sqlAccountingApp.Dispose();
+    var sqlAccountingAppFactory = app.Services.GetRequiredService<SqlAccountingFactory>();
+    sqlAccountingAppFactory.Dispose();
 });
 
 applicationLifetime.ApplicationStarted.Register(() =>
 {
     // TODO: login with SQL accounting if there is a cached username & password
-});//
-// app.UseHttpsRedirection();
+});
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-// 
 
 app.Run();
 

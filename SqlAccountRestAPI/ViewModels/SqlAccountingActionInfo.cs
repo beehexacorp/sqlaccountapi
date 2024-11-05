@@ -1,6 +1,6 @@
 namespace SqlAccountRestAPI.ViewModels;
 
-public class ActionInfo
+public class SqlAccountingActionInfo
 {
     public string Name { get; set; } = null!;
 }

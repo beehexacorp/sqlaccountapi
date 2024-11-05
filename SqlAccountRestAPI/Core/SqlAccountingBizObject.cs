@@ -1,4 +1,4 @@
-namespace SqlAccountRestAPI.Lib;
+namespace SqlAccountRestAPI.Core;
 
 public class SqlAccountingBizObject : IDisposable
 {
@@ -20,6 +20,11 @@ public class SqlAccountingBizObject : IDisposable
     }
 
     public dynamic FindDataset(string datasetName)
+    {
+        return _bizObject.DataSets.Find(datasetName);
+    }
+
+    public dynamic FindMainDataset()
     {
         return _bizObject.DataSets.Find("MainDataSet");
     }

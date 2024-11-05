@@ -3,10 +3,8 @@ using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SqlAccountRestAPI.Lib;
-// using StockItem = SqlAccountRestAPI.Lib.StockItem;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using SqlAccountRestAPI.Core;
+using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers
 {
@@ -14,14 +12,14 @@ namespace SqlAccountRestAPI.Controllers
     [ApiController]
     public partial class BizObjectController : ControllerBase
     {
-        private readonly BizObject _bizObject;
-        public BizObjectController(BizObject bizObject)
+        private readonly SqlAccountingBizObjectHelper _bizObject;
+        public BizObjectController(SqlAccountingBizObjectHelper bizObject)
         {
             _bizObject = bizObject;
         }
 
         [HttpPost("query")]
-        public IActionResult GetByQuery([FromBody] QueryRequest request)
+        public IActionResult GetByQuery([FromBody] BizObjectQueryRequest request)
         {
             var results = _bizObject.Query(request.Sql, request.Params, request.Offset, request.Limit);
             return Ok(results);
