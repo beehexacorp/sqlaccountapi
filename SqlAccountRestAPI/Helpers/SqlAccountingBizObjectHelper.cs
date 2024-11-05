@@ -47,14 +47,14 @@ public class SqlAccountingBizObjectHelper
         // TODO: children should be included in "data" as given example above
         IEnumerable<BizObjectAddChildrenRequest>? children)
     {
-        using (var IvBizObj = _microORM.FindBizObject(entityType))
+        using (var bizObj = _microORM.FindBizObject(entityType))
         {
-            var lMainDataSet = IvBizObj.FindMainDataset();
-            IvBizObj.New();
+            var mainDataset = bizObj.FindMainDataset();
+            bizObj.New();
 
             foreach (var prop in data)
             {
-                var field = lMainDataSet.Findfield(prop.Key);
+                var field = mainDataset.Findfield(prop.Key);
                 if (field != null)
                 {
                     field.value = prop.Value?.ToString();
@@ -71,13 +71,13 @@ public class SqlAccountingBizObjectHelper
             {
                 foreach (var cdsItem in children)
                 {
-                    AddChildrenDataset(IvBizObj, cdsItem.EntityType, cdsItem.Data);
+                    AddChildrenDataset(bizObj, cdsItem.EntityType, cdsItem.Data);
                 }
             }
-            IvBizObj.Save();
+            bizObj.Save();
 
             IDictionary<string, object> results = new Dictionary<string, object>();
-            foreach (var field in lMainDataSet.Fields)
+            foreach (var field in mainDataset.Fields)
             {
                 results.Add(field.FieldName, field.value);
             }
