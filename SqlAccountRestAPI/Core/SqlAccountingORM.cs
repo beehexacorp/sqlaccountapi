@@ -57,7 +57,6 @@ FETCH NEXT 1 ROWS ONLY").Fields;
 
     public IDictionary<string, object>? QueryFirstOrDefault(string sql, IDictionary<string, object?>? @params = null)
     {
-        // TODO: TEST THIS
         sql = $@"{sql}
 OFFSET 0 ROWS
 FETCH NEXT 1 ROWS ONLY";
@@ -65,7 +64,7 @@ FETCH NEXT 1 ROWS ONLY";
         try
         {
             dataset.First();
-            if (dataset.eof) // TODO: is this there is no data?
+            if (dataset.eof)
             {
                 return null;
             }
@@ -91,19 +90,23 @@ FETCH NEXT 1 ROWS ONLY";
 
     public IEnumerable<IDictionary<string, object>> Query(string sql, IDictionary<string, object?>? @params = null, int offset = 0, int limit = 100)
     {
-        // TODO: TEST THIS
+        var results = new List<IDictionary<string, object>>();
+        foreach (var item in AsIterator(sql, @params, offset, limit))
+        {
+            results.Add(item);
+        }
+        return results;
+    }
+    public IEnumerable<IDictionary<string, object>> AsIterator(string sql, IDictionary<string, object?>? @params = null, int offset = 0, int limit = 100)
+    {
         sql = $@"{sql}
 OFFSET {offset} ROWS
 FETCH NEXT {limit} ROWS ONLY";
         var dataset = CreateDataset(sql, @params);
-        /// <param name="offset">The number of rows to skip before returning results.</param>
-        /// <param name="limit">The maximum number of rows to return.</param>
-        /// <returns>A list of dictionaries, where each dictionary represents a row.</returns>
         try
         {
-            var results = new List<IDictionary<string, object>>();
             dataset.First();
-            while (!dataset.eof) // TODO: what if the dataset has only 1 item?
+            while (!dataset.eof)
             {
                 var fields = dataset.Fields;
 
@@ -113,11 +116,10 @@ FETCH NEXT {limit} ROWS ONLY";
                     var datasetField = fields.Items(i);
                     item[datasetField.FieldName] = datasetField.value;
                 }
-                results.Add(item);
                 dataset.Next();
-            }
 
-            return results;
+                yield return item;
+            }
         }
         finally
         {

@@ -1,4 +1,3 @@
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
 using System.Text.Json.Nodes;
 using System.Xml;

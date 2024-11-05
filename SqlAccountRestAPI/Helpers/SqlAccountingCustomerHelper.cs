@@ -1,4 +1,3 @@
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System;
 using System.Text.Json.Nodes;
 using System.Xml;
@@ -72,19 +71,17 @@ public class SqlAccountingCustomerHelper
 
     public IEnumerable<IDictionary<string, object>> GetByEmail(string email)
     {
-        var customers = _microORM.Query($@"SELECT * 
+        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
+        var customerBranchFields = _microORM.GetFields("AR_CUSTOMERBRANCH").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMERBRANCH").Fields;
+
+        var results = _microORM.AsIterator($@"SELECT * 
 FROM AR_CUSTOMER
 JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE
 WHERE AR_CUSTOMER.CODE IN (
     SELECT CODE 
     FROM AR_CUSTOMERBRANCH 
     WHERE AR_CUSTOMERBRANCH.EMAIL='{email}'
-)");
-
-        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
-        var customerBranchFields = _microORM.GetFields("AR_CUSTOMERBRANCH").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMERBRANCH").Fields;
-
-        var results = customers
+)")
             .GroupBy(x => x["CODE"].ToString()!)
             .Select(groupped =>
             {
