@@ -68,7 +68,6 @@ public class SqlAccountingCustomerHelper
             }
             return results;
         }
-
     }
 
     public IEnumerable<IDictionary<string, object>> GetByEmail(string email)
