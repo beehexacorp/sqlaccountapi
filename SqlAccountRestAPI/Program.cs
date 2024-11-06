@@ -22,6 +22,13 @@ builder.Services.AddSingleton<SqlAccountingORM>();
 builder.Services.AddTransient<SqlAccountingAppHelper>();
 builder.Services.AddTransient<SqlAccountingBizObjectHelper>();
 builder.Services.AddTransient<SqlAccountingCustomerHelper>();
+builder.Services.AddTransient<SqlAccountingStockItemHelper>();
+builder.Services.AddTransient<SqlAccountingSaleOrderHelper>();
+builder.Services.AddTransient<SqlAccountingSaleInvoiceHelper>();
+builder.Services.AddTransient<SqlAccountingCustomerInvoiceHelper>();
+builder.Services.AddTransient<SqlAccountingCustomerPaymentHelper>();
+builder.Services.AddTransient<SqlAccountingStockAdjustmentHelper>();
+builder.Services.AddTransient<SqlAccountingStockItemTemplateHelper>();
 
 var app = builder.Build();
 

@@ -40,9 +40,9 @@ public class CustomerController : ControllerBase
     //     }
     // }
 
-    [HttpGet("email")]
+    [HttpGet("email/{email}")]
     // TODO: validate email
-    public IActionResult GetByEmail([FromQuery] string email = "")
+    public IActionResult GetByEmail([FromRoute] string email = "")
     {
         try
         {
@@ -70,6 +70,26 @@ public class CustomerController : ControllerBase
                 request.Code,
                 request.PaymentMethod,
                 request.Project);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = new
+            {
+                error = ex.ToString(),
+                code = 400
+            };
+            return BadRequest(errorResponse);
+        }
+    }
+
+    [HttpGet("code/{code}")]
+    // TODO: validate email
+    public IActionResult GetByCode([FromRoute] string code = "")
+    {
+        try
+        {
+            var result = _customerHelper.GetByCode(code);
             return Ok(result);
         }
         catch (Exception ex)

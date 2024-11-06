@@ -24,8 +24,8 @@ public class SqlAccountingAppHelper
         return new SqlAccountingAppInfo
         {
             Title = app.Title,
-            ReleaseDate = app.ReleaseDate,
-            BuildNo = app.BuildNo
+            ReleaseDate = app.ReleaseDate.ToString("yyyy-MM-dd"),
+            BuildNo = app.BuildNo.ToString()
         };
     }
 

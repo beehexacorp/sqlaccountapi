@@ -17,7 +17,7 @@ public partial class AppController : ControllerBase
         _microORM = microORM;
     }
 
-    [HttpGet("login")]
+    [HttpPost("login")]
     public IActionResult GetLogin([FromBody] LoginRequest request)
     {
         _microORM.Login(request.Username, request.Password);
@@ -51,5 +51,12 @@ public partial class AppController : ControllerBase
     public IActionResult GetBizObjectInfo(string name)
     {
         return Ok(_app.GetBizObjectInfo(name));
+    }
+
+    [HttpGet("sql")]
+    public IActionResult RunSql([FromQuery] string sql)
+    {
+        return Ok(_microORM.Query(sql));
+        // return Ok(_app.GetBizObjectInfo(name));
     }
 }

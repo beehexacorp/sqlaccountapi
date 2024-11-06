@@ -76,7 +76,7 @@ public class SqlAccountingCustomerHelper
 
         var results = _microORM.AsIterator($@"SELECT * 
 FROM AR_CUSTOMER
-JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE
+LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE
 WHERE AR_CUSTOMER.CODE IN (
     SELECT CODE 
     FROM AR_CUSTOMERBRANCH 
@@ -98,13 +98,24 @@ WHERE AR_CUSTOMER.CODE IN (
             .ToList();
         return results;
     }
+    public IEnumerable<IDictionary<string, object>> GetByCode(string code){
+        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
+
+        var sql = $@"SELECT * 
+FROM AR_CUSTOMER 
+LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE 
+WHERE AR_CUSTOMER.CODE ='{code}'
+";
+           
+        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
+    }
 }
 //     public string LoadAllByDaysToNow(int days)
 //     {
 //         long todayTimeStamp = new DateTimeOffset(DateTime.UtcNow.Date).ToUnixTimeSeconds();
 //         long searchDayTimeStamp = todayTimeStamp - days * 24 * 3600;
 //         dynamic lSQL = "SELECT * FROM "
-//             + "AR_CUSTOMER JOIN AR_CUSTOMERBRANCH "
+//             + "AR_CUSTOMER LEFT JOIN AR_CUSTOMERBRANCH "
 //             + "ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE "
 //             + "WHERE AR_CUSTOMER.LASTMODIFIED > " + searchDayTimeStamp.ToString()
 //             + " ORDER BY AR_CUSTOMER.LASTMODIFIED";

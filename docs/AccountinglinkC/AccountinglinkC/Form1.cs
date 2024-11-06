@@ -1794,7 +1794,7 @@ namespace AccountinglinkC
             lSQL = "SELECT DOCNO, DOCDATE FROM SL_DO ";
             lSQL = lSQL + "WHERE DOCKEY = ( ";
             lSQL = lSQL + "SELECT FIRST 1 B.FROMDOCKEY FROM SL_IV A ";
-            lSQL = lSQL + "INNER JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
             lSQL = lSQL + "WHERE FROMDOCTYPE = 'DO' ";
             lSQL = lSQL + "AND A.DOCNO = " + QuotedStr(edDocNo.Text);
             lSQL = lSQL + ")";
@@ -1823,7 +1823,7 @@ namespace AccountinglinkC
             //'Step 2: Find and Create the Biz Objects
             lbTime.Text = "Get Invoice Information...";
             lSQL = "SELECT A.DOCNO, A.DOCDATE FROM SL_IV A ";
-            lSQL = lSQL + "INNER JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
             lSQL = lSQL + "WHERE FROMDOCTYPE = 'DO' ";
             lSQL = lSQL + "AND FROMDOCKEY = (SELECT DOCKEY FROM SL_DO ";
             lSQL = lSQL + "WHERE DOCNO = " + QuotedStr(edDocNo.Text);
@@ -2277,9 +2277,9 @@ namespace AccountinglinkC
             lSQL = lSQL + "B.DtlKey, D.Seq NSeq, B.Seq, B.ItemCode, B.Description, B.Qty, B.UOM, ";
             lSQL = lSQL + "B.UnitPrice, B.Disc, B.Amount, B.Tax, B.TaxRate, B.TaxInclusive, B.TaxAmt,  ";
             lSQL = lSQL + "C.Qty XFQty FROM SL_SO A  ";
-            lSQL = lSQL + "INNER JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
-            lSQL = lSQL + "INNER JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
-            lSQL = lSQL + "LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
+            lSQL = lSQL + "INNER LEFT JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
+            lSQL = lSQL + "LEFT LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
             lSQL = lSQL + "                          AND C.FROMDOCTYPE='SO')  ";
             lSQL = lSQL + "WHERE A.DOCNO='SO-00002')  ";
             lSQL = lSQL + ")  ";
@@ -2680,9 +2680,9 @@ namespace AccountinglinkC
             lSQL = lSQL + "B.DtlKey, D.Seq NSeq, B.Seq, B.ItemCode, B.Description, B.Qty, B.UOM, ";
             lSQL = lSQL + "B.UnitPrice, B.Disc, B.Amount, B.Tax, B.TaxRate, B.TaxInclusive, B.TaxAmt,  ";
             lSQL = lSQL + "C.Qty XFQty FROM SL_SO A  ";
-            lSQL = lSQL + "INNER JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
-            lSQL = lSQL + "INNER JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
-            lSQL = lSQL + "LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
+            lSQL = lSQL + "INNER LEFT JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
+            lSQL = lSQL + "LEFT LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
             lSQL = lSQL + "                          AND C.FROMDOCTYPE='SO')  ";
             lSQL = lSQL + "WHERE A.DOCNO='SO-00002')  ";
             lSQL = lSQL + ")  ";
@@ -3722,7 +3722,7 @@ namespace AccountinglinkC
 
             // Step 2: Get DocNo
             lSQL = "SELECT A.*, B.NEXTNUMBER FROM SY_DOCNO A ";
-            lSQL = lSQL + "INNER JOIN SY_DOCNO_DTL B ON (A.DOCKEY=B.PARENTKEY) ";
+            lSQL = lSQL + "INNER LEFT JOIN SY_DOCNO_DTL B ON (A.DOCKEY=B.PARENTKEY) ";
             lSQL = lSQL + "WHERE A.DOCTYPE='IV' ";
             lSQL = lSQL + "AND A.DESCRIPTION='Customer Invoice' ";
             lSQL = lSQL + "AND A.STATESET=1 ";
@@ -3799,7 +3799,7 @@ namespace AccountinglinkC
 
             // Query Data
             lSQL = "SELECT A.Dockey, A.Parent, A.Code, A.Description, A.SpecialAccType FROM GL_ACC A ";
-            lSQL = lSQL + "LEFT OUTER JOIN GL_ACC B ON (A.Dockey=B.Parent) ";
+            lSQL = lSQL + "LEFT OUTER LEFT JOIN GL_ACC B ON (A.Dockey=B.Parent) ";
             lSQL = lSQL + "WHERE A.Parent<>-1 ";
             lSQL = lSQL + "AND B.Dockey IS NULL ";
             lSQL = lSQL + "AND A.SpecialAccType NOT IN('DC', 'CC') ";
@@ -3824,7 +3824,7 @@ namespace AccountinglinkC
             CheckLogin();
 
             lSQL = "SELECT A.*, B.UOM, B.RATE, B.REFCOST, B.REFPRICE, B.ISBASE FROM ST_ITEM A ";
-            lSQL = lSQL + "INNER JOIN ST_ITEM_UOM B ON (A.CODE=B.CODE) ";
+            lSQL = lSQL + "INNER LEFT JOIN ST_ITEM_UOM B ON (A.CODE=B.CODE) ";
             lSQL = lSQL + "WHERE A.ISACTIVE='T' ";
 
             if (edCode.Text != "")
@@ -3871,7 +3871,7 @@ namespace AccountinglinkC
             lDateTo = "'31 Dec 2017' ";
             // Step 2: GetMaxSeq
             lSQL = "SELECT  A.ItemCode, A.Location, A.Batch, MAX(B.Seq) AS Seq, 1 AS CostingMethod ";
-            lSQL = lSQL + "FROM ST_TR A INNER JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "FROM ST_TR A INNER LEFT JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
             lSQL = lSQL + " GROUP BY A.ItemCode, A.Location, A.Batch";
@@ -3888,7 +3888,7 @@ namespace AccountinglinkC
 
             // Step 3: Get Balance Qty & Up To Date Total Cost
             lSQL = "SELECT A.TRANSNO, A.ItemCode, A.Location, A.Batch, B.QTY, B.COST FROM ST_TR A ";
-            lSQL = lSQL + "INNER JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "INNER LEFT JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE B.COSTTYPE='U' ";
             lSQL = lSQL + "AND A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
@@ -3944,7 +3944,7 @@ namespace AccountinglinkC
             lDateTo = "'31 Dec 2017'";
             // Step 2: GetMaxSeq
             lSQL = "SELECT A.ItemCode, A.Location, A.Batch,  MAX(B.Seq) AS Seq, 2 AS CostingMethod ";
-            lSQL = lSQL + "FROM ST_TR A INNER JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "FROM ST_TR A INNER LEFT JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
             lSQL = lSQL + " GROUP BY A.ItemCode, A.Location, A.Batch";
@@ -3961,7 +3961,7 @@ namespace AccountinglinkC
 
             // Step 3: Get Balance Qty & Up To Date Total Cost
             lSQL = "SELECT A.TRANSNO, A.ItemCode, A.Location, A.Batch, B.UTDQty, B.UTDCost FROM ST_TR A ";
-            lSQL = lSQL + "INNER JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "INNER LEFT JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
             lSQL = lSQL + " AND B.SEQ IN (" + s + ") ";
