@@ -39,6 +39,41 @@ public class CustomerInvoiceController : ControllerBase
             return BadRequest(errorResponse);
         }
     }
-
+    [HttpGet("days-ago/{days}")]
+    public IActionResult GetFromDaysAgo([FromRoute] int days = 0)
+    {
+        try
+        {
+            var result = _customerInvoiceHelper.GetFromDaysAgo(days);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = new
+            {
+                error = ex.ToString(),
+                code = 400
+            };
+            return BadRequest(errorResponse);
+        }
+    }
+    [HttpGet("from-date/{date}")]
+    public IActionResult GetFromDate([FromRoute] string date = "")
+    {
+        try
+        {
+            var result = _customerInvoiceHelper.GetFromDate(date);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = new
+            {
+                error = ex.ToString(),
+                code = 400
+            };
+            return BadRequest(errorResponse);
+        }
+    }
     
 }

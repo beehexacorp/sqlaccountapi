@@ -29,4 +29,33 @@ WHERE ST_ITEM_TPL.CODE ='{code}'
            
         return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsItemTplDtl");
     }
+    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days){
+        var customerFields = _microORM.GetFields("ST_ITEM_TPL").Distinct().ToHashSet(); 
+        
+        var currentUnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var convertedUnixTime = currentUnixTime - (days * 86400);
+        var sql = $@"SELECT * 
+FROM ST_ITEM_TPL
+LEFT JOIN ST_ITEM_TPLDTL ON ST_ITEM_TPL.CODE = ST_ITEM_TPLDTL.CODE 
+WHERE ST_ITEM_TPL.LASTMODIFIED >= {convertedUnixTime}
+";
+        
+           
+        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsItemTplDtl");
+    }
+    public IEnumerable<IDictionary<string, object>> GetFromDate(string date){
+        var customerFields = _microORM.GetFields("ST_ITEM_TPL").Distinct().ToHashSet(); 
+
+        DateTime.TryParse(date, out var parsedDate);
+        var convertedUnixTime = new DateTimeOffset(parsedDate).ToUnixTimeSeconds();
+        
+        var sql = $@"SELECT * 
+FROM ST_ITEM_TPL
+LEFT JOIN ST_ITEM_TPLDTL ON ST_ITEM_TPL.CODE = ST_ITEM_TPLDTL.CODE 
+WHERE ST_ITEM_TPL.LASTMODIFIED >= {convertedUnixTime}
+";
+        
+           
+        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsItemTplDtl");
+    }
 }

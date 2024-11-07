@@ -29,4 +29,30 @@ WHERE AR_PM.DOCNO ='{documentNumber}'
            
         return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsKnockOff");
     }
+    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days){
+        var customerFields = _microORM.GetFields("AR_PM").Distinct().ToHashSet(); 
+
+        var date = DateTime.Now.AddDays(-days).ToString("yyyy-MM-dd");
+        
+        var sql = $@"SELECT * 
+FROM AR_PM
+LEFT JOIN AR_KNOCKOFF ON AR_PM.DOCKEY = AR_KNOCKOFF.FROMDOCKEY
+WHERE AR_PM.DOCDATE >= '{date}'
+";
+        
+           
+        return _microORM.GroupQuery(sql, customerFields, "DOCKEY", "cdsDocDetail");
+    }
+    public IEnumerable<IDictionary<string, object>> GetFromDate(string date){
+        var customerFields = _microORM.GetFields("AR_PM").Distinct().ToHashSet(); 
+        
+        var sql = $@"SELECT * 
+FROM AR_PM
+LEFT JOIN AR_KNOCKOFF ON AR_PM.DOCKEY = AR_KNOCKOFF.FROMDOCKEY
+WHERE AR_PM.DOCDATE >= '{date}'
+";
+        
+           
+        return _microORM.GroupQuery(sql, customerFields, "DOCKEY", "cdsDocDetail");
+    }
 }

@@ -109,6 +109,35 @@ WHERE AR_CUSTOMER.CODE ='{code}'
            
         return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
     }
+    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days){
+        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); 
+        
+        var currentUnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var convertedUnixTime = currentUnixTime - (days * 86400);
+        var sql = $@"SELECT * 
+FROM AR_CUSTOMER 
+LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE 
+WHERE AR_CUSTOMER.LASTMODIFIED >= {convertedUnixTime}
+";
+        
+           
+        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
+    }
+    public IEnumerable<IDictionary<string, object>> GetFromDate(string date){
+        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); 
+
+        DateTime.TryParse(date, out var parsedDate);
+        var convertedUnixTime = new DateTimeOffset(parsedDate).ToUnixTimeSeconds();
+        
+        var sql = $@"SELECT * 
+FROM AR_CUSTOMER 
+LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE 
+WHERE AR_CUSTOMER.LASTMODIFIED >= {convertedUnixTime}
+";
+        
+           
+        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
+    }
 }
 //     public string LoadAllByDaysToNow(int days)
 //     {
