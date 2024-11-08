@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
 using SqlAccountRestAPI.Core;
+using System.Text.RegularExpressions;
 
 namespace SqlAccountRestAPI.Helpers;
 
@@ -71,6 +72,10 @@ public class SqlAccountingCustomerHelper
 
     public IEnumerable<IDictionary<string, object>> GetByEmail(string email)
     {
+         if (string.IsNullOrEmpty(email) || !new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").IsMatch(email))
+        {
+            throw new ArgumentException("Invalid email format.");
+        }
         var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
         var customerBranchFields = _microORM.GetFields("AR_CUSTOMERBRANCH").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMERBRANCH").Fields;
 

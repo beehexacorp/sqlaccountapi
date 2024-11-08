@@ -84,7 +84,6 @@ public class CustomerController : ControllerBase
     }
 
     [HttpGet("code/{code}")]
-    // TODO: validate email
     public IActionResult GetByCode([FromRoute] string code = "")
     {
         try
