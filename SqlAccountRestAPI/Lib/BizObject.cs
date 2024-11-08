@@ -177,8 +177,8 @@ namespace SqlAccountRestAPI.Lib
                     {
                         var key = lField.FieldName;
                         var value = lField.value;
-                        if (value != null && value.ToString() != null)
-                            jsonObject[key] = value.ToString();
+                        if (value != null && value!.ToString() != null)
+                            jsonObject[key] = value!.ToString();
                     }
 
                 }
@@ -201,7 +201,7 @@ namespace SqlAccountRestAPI.Lib
                 var field = lMainDataSet.Findfield(fieldName);
                 if (field != null && fieldValue != null)
                 {
-                    field.value = fieldValue.ToString();
+                    field!.value = fieldValue!.ToString();
                 }
             }
             IvBizObj.Save();
@@ -219,7 +219,7 @@ namespace SqlAccountRestAPI.Lib
 
             IvBizObj.New();
 
-            foreach (var prop in jsonBody["data"].ToObject<JObject>().Properties())
+            foreach (var prop in jsonBody["data"]!.ToObject<JObject>()!.Properties())
             {
                 var fieldName = prop.Name;
                 var fieldValue = prop.Value;
@@ -230,14 +230,14 @@ namespace SqlAccountRestAPI.Lib
                 }
             }
 
-            foreach (var cdsItem in jsonBody["cds"])
+            foreach (var cdsItem in jsonBody["cds"]!)
             {
-                var lCdsDataSet = IvBizObj.DataSets.Find(cdsItem["type"].ToString());
+                var lCdsDataSet = IvBizObj.DataSets.Find(cdsItem["type"]!.ToString());
                 // var lDockey = IvBizObj.FindKeyByRef(cdsItem["key"], lMainDataSet.FindField(cdsItem["key"]).value);
                 var defaultSubDataSetExistFlag = false;
                 if (lCdsDataSet.RecordCount != 0)
                     defaultSubDataSetExistFlag = true;
-                foreach (var dataItem in cdsItem["data"])
+                foreach (var dataItem in cdsItem["data"]!)
                 {
                     if (defaultSubDataSetExistFlag)
                     {
@@ -246,7 +246,7 @@ namespace SqlAccountRestAPI.Lib
                     }
                     else
                         lCdsDataSet.Append();
-                    foreach (var prop in dataItem.ToObject<JObject>().Properties())
+                    foreach (var prop in dataItem.ToObject<JObject>()!.Properties())
                     {
                         var fieldName = prop.Name;
                         var fieldValue = prop.Value;
@@ -284,8 +284,8 @@ namespace SqlAccountRestAPI.Lib
                 {
                     var key = lField.FieldName;
                     var value = lField.value;
-                    if (value != null && value.ToString() != null && value.ToString() != "")
-                        MainObject[key] = value.ToString();
+                    if (value != null && value!.ToString() != null && value.ToString() != "")
+                        MainObject[key] = value!.ToString();
                 }
             }
 
@@ -305,8 +305,8 @@ namespace SqlAccountRestAPI.Lib
                     {
                         var key = lField.FieldName;
                         var value = lField.value;
-                        if (value != null && value.ToString() != null && value.ToString() != "")
-                            DetailObject[key] = value.ToString();
+                        if (value != null && value!.ToString() != null)
+                            DetailObject[key] = value!.ToString();
                     }
                 }
                 DetailObjects.Add(DetailObject);
@@ -324,18 +324,16 @@ namespace SqlAccountRestAPI.Lib
                 var fieldName = prop.Name;
                 var fieldValue = prop.Value;
                 var field = lMainDataSet.Findfield(fieldName);
-                if (field != null && fieldValue != null
-                    && !fieldName.ToString().Contains("DOCNO")
-                    && !fieldName.ToString().Contains("DOCKEY")
-                    && !fieldName.ToString().Contains("DESCRIPTION")
-                )
+                var excludedFields = new[] { "DOCNO", "DOCKEY", "DESCRIPTION"};
+
+                if (field != null && fieldValue != null && !excludedFields.Any(fieldName.ToString().Contains))
                 {
-                    field.value = fieldValue.ToString();
+                    field!.value = fieldValue!.ToString();
                 }
             }
 
             // Console.WriteLine(MainObject);
-            // Console.WriteLine(DetailObjects);
+            Console.WriteLine(DetailObjects);
             var lCdsDataSet = IvBizObj.DataSets.Find("cdsDocDetail");
             var defaultSubDataSetExistFlag = false;
             if (lCdsDataSet.RecordCount != 0)
@@ -356,23 +354,23 @@ namespace SqlAccountRestAPI.Lib
                         var fieldName = prop.Name;
                         var fieldValue = prop.Value;
                         var field = lCdsDataSet.Findfield(fieldName);
-                        if (field != null && fieldValue != null
-                            && !fieldName.ToString().Contains("DOCNO")
-                            && !fieldName.ToString().Contains("DLTKEY")
-                            && !fieldName.ToString().Contains("DOCKEY")
-                            // && !fieldName.ToString().Contains("QTY")
-                        )
+                        var excludedFields = new[] { "DOCNO", "DLTKEY", "DOCKEY", "FROMDOCKEY", "FROMDTLKEY" };
+
+                        if (field != null && fieldValue != null && !excludedFields.Any(fieldName.ToString().Contains))
                         {
-                            Console.WriteLine(fieldName);
-                            field.value = fieldValue.ToString();
+                            field!.value = fieldValue!.ToString();
                         }
                     }
                 }
 
-                Console.WriteLine(MainObject["DOCKEY"]);
-                lCdsDataSet.Findfield("FROMDOCTYPE").value = string.Join("",jsonBody["from"].ToString().Split('_').Skip(1));
+                lCdsDataSet.Findfield("FROMDOCTYPE").value = string.Join("",jsonBody["from"]!.ToString().Split('_').Skip(1));
                 lCdsDataSet.Findfield("FROMDOCKEY").value = MainObject["DOCKEY"];
                 lCdsDataSet.Findfield("FROMDTLKEY").value = cdsItem["DTLKEY"];
+                lCdsDataSet.FindField("TAX").Value = "";
+                if (cdsItem["TAX"] != null)
+                {
+                    lCdsDataSet.FindField("TAX").Value = cdsItem["TAX"];
+                }
                 lCdsDataSet.Post();
             }
 
