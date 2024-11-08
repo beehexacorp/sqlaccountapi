@@ -153,8 +153,8 @@ FETCH NEXT {limit} ROWS ONLY";
                 var customerItem = mainFields.ToDictionary(f => f, f => firstRecord[f]);
                 var childrenDataset = groupped
                     .Select(item => item
-                        .Where(field => !mainFields.Contains(field.Key))  // Lọc field không có trong mainFields
-                        .ToDictionary(field => field.Key, field => field.Value)  // Chuyển thành dictionary
+                        .Where(field => !mainFields.Contains(field.Key)) 
+                        .ToDictionary(field => field.Key, field => field.Value)  
                     )
                     .ToList();
                 customerItem.Add(cdsName, childrenDataset);
