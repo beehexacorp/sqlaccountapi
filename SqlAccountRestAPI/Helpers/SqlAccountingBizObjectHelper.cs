@@ -38,13 +38,36 @@ public class SqlAccountingBizObjectHelper
            "SL_SO_CUSTOMER": {...}, // cds
         }
     }
+    // alternative
+    {
+        "entityType": "SL_SO",
+        "data": {
+            "DOCNO":...,
+            "DOCKEY":...,
+            ...,
+            "SL_SODTL": [
+                {
+                    "DOCNO":...,
+                    "DOCKEY":...,
+                    "ITEM_CODE":...
+                },
+                ...
+            ],
+            "SL_SOKNOCKOFF: [
+                {
+                    "DOCNO":...,
+                    "DOCKEY":...,
+                    "ITEM_CODE":...
+                },
+                ...
+            ]
+            
+        }
+    }
     */
     public IDictionary<string, object> AddDetail(
         string entityType,
-        IDictionary<string, object?> data,
-
-        // TODO: children should be included in "data" as given example above
-        IEnumerable<BizObjectAddChildrenRequest>? children)
+        IDictionary<string, object?> data)
     {
         using (var bizObj = _microORM.FindBizObject(entityType))
         {
@@ -58,26 +81,31 @@ public class SqlAccountingBizObjectHelper
                 {
                     field.value = prop.Value?.ToString();
                 }
-                else
+                else if (prop.Value is IEnumerable<IDictionary<string, object?>> childrenData)
+                // TODO: this is cds
+                // AddChildrenDataset(IvBizObj, prop.Key, prop.Value);
+
                 {
-                    // TODO: this is cds
-                    // AddChildrenDataset(IvBizObj, prop.Key, prop.Value);
+                    AddChildrenDataset(bizObj, prop.Key, childrenData);
                 }
+
             }
 
             // TODO: replace this with add children dataset above
-            if (children != null)
-            {
-                foreach (var cdsItem in children)
-                {
-                    AddChildrenDataset(bizObj, cdsItem.EntityType, cdsItem.Data);
-                }
-            }
+            // if (children != null)
+            // {
+            //     foreach (var cdsItem in children)
+            //     {
+            //         AddChildrenDataset(bizObj, cdsItem.EntityType, cdsItem.Data);
+            //     }
+            // }
             bizObj.Save();
 
             IDictionary<string, object> results = new Dictionary<string, object>();
-            foreach (var field in mainDataset.Fields)
+            var fields = mainDataset.Fields;
+            for (var i = 0; i < fields.Count; i++)
             {
+                var field = fields.Items(i);
                 results.Add(field.FieldName, field.value);
             }
             return results;
@@ -89,9 +117,9 @@ public class SqlAccountingBizObjectHelper
         }
     }
 
-    private void AddChildrenDataset(SqlAccountingBizObject bizObject, string entityType, IEnumerable<IDictionary<string, object?>>? cdsData)
+    private void AddChildrenDataset(SqlAccountingBizObject bizObject, string datasetName, IEnumerable<IDictionary<string, object?>>? cdsData)
     {
-        var lCdsDataSet = bizObject.FindDataset(entityType);
+        var lCdsDataSet = bizObject.FindDataset(datasetName);
         var defaultSubDataSetExistFlag = false;
         if (lCdsDataSet.RecordCount != 0)
             defaultSubDataSetExistFlag = true;

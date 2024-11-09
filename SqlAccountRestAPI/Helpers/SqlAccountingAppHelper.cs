@@ -83,6 +83,7 @@ public class SqlAccountingAppHelper
           "fields": Array<string>
           "cds": ...
         }
+        // alternative
         {
           "name": "...",
           "datasets": [

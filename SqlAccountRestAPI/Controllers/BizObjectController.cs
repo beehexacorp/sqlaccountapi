@@ -27,7 +27,7 @@ namespace SqlAccountRestAPI.Controllers
         [HttpPost("add")]
         public IActionResult Add([FromBody] BizObjectAddRequest request)
         {
-            var result = _bizObject.AddDetail(request.EntityType, request.Data, request.Children);
+            var result = _bizObject.AddDetail(request.EntityType, request.Data);
             return Ok(result);
         }
 
