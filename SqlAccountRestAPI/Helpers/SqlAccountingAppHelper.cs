@@ -83,7 +83,46 @@ public class SqlAccountingAppHelper
           "fields": Array<string>
           "cds": ...
         }
+        {
+          "name": "...",
+          "datasets": [
+            {
+              "name": "...",
+              "fields": Array<string>
+            },
+            {
+              "name": "...",
+              "fields": Array<string>
+            },...
+          ]      
+        
+        }
         */
+        var result = new Dictionary<string, object?>();
+        result.Add("name", name);
+        var datasetList = new List<Dictionary<string, object?>>();
+        dynamic app = _factory.GetInstance();
+        var datasets = app.BizObjects.Find(name).Datasets;
+
+        for (int i = 0; i < datasets.Count; i++)
+        {
+            var dataset = datasets.Items(i);
+            var fields = new List<string>();
+
+            for (int j = 0; j < dataset.Fields.Count; j++)
+            {
+                fields.Add(dataset.Fields.Items(j).FieldName);
+            }
+            var datasetData = new Dictionary<string, object?>
+            {
+                { "name", dataset.Name },
+                { "fields", fields }
+            };
+            datasetList.Add(datasetData);
+        }
+        result.Add("datasets", datasetList);
+        return result;
+        
         throw new NotImplementedException();
     }
 }
