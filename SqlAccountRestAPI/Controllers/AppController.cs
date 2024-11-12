@@ -52,11 +52,4 @@ public partial class AppController : ControllerBase
     {
         return Ok(_app.GetBizObjectInfo(name));
     }
-
-    [HttpGet("sql")]
-    public IActionResult RunSql([FromQuery] string sql)
-    {
-        return Ok(_microORM.Query(sql));
-        // return Ok(_app.GetBizObjectInfo(name));
-    }
 }
