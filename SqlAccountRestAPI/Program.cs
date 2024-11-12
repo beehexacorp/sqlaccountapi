@@ -18,7 +18,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<SqlAccountingFactory>();
-builder.Services.AddSingleton<SqlAccountingORM>();
+builder.Services.AddSingleton<SqlAccountingORM>(provider =>
+{
+    var sqlAccountingFactory = provider.GetRequiredService<SqlAccountingFactory>();
+    return new SqlAccountingLoginHelper(sqlAccountingFactory);
+});
 builder.Services.AddTransient<SqlAccountingAppHelper>();
 builder.Services.AddTransient<SqlAccountingBizObjectHelper>();
 builder.Services.AddTransient<SqlAccountingCustomerHelper>();

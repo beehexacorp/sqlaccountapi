@@ -15,21 +15,54 @@ using System.Runtime.InteropServices;
 
 namespace SqlAccountRestAPI.Helpers;
 
-public class SqlAccountingLoginHelper
+public class SqlAccountingLoginHelper : SqlAccountingORM
 {
     private readonly string _credentialsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "credentials.enc");
+
+    public SqlAccountingLoginHelper(SqlAccountingFactory sqlAccountingFactory) 
+        : base(sqlAccountingFactory)
+    {
+        Login();
+    }
+    public void Login(){
+        var loginInfo = ReLogin();
+        if (loginInfo.Count == 0)
+            return;
+        string username = loginInfo[0];
+        string password = loginInfo[1];
+        try
+        {
+            base.Login(username, password);
+        }
+        catch (Exception e)
+        {
+            ClearStoredCredentials();
+            throw new InvalidOperationException("Login failed: " + e.Message);        
+        }
+    }
+
+    public override void Login(string username, string password){
+        try{
+            base.Login(username, password);
+            SaveEncryptedCredentials(username, password);
+        }
+        catch (Exception e)
+        {
+            throw new InvalidOperationException("Login failed: " + e.Message);        
+        }  
+    }
+        
+
     public string GenerateKeyFromSystemInfo()
     {
-        // Lấy thông tin Machine GUID từ Registry
         string machineGuid = GetMachineGuid();
 
-        // Kết hợp thông tin để tạo khóa
         string keySource = $"{machineGuid}";
 
         using (SHA256 sha256 = SHA256.Create())
         {
             byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(keySource));
-            return Convert.ToBase64String(hash).Substring(0, 32); // Lấy 32 ký tự đầu
+            return Convert.ToBase64String(hash).Substring(0, 32); 
         }
     }
 

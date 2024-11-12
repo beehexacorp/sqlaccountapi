@@ -3,23 +3,20 @@ using SqlAccountRestAPI.Helpers;
 namespace SqlAccountRestAPI.Core;
 public class SqlAccountingORM
 {
-    private readonly SqlAccountingFactory _factory;
+    protected readonly SqlAccountingFactory _factory;
 
     public SqlAccountingORM(SqlAccountingFactory factory)
     {
         _factory = factory;
-        Login(null, null);
     }
 
-    public void Login(string? username, string? password)
+    public virtual void Login(string username, string password)
     {
         /** 
         TODO: 
         1. Store the User & Password in an encrypted file
         2. Whenever an application is stopped and restarted, it must re-login using the cached Username & Password
-        */
-        var sqlAccountingLoginHelper = new SqlAccountingLoginHelper();
-        
+        */        
         dynamic app = _factory.GetInstance();
         if (app.IsLogin == true)
         {
@@ -28,23 +25,8 @@ public class SqlAccountingORM
             
             app = _factory.GetInstance();
         }
-        
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-        {
-            var loginInfo = sqlAccountingLoginHelper.ReLogin();
-            if (loginInfo.Count == 0)
-                return;
-            username = loginInfo[0];
-            password = loginInfo[1];
-        }
-        sqlAccountingLoginHelper.SaveEncryptedCredentials(username, password);
-        try {
-            app.Login(username, password);
-        }
-        catch (Exception)
-        {
-            sqlAccountingLoginHelper.ClearStoredCredentials();
-        }
+        app.Login(username, password);
+
     }
 
     public SqlAccountingBizObject FindBizObject(string name)
