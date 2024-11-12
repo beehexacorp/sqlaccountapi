@@ -108,12 +108,7 @@ public class SqlAccountingAppHelper
         for (int i = 0; i < datasets.Count; i++)
         {
             var dataset = datasets.Items(i);
-            var fields = new List<string>();
-
-            for (int j = 0; j < dataset.Fields.Count; j++)
-            {
-                fields.Add(dataset.Fields.Items(j).FieldName);
-            }
+            var fields =_microORM.FieldIterator(dataset.Fields);
             var datasetData = new Dictionary<string, object?>
             {
                 { "name", dataset.Name },

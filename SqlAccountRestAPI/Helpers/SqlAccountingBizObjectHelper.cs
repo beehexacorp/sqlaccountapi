@@ -148,9 +148,10 @@ public class SqlAccountingBizObjectHelper
     public IDictionary<string, object> Transfer(string fromEntityType, string toEntityType, string docNo)
     {
         // TODO: what if the entity does not have the DOCNO, but CODE instead?
-        var mainObject = _microORM.QueryFirstOrDefault(
-            "SELECT * FROM " + fromEntityType + " WHERE DOCNO='" + docNo + "'",
-            new Dictionary<string, object?>());
+        // Transfer able object have cds that have DOCNO DOCKEY & FROMDOCKEY fields at least
+        var query = $"SELECT * FROM {fromEntityType} WHERE DOCNO='{docNo}'";
+        var parameters = new Dictionary<string, object?> { { "@DocNo", docNo } };
+        var mainObject = _microORM.QueryFirstOrDefault(query, parameters);
         if (mainObject == null)
         {
             throw new Exception($"The source object {fromEntityType}, DOCNO={docNo} to transform is not found");
@@ -172,14 +173,14 @@ public class SqlAccountingBizObjectHelper
                 if (field != null)
                 {
                     // TODO: do we overwrite null values?
-                    field.value = prop.Value;
+                    // "" mean not having | -1 mean default value or auto generated
+                    // prop has null values
+                    field.value = prop.Value ?? "";
                 }
             }
 
             var lCdsDataSet = IvBizObj.FindDataset("cdsDocDetail");
-            var defaultSubDataSetExistFlag = false;
-            if (lCdsDataSet.RecordCount != 0)
-                defaultSubDataSetExistFlag = true;
+            var defaultSubDataSetExistFlag = lCdsDataSet.RecordCount != 0;
 
             var offset = 0;
             const int limit = 100;
@@ -214,7 +215,9 @@ public class SqlAccountingBizObjectHelper
                         if (field != null)
                         {
                             // TODO: do we overwrite null values?
-                            field.value = prop.Value;
+                            // "" mean not having | -1 mean default value or auto generated
+                            // prop has null values
+                            field.value = prop.Value ?? "";
                         }
                     }
 
@@ -228,7 +231,7 @@ public class SqlAccountingBizObjectHelper
             IvBizObj.Save();
 
             IDictionary<string, object> results = new Dictionary<string, object>();
-            foreach (var field in lMainDataSet.Fields)
+            foreach (var field in _microORM.ItemsIterator(lMainDataSet.Fields))
             {
                 results.Add(field.FieldName, field.value);
             }

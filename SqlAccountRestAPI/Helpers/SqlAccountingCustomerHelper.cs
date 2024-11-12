@@ -79,29 +79,15 @@ public class SqlAccountingCustomerHelper
         var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
         var customerBranchFields = _microORM.GetFields("AR_CUSTOMERBRANCH").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMERBRANCH").Fields;
 
-        var results = _microORM.AsIterator($@"SELECT * 
+        var sql = $@"SELECT * 
 FROM AR_CUSTOMER
 LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE
 WHERE AR_CUSTOMER.CODE IN (
     SELECT CODE 
     FROM AR_CUSTOMERBRANCH 
     WHERE AR_CUSTOMERBRANCH.EMAIL='{email}'
-)")
-            .GroupBy(x => x["CODE"].ToString()!)
-            .Select(groupped =>
-            {
-                var firstRecord = groupped.First();
-                var customerItem = customerFields.ToDictionary(f => f, f => firstRecord[f]);
-                var customerBranches = new List<IDictionary<string, object>>();
-                foreach (var item in groupped)
-                {
-                    customerBranches.Add(customerBranchFields.ToDictionary(f => f, f => item[f]));
-                }
-                customerItem.Add("cdsBranch", customerBranches);
-                return customerItem;
-            })
-            .ToList();
-        return results;
+)";
+        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
     }
     public IEnumerable<IDictionary<string, object>> GetByCode(string code){
         var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;

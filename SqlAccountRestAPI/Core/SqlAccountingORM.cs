@@ -92,12 +92,11 @@ FETCH NEXT 1 ROWS ONLY";
             }
             var fields = dataset.Fields;
 
-            var item = new Dictionary<string, object>();
-            for (int i = 0; i < fields.Count; i++)
-            {
-                var datasetField = fields.Items(i);
-                item[datasetField.FieldName] = datasetField.value;
-            }
+            var item = ((IEnumerable<dynamic>)ItemsIterator(fields))
+                .ToDictionary(
+                    field => (string)field.FieldName,
+                    field => field.value
+                );
 
             return item;
         }
@@ -132,12 +131,11 @@ FETCH NEXT {limit} ROWS ONLY";
             {
                 var fields = dataset.Fields;
 
-                var item = new Dictionary<string, object>();
-                for (int i = 0; i < fields.Count; i++)
-                {
-                    var datasetField = fields.Items(i);
-                    item[datasetField.FieldName] = datasetField.value;
-                }
+                var item = ((IEnumerable<dynamic>)ItemsIterator(fields))
+                .ToDictionary(
+                    field => (string)field.FieldName,
+                    field => field.value
+                );
                 dataset.Next();
 
                 yield return item;
@@ -152,9 +150,13 @@ FETCH NEXT {limit} ROWS ONLY";
         }
     }
     public IEnumerable<string> FieldIterator(dynamic fields){
-        int fieldCount = fields.Count;
-        for (int i=0; i<fieldCount; i++){
-            yield return fields.Items(i).FieldName;
+        foreach (var field in ItemsIterator(fields)){
+            yield return field.FieldName;
+        }
+    }
+    public IEnumerable<dynamic> ItemsIterator(dynamic fields){
+        for (var i = 0; i < fields.Count; i++){
+            yield return fields.Items(i);
         }
     }
     public IEnumerable<IDictionary<string, object>> GroupQuery(
