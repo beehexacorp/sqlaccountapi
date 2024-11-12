@@ -10,6 +10,8 @@ using SqlAccountRestAPI.Core;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Runtime.InteropServices;
+
 
 namespace SqlAccountRestAPI.Helpers;
 
@@ -33,9 +35,19 @@ public class SqlAccountingLoginHelper
 
     public string GetMachineGuid()
     {
-        using (var registryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography"))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            return registryKey?.GetValue("MachineGuid")?.ToString() ?? throw new Exception("MachineGuid not found.");
+            using (var registryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Cryptography"))
+            {
+                return registryKey?.GetValue("MachineGuid")?.ToString() ?? throw new Exception("MachineGuid not found.");
+            }
+        }
+        else
+        {
+            using var rng = RandomNumberGenerator.Create();
+            var guidBytes = new byte[16];
+            rng.GetBytes(guidBytes);
+            return new Guid(guidBytes).ToString();
         }
     }
 
