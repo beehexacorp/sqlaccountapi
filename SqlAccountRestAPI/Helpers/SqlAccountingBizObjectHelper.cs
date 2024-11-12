@@ -101,14 +101,20 @@ public class SqlAccountingBizObjectHelper
             // }
             bizObj.Save();
 
-            IDictionary<string, object> results = new Dictionary<string, object>();
-            var fields = mainDataset.Fields;
-            for (var i = 0; i < fields.Count; i++)
+            // IDictionary<string, object> results = new Dictionary<string, object>();
+            // var fields = mainDataset.Fields;
+            // for (var i = 0; i < fields.Count; i++)
+            // {
+            //     var field = fields.Items(i);
+            //     results.Add(field.FieldName, field.value);
+            // }
+            var result = new Dictionary<string, object>();
+            foreach (var field in _microORM.ItemsIterator(mainDataset.Fields))
             {
-                var field = fields.Items(i);
-                results.Add(field.FieldName, field.value);
+                result.Add(field.FieldName, field.value);
             }
-            return results;
+            // var result = (IDictionary<string, object>)_microORM.ItemsIterator(mainDataset.Fields);
+            return result;
             // IvBizObj.Close();
             // System.Runtime.InteropServices.Marshal.ReleaseComObject(IvBizObj);
             // if (lMainDataSet.FindField("DOCNO") != null)

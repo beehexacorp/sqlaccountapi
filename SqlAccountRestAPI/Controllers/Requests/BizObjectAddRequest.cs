@@ -3,7 +3,6 @@ public class BizObjectAddRequest
 {
     public string EntityType { get; set; } = null!;
     public IDictionary<string, object?> Data { get; set; } = null!;
-    public IEnumerable<BizObjectAddChildrenRequest>? Children { get; set; } = null;
 }
 
 public class BizObjectAddChildrenRequest
