@@ -111,9 +111,15 @@ FETCH NEXT {limit} ROWS ONLY";
             dataset.First();
             while (!dataset.eof)
             {
-                var fields = dataset.Fields;
+                IEnumerable<dynamic> fields = ItemsIterator(dataset.Fields);
 
-                var item = ((IEnumerable<dynamic>)ItemsIterator(fields))
+                List<string> check = new List<string> { };
+                foreach (var field in fields){
+                    check.Add(field.FieldName);
+                }
+                
+
+                var item = fields
                 .ToDictionary(
                     field => (string)field.FieldName,
                     field => field.value

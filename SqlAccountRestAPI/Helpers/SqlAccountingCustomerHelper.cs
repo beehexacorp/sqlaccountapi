@@ -77,7 +77,6 @@ public class SqlAccountingCustomerHelper
             throw new ArgumentException("Invalid email format.");
         }
         var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
-        var customerBranchFields = _microORM.GetFields("AR_CUSTOMERBRANCH").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMERBRANCH").Fields;
 
         var sql = $@"SELECT * 
 FROM AR_CUSTOMER

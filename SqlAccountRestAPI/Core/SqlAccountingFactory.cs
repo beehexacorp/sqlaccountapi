@@ -8,7 +8,13 @@ public class SqlAccountingFactory : IDisposable
     {
         if (_app != null)
         {
-            return _app;
+            try{
+                _app.IsLogin();
+                return _app;
+            }
+            catch (COMException){
+                _app = null;
+            }
         }
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {

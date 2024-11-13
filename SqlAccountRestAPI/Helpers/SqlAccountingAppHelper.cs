@@ -99,8 +99,10 @@ public class SqlAccountingAppHelper
         
         }
         */
-        var result = new Dictionary<string, object?>();
-        result.Add("name", name);
+        var result = new Dictionary<string, object?>
+        {
+            { "name", name }
+        };
         var datasetList = new List<Dictionary<string, object?>>();
         dynamic app = _factory.GetInstance();
         var datasets = app.BizObjects.Find(name).Datasets;
