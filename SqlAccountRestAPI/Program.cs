@@ -1,6 +1,12 @@
 using SqlAccountRestAPI.Core;
 using SqlAccountRestAPI.Helpers;
 using SqlAccountRestAPI.Middleware;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +39,11 @@ builder.Services.AddTransient<SqlAccountingCustomerInvoiceHelper>();
 builder.Services.AddTransient<SqlAccountingCustomerPaymentHelper>();
 builder.Services.AddTransient<SqlAccountingStockAdjustmentHelper>();
 builder.Services.AddTransient<SqlAccountingStockItemTemplateHelper>();
+
+if (OperatingSystem.IsWindows())
+{
+    builder.Host.UseWindowsService();  
+}
 
 var app = builder.Build();
 
