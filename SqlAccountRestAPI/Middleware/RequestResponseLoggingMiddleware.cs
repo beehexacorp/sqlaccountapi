@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-
+using Serilog;
 namespace SqlAccountRestAPI.Middleware
 {
     public class RequestResponseLoggingMiddleware
@@ -28,7 +28,8 @@ namespace SqlAccountRestAPI.Middleware
 
         private async Task LogRequest(HttpContext context)
         {
-            context.Request.EnableBuffering(); // Allow the request body to be read multiple times
+            // Allow the request body to be read multiple times
+            context.Request.EnableBuffering(); 
 
             var request = context.Request;
             var requestBody = "";
@@ -38,7 +39,8 @@ namespace SqlAccountRestAPI.Middleware
                 using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 1024, true))
                 {
                     requestBody = await reader.ReadToEndAsync();
-                    context.Request.Body.Position = 0; // Reset body stream position for further processing
+                    // Reset body stream position for further processing
+                    context.Request.Body.Position = 0; 
                 }
             }
 
@@ -49,7 +51,7 @@ namespace SqlAccountRestAPI.Middleware
             logMessage.AppendLine($"Query: {request.QueryString}");
             logMessage.AppendLine($"Body: {requestBody}");
 
-            _logger.LogInformation(logMessage.ToString());
+            Log.Information(logMessage.ToString());
         }
 
         private async Task LogResponse(HttpContext context)
@@ -58,7 +60,8 @@ namespace SqlAccountRestAPI.Middleware
             using var responseBodyStream = new MemoryStream();
             context.Response.Body = responseBodyStream;
 
-            await _next(context); // Continue processing the request
+            // Continue processing the request
+            await _next(context); 
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
@@ -69,7 +72,7 @@ namespace SqlAccountRestAPI.Middleware
             logMessage.AppendLine($"Status Code: {context.Response.StatusCode}");
             logMessage.AppendLine($"Response Body: {responseBody}");
 
-            _logger.LogInformation(logMessage.ToString());
+            Log.Information(logMessage.ToString());
 
             await responseBodyStream.CopyToAsync(originalBodyStream);
         }

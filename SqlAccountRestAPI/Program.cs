@@ -7,13 +7,23 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Log by day
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()  
+    .WriteTo.Console()  
+    .WriteTo.File("Logs/Request-.txt", rollingInterval: RollingInterval.Day) 
+    .CreateLogger();
+
 // Configure logging
 builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddFile("Logs/Request-{Date}.txt");
+builder.Logging.AddSerilog();
+// builder.Logging.AddConsole();
+// builder.Logging.AddFile("Logs/Request-{Date}.txt");
 
 builder.WebHost.UseIISIntegration();
 
