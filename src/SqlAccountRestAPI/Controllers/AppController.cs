@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SqlAccountRestAPI.Core;
 using SqlAccountRestAPI.Helpers;
 
@@ -10,11 +11,13 @@ public partial class AppController : ControllerBase
 
     private readonly SqlAccountingAppHelper _app;
     private readonly SqlAccountingORM _microORM;
+    private readonly ILogger<AppController> _logger;
 
-    public AppController(SqlAccountingAppHelper app, SqlAccountingORM microORM)
+    public AppController(SqlAccountingAppHelper app, SqlAccountingORM microORM, ILogger<AppController> logger)
     {
         _app = app;
         _microORM = microORM;
+        _logger = logger;
     }
 
     [HttpPost("login")]
@@ -51,5 +54,19 @@ public partial class AppController : ControllerBase
     public IActionResult GetBizObjectInfo(string name)
     {
         return Ok(_app.GetBizObjectInfo(name));
+    }
+
+    [HttpGet("logs/test")]
+    public IActionResult TestLog()
+    {
+        try
+        {
+            _logger.LogInformation("This is a test message");
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex);
+        }
     }
 }
