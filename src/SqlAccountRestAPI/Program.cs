@@ -13,15 +13,12 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Log by day
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console()
     .WriteTo.File("log.txt", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(5), rollingInterval: RollingInterval.Hour)
     .CreateLogger();
-
-File.WriteAllText("log.txt", "Application created.");
 
 // Configure logging
 builder.Logging.ClearProviders();
