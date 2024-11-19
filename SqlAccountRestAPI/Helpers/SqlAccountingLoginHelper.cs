@@ -15,9 +15,13 @@ using System.Runtime.InteropServices;
 
 namespace SqlAccountRestAPI.Helpers;
 
+public class ApplicationConstants
+{
+    public const string APPLICATION_NAME = "SQLAccountRestAPI";
+}
 public class SqlAccountingLoginHelper : SqlAccountingORM
 {
-    private readonly string _credentialsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "credentials.enc");
+    private readonly string _credentialsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),ApplicationConstants.APPLICATION_NAME,"credentials.enc");
 
     public SqlAccountingLoginHelper(SqlAccountingFactory sqlAccountingFactory) 
         : base(sqlAccountingFactory)
