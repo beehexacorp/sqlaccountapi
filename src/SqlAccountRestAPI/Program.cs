@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
+using System.Text.Json;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,14 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
+
+app.UseExceptionHandler(a => a.Run(async context =>
+        {
+            var logger = app.Logger;
+            var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+            var exception = exceptionHandlerPathFeature?.Error;
+            app.Logger.LogError(exception?.Message ?? exception?.InnerException?.Message, exception?.InnerException ?? exception);
+        }));
 
 var applicationLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 applicationLifetime.ApplicationStopped.Register(() =>
