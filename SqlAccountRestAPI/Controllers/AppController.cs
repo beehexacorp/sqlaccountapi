@@ -1,106 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SqlAccountRestAPI.Lib;
+using SqlAccountRestAPI.Core;
+using SqlAccountRestAPI.Helpers;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace SqlAccountRestAPI.Controllers
+namespace SqlAccountRestAPI.Controllers;
+[Route("api/[controller]")]
+[ApiController]
+public partial class AppController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AppController : ControllerBase
+
+    private readonly SqlAccountingAppHelper _app;
+    private readonly SqlAccountingORM _microORM;
+
+    public AppController(SqlAccountingAppHelper app, SqlAccountingORM microORM)
     {
-        private readonly SqlComServer app;
-        public AppController(SqlComServer comServer)
-        {
-            app = comServer;
-        }
+        _app = app;
+        _microORM = microORM;
+    }
 
-        // GET: api/<LoginController>
-        [HttpGet("Login")]
-        public IActionResult GetLogin()
-        {
-            try
-            {
-                //var helper = new SqlComServer();
-                return Ok(app.ComServer.Title);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+    [HttpPost("login")]
+    public IActionResult GetLogin([FromBody] LoginRequest request)
+    {
+        _microORM.Login(request.Username, request.Password);
+        return Ok(_app.GetInfo());
+    }
 
-        // GET: api/<AppController>
-        [HttpGet]
-        public IActionResult Get()
-        {
-            try
-            {
-                //var helper = new SqlComServer();
-                var jsonObject = app.GetAppInfo();
-                return Ok(jsonObject);
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+    // GET: api/<AppController>
+    [HttpGet("info")]
+    public IActionResult Get()
+    {
+        return Ok(_app.GetInfo());
+    }
+    [HttpGet("actions")]
+    public IActionResult GetActions()
+    {
+        return Ok(_app.GetActions());
+    }
 
-        /// <summary>
-        /// Get Actions
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("Actions")]
-        public IActionResult GetActions()
-        {
-            try
-            {
-                //var helper = new SqlComServer();
-                var arr = app.GetActions();
-                return Ok(arr);
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+    [HttpGet("modules")]
+    public IActionResult GetModules()
+    {
+        return Ok(_app.GetModules());
+    }
+    [HttpGet("objects")]
+    public IActionResult GetBizObjects()
+    {
+        return Ok(_app.GetBizObjects());
+    }
 
-        /// <summary>
-        /// Get Modules
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("Modules")]
-        public IActionResult GetModules()
-        {
-            try
-            {
-                //var helper = new SqlComServer();
-                var arr = app.GetModules();
-                return Ok(arr);
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Get Business Objects
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("BizObjects")]
-        public IActionResult GetBizObjects()
-        {
-            try
-            {
-                //var helper = new SqlComServer();
-                var arr = app.GetBizObjects();
-                return Ok(arr);
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+    [HttpGet("objects/{name}")]
+    public IActionResult GetBizObjectInfo(string name)
+    {
+        return Ok(_app.GetBizObjectInfo(name));
     }
 }

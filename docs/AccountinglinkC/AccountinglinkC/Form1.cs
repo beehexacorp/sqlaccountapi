@@ -43,21 +43,22 @@ namespace AccountinglinkC
             }
         }
         public void CheckLogin(int AType = 0, int ATDCF = 0)
-        {            
+        {
             string ADB, ADCF;
 
             if (edLogout.Checked)
             {
-               // KillApp();
+                // KillApp();
             }
 
             lBizType = Type.GetTypeFromProgID("SQLAcc.BizApp");
             ComServer = Activator.CreateInstance(lBizType);
-            
+
             if (AType == 0)
             {
                 ADB = edDB.Text;
-            } else
+            }
+            else
             {
                 ADB = edDB2.Text;
             }
@@ -78,7 +79,7 @@ namespace AccountinglinkC
                     ComServer.Login(edUN.Text, edPW.Text, ADCF, ADB);
                     ComServer.Minimize();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     FreeBiz(ComServer);
@@ -88,7 +89,7 @@ namespace AccountinglinkC
             {
                 lBuildNo = ComServer.BuildNo;
             }
-         }
+        }
 
         public void Logout()
         {
@@ -106,7 +107,7 @@ namespace AccountinglinkC
 
         public bool IsOdd(long lngNumber)
         {
-            return !(lngNumber%2 == 0);
+            return !(lngNumber % 2 == 0);
         }
 
         public string QuotedStr(string str)
@@ -130,7 +131,7 @@ namespace AccountinglinkC
             DataColumn col;
             string lFld;
             int I, J, K;
-            Dictionary<int, object> dict = new Dictionary<int, object>();            
+            Dictionary<int, object> dict = new Dictionary<int, object>();
             dynamic dsFld;
             for (I = 0; (I <= (ADataset.Fields.Count - 1)); I++)
             {
@@ -156,9 +157,9 @@ namespace AccountinglinkC
                 {
                     dsFld = dict[I];
                     lFld = dsFld.FieldName();
-                    lbTime.Text = "Insert Grid - " + AName + " " 
-                                 + K.ToString() + " of " 
-                                 + J.ToString() + " - " 
+                    lbTime.Text = "Insert Grid - " + AName + " "
+                                 + K.ToString() + " of "
+                                 + J.ToString() + " - "
                                  + lFld;
                     row[I] = dsFld.Value;
                 }
@@ -198,11 +199,11 @@ namespace AccountinglinkC
         {
             OpenFileDialog fd = new OpenFileDialog()
             {
-            Title = "Open DCF File...",
-            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            Filter = "DCF File (*.DCF)|*.DCF|All Files (*.*)|*.*",
-            FilterIndex = 1,
-            RestoreDirectory = true
+                Title = "Open DCF File...",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Filter = "DCF File (*.DCF)|*.DCF|All Files (*.*)|*.*",
+                FilterIndex = 1,
+                RestoreDirectory = true
             };
 
             if (fd.ShowDialog() == DialogResult.OK)
@@ -278,14 +279,14 @@ namespace AccountinglinkC
             lbTime.Text = "Posting Cash Sales...";
             //Begin Looping yr data
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("SL_CS");
+            BizObject = FindBizObject("SL_CS");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
             lDetail = BizObject.DataSets.Find("cdsDocDetail"); //lDetail contains detail data
             lSN = BizObject.DataSets.Find("cdsSerialNumber"); //lSN contains Serial Number data
 
-            
+
             //Step 4 : Insert Data - Master
             lDate = DateTime.Parse("January 1, 2018");
             BizObject.New();
@@ -350,7 +351,7 @@ namespace AccountinglinkC
             lDetail.FindField("Description").AsString = "Sales Item B";
             //lDetail.FindField("Account").AsString     = "500-000"; //If you wanted override the Sales Account Code
             lDetail.FindField("UOM").AsString = "UNIT";
-            lDetail.FindField("Qty").AsFloat = 2;            
+            lDetail.FindField("Qty").AsFloat = 2;
             //lDetail.FindField("DISC").AsString        = "5%+3"; //Optional(eg 5% plus 3 Discount)
             lDetail.FindField("Tax").AsString = "SR";
             lDetail.FindField("TaxRate").AsString = "6%";
@@ -380,7 +381,7 @@ namespace AccountinglinkC
             lDetail.FindField("UOM").AsString = "UNIT";
             lDetail.FindField("QTY").AsFloat = 2;
             lDetail.FindField("TAX").AsString = "SR";
-			lDetail.FindField("TaxRate").AsString = "6%";
+            lDetail.FindField("TaxRate").AsString = "6%";
             lDetail.FindField("TAXINCLUSIVE").Value = 0;
             lDetail.FindField("UNITPRICE").AsFloat = 94.43;
             lDetail.FindField("TAXAMT").AsFloat = 11.33;
@@ -390,7 +391,7 @@ namespace AccountinglinkC
             //Step 6: Save Document
             BizObject.Save();
             BizObject.Close();
-			FreeBiz(BizObject);
+            FreeBiz(BizObject);
             //End Looping yr data
 
             //Step 7: Payment
@@ -406,7 +407,7 @@ namespace AccountinglinkC
             InsertARCF();
 
             //Step 10 : Logout after done 
-            MessageBox.Show("Done", "Posting Status", MessageBoxButtons.OK, MessageBoxIcon.Information);            
+            MessageBox.Show("Done", "Posting Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Logout();
         }
 
@@ -418,7 +419,7 @@ namespace AccountinglinkC
             string lIVNO;
 
             //Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_PM");
+            BizObject = FindBizObject("AR_PM");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");   //lMain contains master data
@@ -456,7 +457,7 @@ namespace AccountinglinkC
             //Step 6: Save Document
             BizObject.Save();
             BizObject.Close();
-			FreeBiz(BizObject);
+            FreeBiz(BizObject);
         }
 
         public void InsertSLCN()
@@ -464,7 +465,7 @@ namespace AccountinglinkC
             dynamic BizObject, lMain, lDetail;
             DateTime lDate;
             //Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("SL_CN");
+            BizObject = FindBizObject("SL_CN");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  //lMain contains master data
@@ -507,7 +508,7 @@ namespace AccountinglinkC
             //Step 6: Save Document
             BizObject.Save();
             BizObject.Close();
-			FreeBiz(BizObject);
+            FreeBiz(BizObject);
 
             //Step 7: Knock Off Invoice
             lbTime.Text = "Posting Credit Note - Knock Invoice...";
@@ -521,7 +522,7 @@ namespace AccountinglinkC
             string lDocNo, lIVNO;
 
             //Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_CN");
+            BizObject = FindBizObject("AR_CN");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet"); //lMain contains master data
@@ -553,7 +554,7 @@ namespace AccountinglinkC
                 //Step 6: Save Document
                 BizObject.Save();
                 BizObject.Close();
-				FreeBiz(BizObject);
+                FreeBiz(BizObject);
             }
         }
 
@@ -565,7 +566,7 @@ namespace AccountinglinkC
             string lIVNO;
 
             //Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_CF");
+            BizObject = FindBizObject("AR_CF");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");   //lMain contains master data
@@ -602,7 +603,7 @@ namespace AccountinglinkC
             //Step 6: Save Document
             BizObject.Save();
             BizObject.Close();
-			FreeBiz(BizObject);
+            FreeBiz(BizObject);
         }
 
         dynamic lMain, lDtl, BizObject, lQty,
@@ -623,7 +624,7 @@ namespace AccountinglinkC
                 {
                     CheckLogin(0);
 
-                    BizObject = ComServer.BizObjects.Find(edBizType.Text);
+                    BizObject = FindBizObject(edBizType.Text);
                     lMain = BizObject.DataSets.Find("MainDataSet");  //lMain contains master data
                     lDtl = BizObject.DataSets.Find("cdsDocDetail");  //lDetail contains detail data
 
@@ -719,7 +720,7 @@ namespace AccountinglinkC
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("ST_ITEM");
+            BizObject = FindBizObject("ST_ITEM");
 
             //Step 3: Search
             lDocKey = BizObject.FindKeyByRef("CODE", edCode.Text);
@@ -746,7 +747,7 @@ namespace AccountinglinkC
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("SL_CS");
+            BizObject = FindBizObject("SL_CS");
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
             //Step 3: Search
             lDocKey = BizObject.FindKeyByRef("DocNo", edDocNo.Text);
@@ -777,7 +778,7 @@ namespace AccountinglinkC
             dynamic lMain, lDtl;
             string lSQL;
             DataColumn tblC1, tblC2;
-            DataRelation drt;            
+            DataRelation drt;
 
             // Step 1: Login
             CheckLogin();
@@ -818,7 +819,7 @@ namespace AccountinglinkC
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_Customer");
+            BizObject = FindBizObject("AR_Customer");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  //lMain contains master data
@@ -942,7 +943,7 @@ namespace AccountinglinkC
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_Customer");
+            BizObject = FindBizObject("AR_Customer");
 
             //Step 3: Search
             lDocKey = BizObject.FindKeyByRef("CODE", edCode.Text);
@@ -980,7 +981,7 @@ namespace AccountinglinkC
             if (edCode.Text != "")
             {
                 // if wanted filter by Account Code
-                lSQL = lSQL + "AND CODE=" + QuotedStr(edCode.Text);                
+                lSQL = lSQL + "AND CODE=" + QuotedStr(edCode.Text);
             }
 
             lSQL = lSQL + " ORDER BY CODE, POSTDATE ";
@@ -991,7 +992,7 @@ namespace AccountinglinkC
                 Tbl.Tables.Clear();
                 PrepareData(lDataSet, "Master");
 
-               //Bind the Master to the dataset.
+                //Bind the Master to the dataset.
                 MasterBS.DataSource = Tbl;
                 MasterBS.DataMember = "Master";
 
@@ -1024,7 +1025,7 @@ namespace AccountinglinkC
             RptObject.Params.Find("AllCompany").Value = false;
             RptObject.Params.Find("AllCurrency").Value = true;
             RptObject.Params.Find("AllDocument").Value = true;
-            RptObject.Params.Find("AllPaymentMethod").Value = true; 
+            RptObject.Params.Find("AllPaymentMethod").Value = true;
             //RptObject.Params.Find("AreaData").Value = //Not use if AllArea is true
             RptObject.Params.Find("CompanyData").Value = "300-A0003";
             //RptObject.Params.Find("CurrencyData").Value = //Not use if AllCurrency is true
@@ -1091,7 +1092,7 @@ namespace AccountinglinkC
 
             lSQL = lSQL + " GROUP BY ItemCode, Location, Batch, SerialNumber";
             lSQL = lSQL + " HAVING SUM(Qty) > 0";
-            
+
             lDataSet = ComServer.DBManager.NewDataSet(lSQL);
 
             Tbl.Tables.Clear();
@@ -1119,7 +1120,7 @@ namespace AccountinglinkC
             CheckLogin(0);
             lbTime.Text = "Posting AR Deposit...";
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_DP");
+            BizObject = FindBizObject("AR_DP");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -1173,7 +1174,7 @@ namespace AccountinglinkC
             {
                 lbTime.Text = "Posting AR Payment...";
                 //Step 2: Find and Create the Biz Objects
-                BizObject = ComServer.BizObjects.Find("AR_PM");
+                BizObject = FindBizObject("AR_PM");
 
                 //Step 3: Set Dataset
                 lMain = BizObject.DataSets.Find("MainDataSet");   //lMain contains master data
@@ -1213,7 +1214,7 @@ namespace AccountinglinkC
                 FreeBiz(BizObject);
             }
             //Step 7 : Logout after done 
-            MessageBox.Show("Done", "Posting Status", MessageBoxButtons.OK, MessageBoxIcon.Information);        
+            MessageBox.Show("Done", "Posting Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Logout();
         }
 
@@ -1236,7 +1237,7 @@ namespace AccountinglinkC
             {
                 lbTime.Text = "Posting Deposit Refund...";
                 //Step 2: Find and Create the Biz Objects
-                BizObject = ComServer.BizObjects.Find("AR_DPDTL_REFUND");
+                BizObject = FindBizObject("AR_DPDTL_REFUND");
 
                 //Step 3: Set Dataset
                 lMain = BizObject.DataSets.Find("MainDataSet");   //lMain contains master data
@@ -1282,7 +1283,7 @@ namespace AccountinglinkC
             {
                 lbTime.Text = "Posting Deposit Forfeit...";
                 //Step 2: Find and Create the Biz Objects
-                BizObject = ComServer.BizObjects.Find("AR_DPDTL_FORFEIT");
+                BizObject = FindBizObject("AR_DPDTL_FORFEIT");
 
                 //Step 3: Set Dataset
                 lMain = BizObject.DataSets.Find("MainDataSet");   //lMain contains master data
@@ -1314,7 +1315,7 @@ namespace AccountinglinkC
             dynamic BizObject, lMain, lDetail, lxFer,
                     lFld_MDockey, lFld_DocNo,
                     lFld_Code, lFld_DocDate, lFld_PostDate, lFld_CoName, lFld_Desc,
-                    lFld_DDockey, lFld_DtlKey, lFld_Seq, lFld_ItemCode, lFld_DDesc, 
+                    lFld_DDockey, lFld_DtlKey, lFld_Seq, lFld_ItemCode, lFld_DDesc,
                     lFld_FromDocType, lFld_FromDockey, lFld_FromDtlkey,
                     lFld_Qty, lFld_UOM, lFld_Tax, lFld_TaxRate, lFld_TaxInc,
                     lFld_UPrice, lFld_Amt, lFld_TaxAmt;
@@ -1325,7 +1326,7 @@ namespace AccountinglinkC
             CheckLogin(0);
             lbTime.Text = "Posting Delivery Order...";
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("SL_DO");
+            BizObject = FindBizObject("SL_DO");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -1393,7 +1394,7 @@ namespace AccountinglinkC
             lFld_DDockey.value = -1;
             lFld_Seq.value = 2;
             lFld_ItemCode.AsString = "COVER";
-            lFld_DDesc.AsString = "Sales Item B";            
+            lFld_DDesc.AsString = "Sales Item B";
             lFld_UOM.AsString = "UNIT";
             lFld_Qty.AsFloat = 3;
             lFld_Tax.AsString = "SV";
@@ -1428,7 +1429,7 @@ namespace AccountinglinkC
 
                 lbTime.Text = "Posting Invoice...";
                 //Find and Create the Biz Objects
-                BizObject = ComServer.BizObjects.Find("SL_IV");
+                BizObject = FindBizObject("SL_IV");
 
                 //Set Dataset
                 lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -1458,7 +1459,7 @@ namespace AccountinglinkC
                 lFld_FromDocType = lDetail.FindField("FromDocType");
                 lFld_FromDockey = lDetail.FindField("FromDockey");
                 lFld_FromDtlkey = lDetail.FindField("FromDtlKey");
-           
+
 
                 lbTime.Text = "Transfer DO to IV...";
                 lDate = DateTime.Parse("January 10, 2019");
@@ -1514,12 +1515,12 @@ namespace AccountinglinkC
             dynamic lDate, lMain, lDtl, BizObject, lFld_MDockey, lFld_DocNo,
                     lFld_DocDate, lFld_PostDate, lFld_Desc,
                     lFld_Cancelled, lFld_DDockey, lFld_DtlKey,
-                    lFld_Seq, lFld_ItemCode, lFld_Qty, lFld_UOM, 
-					lFld_DDesc, lFld_UCost;
+                    lFld_Seq, lFld_ItemCode, lFld_Qty, lFld_UOM,
+                    lFld_DDesc, lFld_UCost;
 
             CheckLogin(0);
 
-            BizObject = ComServer.BizObjects.Find("ST_AJ");
+            BizObject = FindBizObject("ST_AJ");
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
             lDtl = BizObject.DataSets.Find("cdsDocDetail"); // lDetail contains detail data
 
@@ -1556,7 +1557,7 @@ namespace AccountinglinkC
             lFld_Seq.Value = 1;
             lFld_ItemCode.AsString = "ANT";
             lFld_DDesc.AsString = "Adjust IN Item";
-			lFld_UOM.AsString = "UNIT";
+            lFld_UOM.AsString = "UNIT";
             lFld_Qty.AsFloat = 3;
             lFld_UCost.AsFloat = 25.15;//Only IN need UnitCost
             lDtl.Post();
@@ -1567,7 +1568,7 @@ namespace AccountinglinkC
             lFld_Seq.Value = 2;
             lFld_ItemCode.AsString = "E-BAT";
             lFld_DDesc.AsString = "Adjust OUT Item";
-			lFld_UOM.AsString = "UNIT";
+            lFld_UOM.AsString = "UNIT";
             lFld_Qty.AsFloat = -4;
             lDtl.Post();
 
@@ -1583,12 +1584,12 @@ namespace AccountinglinkC
             dynamic lDate, lMain, lDtl, BizObject, lFld_MDockey, lFld_DocNo,
                     lFld_DocDate, lFld_PostDate, lFld_Desc,
                     lFld_Cancelled, lFld_DDockey, lFld_DtlKey,
-                    lFld_Seq, lFld_ItemCode, lFld_Qty, lFld_UOM, lFld_DDesc, 
+                    lFld_Seq, lFld_ItemCode, lFld_Qty, lFld_UOM, lFld_DDesc,
                     lFld_FromLoc, lFld_ToLoc;
 
             CheckLogin(0);
 
-            BizObject = ComServer.BizObjects.Find("ST_XF");
+            BizObject = FindBizObject("ST_XF");
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
             lDtl = BizObject.DataSets.Find("cdsDocDetail"); // lDetail contains detail data
 
@@ -1626,7 +1627,7 @@ namespace AccountinglinkC
             lFld_Seq.Value = 1;
             lFld_ItemCode.AsString = "ANT";
             lFld_DDesc.AsString = "ANTENNA";
-			lFld_UOM.AsString = "UNIT";
+            lFld_UOM.AsString = "UNIT";
             lFld_Qty.AsFloat = 3;
             lFld_FromLoc.AsString = "----";
             lFld_ToLoc.AsString = "BALAKONG";
@@ -1638,7 +1639,7 @@ namespace AccountinglinkC
             lFld_Seq.Value = 2;
             lFld_ItemCode.AsString = "E-BAT";
             lFld_DDesc.AsString = "ERICSSON BATTERY";
-			lFld_UOM.AsString = "UNIT";
+            lFld_UOM.AsString = "UNIT";
             lFld_Qty.AsFloat = 4;
             lFld_FromLoc.AsString = "KL";
             lFld_ToLoc.AsString = "BC";
@@ -1660,7 +1661,7 @@ namespace AccountinglinkC
             CheckLogin();
 
             // Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("GL_JE");
+            BizObject = FindBizObject("GL_JE");
 
             // Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
@@ -1740,7 +1741,7 @@ namespace AccountinglinkC
             CheckLogin();
 
             // Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("GL_PV");
+            BizObject = FindBizObject("GL_PV");
 
             // Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
@@ -1793,7 +1794,7 @@ namespace AccountinglinkC
             lSQL = "SELECT DOCNO, DOCDATE FROM SL_DO ";
             lSQL = lSQL + "WHERE DOCKEY = ( ";
             lSQL = lSQL + "SELECT FIRST 1 B.FROMDOCKEY FROM SL_IV A ";
-            lSQL = lSQL + "INNER JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
             lSQL = lSQL + "WHERE FROMDOCTYPE = 'DO' ";
             lSQL = lSQL + "AND A.DOCNO = " + QuotedStr(edDocNo.Text);
             lSQL = lSQL + ")";
@@ -1822,10 +1823,10 @@ namespace AccountinglinkC
             //'Step 2: Find and Create the Biz Objects
             lbTime.Text = "Get Invoice Information...";
             lSQL = "SELECT A.DOCNO, A.DOCDATE FROM SL_IV A ";
-            lSQL = lSQL + "INNER JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_IVDTL B ON(A.DOCKEY = B.DOCKEY) ";
             lSQL = lSQL + "WHERE FROMDOCTYPE = 'DO' ";
             lSQL = lSQL + "AND FROMDOCKEY = (SELECT DOCKEY FROM SL_DO ";
-            lSQL = lSQL + "WHERE DOCNO = " + QuotedStr(edDocNo.Text); 
+            lSQL = lSQL + "WHERE DOCNO = " + QuotedStr(edDocNo.Text);
             lSQL = lSQL + ")";
             lxFer = ComServer.DBManager.NewDataSet(lSQL);
 
@@ -1856,7 +1857,7 @@ namespace AccountinglinkC
             lDataSet = ComServer.DBManager.NewDataSet(lSQL);
 
             //Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_CT");
+            BizObject = FindBizObject("AR_CT");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");   //lMain contains master data
@@ -1987,7 +1988,7 @@ namespace AccountinglinkC
 
         private void BtnARIV_Click(object sender, EventArgs e)
         {
-            dynamic BizObject, lMain, lDetail, 
+            dynamic BizObject, lMain, lDetail,
                     lFld_MDockey, lFld_DocNo,
                     lFld_Code, lFld_DocDate, lFld_PostDate, lFld_Desc,
                     lFld_DDockey, lFld_DtlKey, lFld_Seq, lFld_DDesc,
@@ -1999,7 +2000,7 @@ namespace AccountinglinkC
             CheckLogin(0);
             lbTime.Text = "Posting Customer Invoice...";
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_IV");
+            BizObject = FindBizObject("AR_IV");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -2038,7 +2039,7 @@ namespace AccountinglinkC
             lFld_DDockey.value = -1;
             lFld_Seq.value = 1;
             lFld_DDesc.AsString = "Sales Item A";
-            lDetail.FindField("Account").AsString     = "500-000";
+            lDetail.FindField("Account").AsString = "500-000";
             lFld_Tax.AsString = "SV";
             lFld_TaxRate.AsString = "6%";
             lFld_TaxInc.value = 0;
@@ -2075,7 +2076,7 @@ namespace AccountinglinkC
             CheckLogin();
 
             //Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_PM");
+            BizObject = FindBizObject("AR_PM");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet"); //lMain contains master data
@@ -2117,7 +2118,7 @@ namespace AccountinglinkC
             CheckLogin(0);
             lbTime.Text = "Posting Customer Credit Note...";
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_CN");
+            BizObject = FindBizObject("AR_CN");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -2206,7 +2207,7 @@ namespace AccountinglinkC
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("ST_Location");
+            BizObject = FindBizObject("ST_Location");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  //lMain contains master data
@@ -2261,7 +2262,7 @@ namespace AccountinglinkC
 
             string lSQL;
             DateTime lDate;
-            
+
             CheckLogin(0);
             Logout();
             // Check Is Transferred or not
@@ -2276,9 +2277,9 @@ namespace AccountinglinkC
             lSQL = lSQL + "B.DtlKey, D.Seq NSeq, B.Seq, B.ItemCode, B.Description, B.Qty, B.UOM, ";
             lSQL = lSQL + "B.UnitPrice, B.Disc, B.Amount, B.Tax, B.TaxRate, B.TaxInclusive, B.TaxAmt,  ";
             lSQL = lSQL + "C.Qty XFQty FROM SL_SO A  ";
-            lSQL = lSQL + "INNER JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
-            lSQL = lSQL + "INNER JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
-            lSQL = lSQL + "LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
+            lSQL = lSQL + "INNER LEFT JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
+            lSQL = lSQL + "LEFT LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
             lSQL = lSQL + "                          AND C.FROMDOCTYPE='SO')  ";
             lSQL = lSQL + "WHERE A.DOCNO='SO-00002')  ";
             lSQL = lSQL + ")  ";
@@ -2291,7 +2292,7 @@ namespace AccountinglinkC
             {
                 lbTime.Text = "Posting DO...";
                 //Find and Create the Biz Objects
-                BizObject = ComServer.BizObjects.Find("SL_DO");
+                BizObject = FindBizObject("SL_DO");
 
                 //Set Dataset
                 lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -2417,7 +2418,7 @@ namespace AccountinglinkC
             {
                 lCode = "";
             }
-            BizObject = ComServer.BizObjects.Find("ST.BATCH.OPF");
+            BizObject = FindBizObject("ST.BATCH.OPF");
 
             //Set Dataset
             lMain = BizObject.DataSets.Find("Main");  //lMain contains master data
@@ -2527,7 +2528,7 @@ namespace AccountinglinkC
             RptObject.Params.Find("DateFrom").Value = lDateFrom;
             RptObject.Params.Find("DateTo").Value = lDateTo;
 
-            
+
             RptObject.Params.Find("IncludeZeroBalance").Value = false;
             RptObject.Params.Find("SelectDate").Value = true;
             RptObject.Params.Find("SortBy").Value = "CompanyCategory;Code;CompanyName;Agent;Area;CurrencyCode;ControlAccount";
@@ -2548,9 +2549,9 @@ namespace AccountinglinkC
             PrepareData(lDataSet2, "Detail");
 
             // Step 6 : Get Relation column
-             tblC1 = Tbl.Tables["Master"].Columns["Code"];
-             tblC2 = Tbl.Tables["Detail"].Columns["Code"];
-             drt = new DataRelation("relation", tblC1, tblC2);
+            tblC1 = Tbl.Tables["Master"].Columns["Code"];
+            tblC2 = Tbl.Tables["Detail"].Columns["Code"];
+            drt = new DataRelation("relation", tblC1, tblC2);
 
 
             // Step 7 : Set Grid Info
@@ -2577,7 +2578,7 @@ namespace AccountinglinkC
             lDataSet = ComServer.DBManager.NewDataSet(lSQL);
 
             //Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("AR_PM");
+            BizObject = FindBizObject("AR_PM");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");   //lMain contains master data
@@ -2679,9 +2680,9 @@ namespace AccountinglinkC
             lSQL = lSQL + "B.DtlKey, D.Seq NSeq, B.Seq, B.ItemCode, B.Description, B.Qty, B.UOM, ";
             lSQL = lSQL + "B.UnitPrice, B.Disc, B.Amount, B.Tax, B.TaxRate, B.TaxInclusive, B.TaxAmt,  ";
             lSQL = lSQL + "C.Qty XFQty FROM SL_SO A  ";
-            lSQL = lSQL + "INNER JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
-            lSQL = lSQL + "INNER JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
-            lSQL = lSQL + "LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
+            lSQL = lSQL + "INNER LEFT JOIN SL_SODTL B ON (A.DOCKEY=B.DOCKEY)  ";
+            lSQL = lSQL + "INNER LEFT JOIN DOC_SEQ D ON (B.DTLKEY=D.DTLKEY)  ";
+            lSQL = lSQL + "LEFT LEFT JOIN ST_XTRANS C ON (A.DOCKEY=C.FROMDOCKEY AND B.DTLKEY=C.FROMDTLKEY  ";
             lSQL = lSQL + "                          AND C.FROMDOCTYPE='SO')  ";
             lSQL = lSQL + "WHERE A.DOCNO='SO-00002')  ";
             lSQL = lSQL + ")  ";
@@ -2694,7 +2695,7 @@ namespace AccountinglinkC
             {
                 lbTime.Text = "Posting DO...";
                 //Find and Create the Biz Objects
-                BizObject = ComServer.BizObjects.Find("SL_DO");
+                BizObject = FindBizObject("SL_DO");
 
                 //Set Dataset
                 lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -2779,7 +2780,7 @@ namespace AccountinglinkC
                 ComServer.Logout();
                 FreeBiz(ComServer);
                 Thread.Sleep(5000); //Sleep for 5 seconds.
-                
+
             }
         }
 
@@ -2899,7 +2900,7 @@ namespace AccountinglinkC
             DateTime lDate = new DateTime(DateTime.Now.Year, 1, 1);
             Random IP;
 
-            edLogout.Checked = true;            
+            edLogout.Checked = true;
             for (I = 1; (I <= edRecord.Value); I++)
             {
                 if (IsOdd(I))
@@ -2911,7 +2912,7 @@ namespace AccountinglinkC
                     CheckLogin(1);
                 }
 
-                BizObject = ComServer.BizObjects.Find(edBizType.Text);
+                BizObject = FindBizObject(edBizType.Text);
                 lMain = BizObject.DataSets.Find("MainDataSet");  //lMain contains master data
                 lDtl = BizObject.DataSets.Find("cdsDocDetail");  //lDetail contains detail data
 
@@ -2995,7 +2996,7 @@ namespace AccountinglinkC
                 }
                 BizObject.Save();
                 BizObject.Close();
-                FreeBiz(BizObject);                
+                FreeBiz(BizObject);
             }
             MessageBox.Show("Done", "Posting Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Logout();
@@ -3025,7 +3026,7 @@ namespace AccountinglinkC
                     CheckLogin(1, 1);
                 }
 
-                BizObject = ComServer.BizObjects.Find(edBizType.Text);
+                BizObject = FindBizObject(edBizType.Text);
                 lMain = BizObject.DataSets.Find("MainDataSet");  //lMain contains master data
                 lDtl = BizObject.DataSets.Find("cdsDocDetail");  //lDetail contains detail data
 
@@ -3197,11 +3198,11 @@ namespace AccountinglinkC
 
         private void BtnGetAgent_Click(object sender, EventArgs e)
         {
-            dynamic BizObject, lMain, lDocKey;            
+            dynamic BizObject, lMain, lDocKey;
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("Agent");
+            BizObject = FindBizObject("Agent");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -3234,7 +3235,7 @@ namespace AccountinglinkC
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("Agent");
+            BizObject = FindBizObject("Agent");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");    //lMain contains master data
@@ -3275,7 +3276,7 @@ namespace AccountinglinkC
                 //Step 7 : Logout after done             
                 FreeBiz(BizObject);
                 Logout();
-            }            
+            }
         }
 
         private void BtnAddSKU_Click(object sender, EventArgs e)
@@ -3284,7 +3285,7 @@ namespace AccountinglinkC
 
             CheckLogin(0);
             //'Step 2: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("ST_ITEM");
+            BizObject = FindBizObject("ST_ITEM");
 
             //Step 3: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  //lMain contains master data
@@ -3397,7 +3398,7 @@ namespace AccountinglinkC
             if (lBuildNo >= 776)
             {
                 RptObject.Params.Find("AllTariff").Value = true;
-               //RptObject.Params.Find("TariffData").Value         = //Not use if AllTariff is true
+                //RptObject.Params.Find("TariffData").Value         = //Not use if AllTariff is true
             }
             //RptObject.Params.Find("AreaData").Value               = //Not use if AllArea is true
             //RptObject.Params.Find("CompanyCategoryData").Value    = //Not use if AllCompanyCategory is true
@@ -3548,17 +3549,17 @@ namespace AccountinglinkC
         private void btnGLJEEdit_Click(object sender, EventArgs e)
         {
             dynamic lSQL, lDataSet, BizObject, lMain, lDetail;
-            
+
             // Step 1: Create Com Server object
             CheckLogin();
-            
+
             // Step 2: GetDockey
             lSQL = "SELECT Dockey FROM GL_JE ";
             lSQL = lSQL + "WHERE DocNo=" + QuotedStr(edDocNo.Text); // JV-00002
             lDataSet = ComServer.DBManager.NewDataSet(lSQL);
 
             // Step 3: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("GL_JE");
+            BizObject = FindBizObject("GL_JE");
 
             // Step 4: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
@@ -3655,7 +3656,7 @@ namespace AccountinglinkC
             lDataSet = ComServer.DBManager.NewDataSet(lSQL);
 
             // Step 3: Find and Create the Biz Objects
-            BizObject = ComServer.BizObjects.Find("SL_CS");
+            BizObject = FindBizObject("SL_CS");
 
             // Step 4: Set Dataset
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
@@ -3690,7 +3691,7 @@ namespace AccountinglinkC
                     lDetail.FindField("TaxAmt").value = 0;
                     lDetail.Post();
 
-                // Step 8: Save Document
+                    // Step 8: Save Document
 
                     BizObject.Save();
                 }
@@ -3721,7 +3722,7 @@ namespace AccountinglinkC
 
             // Step 2: Get DocNo
             lSQL = "SELECT A.*, B.NEXTNUMBER FROM SY_DOCNO A ";
-            lSQL = lSQL + "INNER JOIN SY_DOCNO_DTL B ON (A.DOCKEY=B.PARENTKEY) ";
+            lSQL = lSQL + "INNER LEFT JOIN SY_DOCNO_DTL B ON (A.DOCKEY=B.PARENTKEY) ";
             lSQL = lSQL + "WHERE A.DOCTYPE='IV' ";
             lSQL = lSQL + "AND A.DESCRIPTION='Customer Invoice' ";
             lSQL = lSQL + "AND A.STATESET=1 ";
@@ -3798,7 +3799,7 @@ namespace AccountinglinkC
 
             // Query Data
             lSQL = "SELECT A.Dockey, A.Parent, A.Code, A.Description, A.SpecialAccType FROM GL_ACC A ";
-            lSQL = lSQL + "LEFT OUTER JOIN GL_ACC B ON (A.Dockey=B.Parent) ";
+            lSQL = lSQL + "LEFT OUTER LEFT JOIN GL_ACC B ON (A.Dockey=B.Parent) ";
             lSQL = lSQL + "WHERE A.Parent<>-1 ";
             lSQL = lSQL + "AND B.Dockey IS NULL ";
             lSQL = lSQL + "AND A.SpecialAccType NOT IN('DC', 'CC') ";
@@ -3821,9 +3822,9 @@ namespace AccountinglinkC
 
             // Step 1: Login
             CheckLogin();
-            
+
             lSQL = "SELECT A.*, B.UOM, B.RATE, B.REFCOST, B.REFPRICE, B.ISBASE FROM ST_ITEM A ";
-            lSQL = lSQL + "INNER JOIN ST_ITEM_UOM B ON (A.CODE=B.CODE) ";
+            lSQL = lSQL + "INNER LEFT JOIN ST_ITEM_UOM B ON (A.CODE=B.CODE) ";
             lSQL = lSQL + "WHERE A.ISACTIVE='T' ";
 
             if (edCode.Text != "")
@@ -3870,7 +3871,7 @@ namespace AccountinglinkC
             lDateTo = "'31 Dec 2017' ";
             // Step 2: GetMaxSeq
             lSQL = "SELECT  A.ItemCode, A.Location, A.Batch, MAX(B.Seq) AS Seq, 1 AS CostingMethod ";
-            lSQL = lSQL + "FROM ST_TR A INNER JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "FROM ST_TR A INNER LEFT JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
             lSQL = lSQL + " GROUP BY A.ItemCode, A.Location, A.Batch";
@@ -3887,7 +3888,7 @@ namespace AccountinglinkC
 
             // Step 3: Get Balance Qty & Up To Date Total Cost
             lSQL = "SELECT A.TRANSNO, A.ItemCode, A.Location, A.Batch, B.QTY, B.COST FROM ST_TR A ";
-            lSQL = lSQL + "INNER JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "INNER LEFT JOIN ST_TR_FIFO B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE B.COSTTYPE='U' ";
             lSQL = lSQL + "AND A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
@@ -3943,7 +3944,7 @@ namespace AccountinglinkC
             lDateTo = "'31 Dec 2017'";
             // Step 2: GetMaxSeq
             lSQL = "SELECT A.ItemCode, A.Location, A.Batch,  MAX(B.Seq) AS Seq, 2 AS CostingMethod ";
-            lSQL = lSQL + "FROM ST_TR A INNER JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "FROM ST_TR A INNER LEFT JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
             lSQL = lSQL + " GROUP BY A.ItemCode, A.Location, A.Batch";
@@ -3960,7 +3961,7 @@ namespace AccountinglinkC
 
             // Step 3: Get Balance Qty & Up To Date Total Cost
             lSQL = "SELECT A.TRANSNO, A.ItemCode, A.Location, A.Batch, B.UTDQty, B.UTDCost FROM ST_TR A ";
-            lSQL = lSQL + "INNER JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
+            lSQL = lSQL + "INNER LEFT JOIN ST_TR_WMA B ON (A.TRANSNO=B.TRANSNO) ";
             lSQL = lSQL + "WHERE A.PostDate<=" + lDateTo;
             lSQL = lSQL + "And A.ITEMCODE =" + QuotedStr(edCode.Text);
             lSQL = lSQL + " AND B.SEQ IN (" + s + ") ";
@@ -3986,14 +3987,14 @@ namespace AccountinglinkC
 
         private void BtnSTAS_Click(object sender, EventArgs e)
         {
-            dynamic lDate, lMain, lDtl, BizObject, lFld_MDockey, lFld_DocNo, 
-                    lFld_Code, lFld_DocDate, lFld_PostDate, lFld_MLoc, lFld_Desc, 
-                    lFld_Cancelled, lFld_MQty, lFld_MUOM, lFld_DDockey, lFld_DtlKey, 
+            dynamic lDate, lMain, lDtl, BizObject, lFld_MDockey, lFld_DocNo,
+                    lFld_Code, lFld_DocDate, lFld_PostDate, lFld_MLoc, lFld_Desc,
+                    lFld_Cancelled, lFld_MQty, lFld_MUOM, lFld_DDockey, lFld_DtlKey,
                     lFld_Seq, lFld_ItemCode, lFld_Qty, lFld_Wastage;
 
             CheckLogin(0);
 
-            BizObject = ComServer.BizObjects.Find("ST_AS");
+            BizObject = FindBizObject("ST_AS");
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
             lDtl = BizObject.DataSets.Find("cdsDocDetail"); // lDetail contains detail data
 
@@ -4074,16 +4075,16 @@ namespace AccountinglinkC
 
         private void btnJO2AS_Click(object sender, EventArgs e)
         {
-            dynamic lDate, lMain, lDtl, BizObject, lxFer, lSQL, 
-                    lFld_MDockey, lFld_DocNo, 
-                    lFld_Code, lFld_DocDate, lFld_PostDate, lFld_MLoc, lFld_Desc, 
-                    lFld_Cancelled, lFld_MQty, lFld_MUOM, lFld_MItemCode, lFld_FromDocType, 
-                    lFld_FromDockey, lFld_DDockey, lFld_DtlKey, lFld_Seq, lFld_ItemCode, 
+            dynamic lDate, lMain, lDtl, BizObject, lxFer, lSQL,
+                    lFld_MDockey, lFld_DocNo,
+                    lFld_Code, lFld_DocDate, lFld_PostDate, lFld_MLoc, lFld_Desc,
+                    lFld_Cancelled, lFld_MQty, lFld_MUOM, lFld_MItemCode, lFld_FromDocType,
+                    lFld_FromDockey, lFld_DDockey, lFld_DtlKey, lFld_Seq, lFld_ItemCode,
                     lFld_Qty, lFld_Wastage;
 
             CheckLogin(0);
             // Insert PD JO
-            BizObject = ComServer.BizObjects.Find("PD_JO");
+            BizObject = FindBizObject("PD_JO");
             lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
             lDtl = BizObject.DataSets.Find("cdsDocDetail"); // lDetail contains detail data
 
@@ -4141,7 +4142,7 @@ namespace AccountinglinkC
                 lxFer = ComServer.DBManager.NewDataSet(lSQL);
 
                 // Post ST AS
-                BizObject = ComServer.BizObjects.Find("ST_AS");
+                BizObject = FindBizObject("ST_AS");
                 lMain = BizObject.DataSets.Find("MainDataSet");  // lMain contains master data
                 lDtl = BizObject.DataSets.Find("cdsDocDetail"); // lDetail contains detail data
 
@@ -4249,7 +4250,7 @@ namespace AccountinglinkC
             lDataSet = ComServer.DBManager.NewDataSet(lSQL);
 
             edDesc.Text = lDataSet.FindField("Description3").AsString;
-           //edCoCode.Text = lDataSet.FindField("Description3").AsString;
+            //edCoCode.Text = lDataSet.FindField("Description3").AsString;
             pictureBox1.Image = ByteToImage(lDataSet.FindField("Picture").Value);
             richTextBox1.Rtf = edDesc.Text;
             // Logout after done 
