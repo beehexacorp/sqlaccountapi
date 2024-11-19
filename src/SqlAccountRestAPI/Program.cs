@@ -14,15 +14,14 @@ using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var logFilePath = Path.Combine(ApplicationConstants.APPLICATION_NAME, "log.txt");
 // Log by day
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console()
-    .WriteTo.File(logFilePath, shared: true, flushToDiskInterval: TimeSpan.FromSeconds(5), rollingInterval: RollingInterval.Hour)
+    .WriteTo.File("log.txt", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(5), rollingInterval: RollingInterval.Hour)
     .CreateLogger();
 
-File.WriteAllText(logFilePath, "Application created.");
+File.WriteAllText("log.txt", "Application created.");
 
 // Configure logging
 builder.Logging.ClearProviders();
