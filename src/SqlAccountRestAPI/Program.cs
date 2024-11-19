@@ -25,7 +25,16 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
 // builder.Logging.AddConsole();
 // builder.Logging.AddFile("Logs/Request-{Date}.txt");
+// Get dynamic port from arguments, environment variables, or use a default value
+var port = args.Length > 0 ? args[0] :
+           Environment.GetEnvironmentVariable("PORT") ??
+           builder.Configuration["Kestrel:Port"] ?? "5000";
 
+// Configure Kestrel to use the dynamic port
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(int.Parse(port)); // Bind to the specified port
+});
 builder.WebHost.UseIISIntegration();
 
 builder.Services.AddControllers();
@@ -87,6 +96,5 @@ applicationLifetime.ApplicationStarted.Register(() =>
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
 
