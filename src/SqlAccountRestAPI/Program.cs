@@ -15,9 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 var logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationConstants.APPLICATION_NAME, "log.txt");
 // Log by day
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()  
-    .WriteTo.Console()  
-    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Hour) 
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Hour)
     .CreateLogger();
 
 // Configure logging
@@ -53,17 +53,14 @@ builder.Services.AddTransient<SqlAccountingStockItemTemplateHelper>();
 
 if (OperatingSystem.IsWindows())
 {
-    builder.Host.UseWindowsService();  
+    builder.Host.UseWindowsService();
 }
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
