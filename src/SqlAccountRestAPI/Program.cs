@@ -19,7 +19,7 @@ var logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFold
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console()
-    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Hour)
+    .WriteTo.File(logFilePath, shared: true, rollingInterval: RollingInterval.Hour)
     .CreateLogger();
 
 // Configure logging
