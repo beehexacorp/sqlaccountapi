@@ -12,11 +12,12 @@ using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationConstants.APPLICATION_NAME, "log.txt");
 // Log by day
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()  
+    .MinimumLevel.Information()  
     .WriteTo.Console()  
-    .WriteTo.File("Logs/Request-.txt", rollingInterval: RollingInterval.Day) 
+    .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Hour) 
     .CreateLogger();
 
 // Configure logging
