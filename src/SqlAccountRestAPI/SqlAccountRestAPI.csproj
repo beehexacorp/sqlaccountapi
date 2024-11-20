@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <Nullable>enable</Nullable>
-    <PreserveCompilationContext>false</PreserveCompilationContext> <!-- Chỉ giữ lại những gì cần thiết -->
+    <PreserveCompilationContext>false</PreserveCompilationContext> 
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 

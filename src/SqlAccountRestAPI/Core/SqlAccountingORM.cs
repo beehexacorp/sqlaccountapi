@@ -91,7 +91,7 @@ FETCH NEXT 1 ROWS ONLY";
         }
     }
 
-    public IEnumerable<IDictionary<string, object>> Query(string sql, IDictionary<string, object?>? @params = null, int offset = 0, int limit = 100)
+    public virtual IEnumerable<IDictionary<string, object>> Query(string sql, IDictionary<string, object?>? @params = null, int offset = 0, int limit = 100)
     {
         var results = new List<IDictionary<string, object>>();
         foreach (var item in AsIterator(sql, @params, offset, limit))

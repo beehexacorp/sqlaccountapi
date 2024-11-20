@@ -11,6 +11,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 
 namespace SqlAccountRestAPI.Helpers;
@@ -19,11 +20,12 @@ public class ApplicationConstants
 {
     public const string APPLICATION_NAME = "SQLAccountRestAPI";
 }
-public class SqlAccountingLoginHelper : SqlAccountingORM
+public class SqlAccountingORMHelper : SqlAccountingORM
 {
     private readonly string _credentialsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),ApplicationConstants.APPLICATION_NAME,"credentials.enc");
+    private List<Regex> AvoidSqlRegex = [new Regex(@"(?i)\b(DROP\s+(TABLE|INDEX|DATABASE)|ALTER\s+(TABLE|INDEX)|RENAME\s+INDEX)\b")];
 
-    public SqlAccountingLoginHelper(SqlAccountingFactory sqlAccountingFactory) 
+    public SqlAccountingORMHelper(SqlAccountingFactory sqlAccountingFactory) 
         : base(sqlAccountingFactory)
     {
         Login();
@@ -55,7 +57,19 @@ public class SqlAccountingLoginHelper : SqlAccountingORM
             throw new InvalidOperationException("Login failed: " + e.Message);        
         }  
     }
-        
+
+    public override IEnumerable<IDictionary<string, object>> Query(string sql, IDictionary<string, object?>? @params = null, int offset = 0, int limit = 100)
+    {
+        foreach (Regex regex in AvoidSqlRegex){
+            if (regex.IsMatch(sql))
+            {
+                throw new InvalidOperationException("Detected potentially harmful SQL commands.");
+            }
+        }
+        return base.Query(sql, @params, offset, limit);
+    }
+
+
 
     public string GenerateKeyFromSystemInfo()
     {

@@ -38,7 +38,7 @@ builder.Services.AddSingleton<SqlAccountingFactory>();
 builder.Services.AddSingleton<SqlAccountingORM>(provider =>
 {
     var sqlAccountingFactory = provider.GetRequiredService<SqlAccountingFactory>();
-    return new SqlAccountingLoginHelper(sqlAccountingFactory);
+    return new SqlAccountingORMHelper(sqlAccountingFactory);
 });
 builder.Services.AddTransient<SqlAccountingAppHelper>();
 builder.Services.AddTransient<SqlAccountingBizObjectHelper>();
