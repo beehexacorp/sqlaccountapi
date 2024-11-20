@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+    "watch": "vite build --watch",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:e2e": "nightwatch tests/e2e/*",
@@ -14,9 +15,11 @@
     "lint:oxlint": "oxlint . --fix -D correctness --ignore-path .gitignore",
     "lint:eslint": "eslint . --fix",
     "lint": "run-s lint:*",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "postinstall": "patch-package"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
     "ant-design-vue": "^4.2.6",
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
@@ -43,13 +46,17 @@
     "nightwatch": "^3.8.1",
     "npm-run-all2": "^7.0.1",
     "oxlint": "^0.11.0",
+    "patch-package": "^8.0.0",
     "prettier": "^3.3.3",
+    "sass-embedded": "^1.81.0",
+    "sass-migrator": "^2.2.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.6.3",
     "unplugin-vue-components": "^0.27.4",
     "vite": "^5.4.10",
     "vite-plugin-nightwatch": "^0.4.6",
     "vite-plugin-vue-devtools": "^7.5.4",
+    "vite-svg-loader": "^5.1.0",
     "vitest": "^2.1.4",
     "vue-tsc": "^2.1.10"
   }

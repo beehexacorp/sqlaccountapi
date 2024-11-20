@@ -4,6 +4,7 @@
       <div class="ant-layout-sider-logo">
         <Logo />
       </div>
+      <!-- TODO: create component Menu.vue -->
       <side-bar :selectedKeys="selectedKeys"></side-bar>
     </a-layout-sider>
     <a-layout :style="{ marginLeft: '200px' }">
@@ -13,23 +14,7 @@
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
         <!-- TODO: create component Home.vue and use router -->
         <div :style="{ padding: '24px', textAlign: 'center' }">
-
-          <a-list size="small" bordered :data-source="messages">
-            <template #renderItem="{ item }">
-              <a-list-item>
-                <span style="font-weight: 700;">{{ item.logLevel }}</span>
-                <pre style="white-space: pre-wrap;">{{ item.message }}</pre>
-              </a-list-item>
-            </template>
-            <template #header>
-              <div>Application Log</div>
-            </template>
-          </a-list>
-          <!-- <pre style="width: 100%; text-align: left;">
-  <span v-for="(m, mix) in messages" :key="mix">
-    {{ m }}
-  </span>
-</pre> -->
+          Hello world
         </div>
       </a-layout-content>
       <!-- TODO: create component Footer.vue -->
@@ -40,8 +25,7 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, ref, onMounted } from 'vue';
-import { startConnection, onReceiveLog } from '../signalr';
+import { defineAsyncComponent, ref } from 'vue';
 import Logo from '../assets/logo.svg?component'
 // const Sidebar = defineAsyncComponent(() => import('../components/Sidebar.vue'))
 import {
@@ -55,13 +39,6 @@ import {
   ShopOutlined,
 } from '@ant-design/icons-vue';
 
-const selectedKeys = ref<string[]>(['1']);
-const messages = ref<{ logLevel: string, message: string, ts: number }[]>([])
-onMounted(async () => {
-  await startConnection();
-  onReceiveLog((logLevel: string, message: string, ts: number) => {
-    messages.value.push({ logLevel, message, ts })
-  })
-})
+const selectedKeys = ref<string[]>(['2']);
 </script>
 <style scoped></style>
