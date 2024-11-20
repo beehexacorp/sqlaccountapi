@@ -44,7 +44,7 @@ jobs:
         shell: bash
         run: |
           tag=$(git describe --tags --abbrev=0)
-          release_name="sql-accounting-$tag-${{ matrix.target }}"
+          release_name="sql-account-$tag-${{ matrix.target }}"
 
           # Build everything
           dotnet publish src/SqlAccountRestAPI/SqlAccountRestAPI.csproj --runtime "${{ matrix.target }}" -c Release -o "$release_name"
