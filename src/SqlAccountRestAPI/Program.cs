@@ -66,6 +66,12 @@ if (OperatingSystem.IsWindows())
 
 var app = builder.Build();
 
+// Serve static files
+app.UseStaticFiles();
+
+// Fallback to index.html for SPA routes
+app.MapFallbackToFile("/dashboard/{*path:nonfile}", "/dashboard/index.html");
+
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
