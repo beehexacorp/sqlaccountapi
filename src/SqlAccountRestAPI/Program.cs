@@ -23,8 +23,7 @@ Log.Logger = new LoggerConfiguration()
 // Configure logging
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
-// builder.Logging.AddConsole();
-// builder.Logging.AddFile("Logs/Request-{Date}.txt");
+
 // Get dynamic port from arguments, environment variables, or use a default value
 var port = args.Length > 0 ? args[0] :
            Environment.GetEnvironmentVariable("PORT") ??
@@ -79,6 +78,12 @@ app.UseExceptionHandler(a => a.Run(async context =>
             var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
             var exception = exceptionHandlerPathFeature?.Error;
             app.Logger.LogError(exception?.Message ?? exception?.InnerException?.Message, exception?.InnerException ?? exception);
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new
+            {
+                errorMessage = exception?.InnerException?.Message ?? exception?.Message
+            }));
         }));
 
 var applicationLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
