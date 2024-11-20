@@ -57,10 +57,16 @@ import {
 
 const selectedKeys = ref<string[]>(['1']);
 const messages = ref<{ logLevel: string, message: string, ts: number }[]>([])
+// TODO: display list of log histories files so people can see the log histories and also the real-time log
+// TODO: improve UX for this page
+// TODO: use virtual list instead of ant-design list for better performance (please google/chatgpt)
 onMounted(async () => {
   await startConnection();
   onReceiveLog((logLevel: string, message: string, ts: number) => {
     messages.value.push({ logLevel, message, ts })
+    if (messages.value.length > 10000) {
+      messages.value.slice(messages.value.length - 10000);
+    }
   })
 })
 </script>
