@@ -7,3 +7,7 @@ obj/
 Logs/
 *.user
 *.zip
+
+log*.txt
+node_modules
+dist

@@ -1,0 +1,28 @@
+.ant-layout  {
+    &.ant-layout-has-sider {
+        .ant-layout-sider {
+            .ant-layout-sider-logo {
+                height: 32px;
+                // background: rgba(255, 255, 255, 0.2);
+                margin: 16px;
+                color: var(--color-light);
+                display: flex;
+                justify-content: center;
+                svg {
+                    height: 32px !important;
+                }
+            }
+            &.ant-layout-sider-dark {
+                background: var(--bg-color-dark);
+            }
+        }
+    }
+}
+.ant-menu {
+    &.ant-menu-dark {
+        background: var(--bg-color-dark);
+    }
+    .ant-menu-item {
+        border-radius: 2px;
+    }
+}

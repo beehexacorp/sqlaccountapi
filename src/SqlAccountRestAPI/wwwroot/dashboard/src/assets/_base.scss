@@ -1,0 +1,29 @@
+/* color palette from <https://github.com/vuejs/theme> */
+$bg-color-light: #f6f6f9;
+$bg-color-dark: #141f2e;
+
+$color-light: #ddd;
+$color-dark: #333;
+
+:root {
+  --bg-color-light: #{$bg-color-light};
+  --bg-color-dark: #{$bg-color-dark};
+  --color-light: #{$color-light};
+  --color-dark: #{$color-dark};
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body, #app, .app, main {
+  min-height: 100vh;
+  font-size: 14px;
+  font-weight: 400;
+  font-family:Arial, Helvetica, sans-serif;
+  background-color: var(--bg-color-light);
+}
