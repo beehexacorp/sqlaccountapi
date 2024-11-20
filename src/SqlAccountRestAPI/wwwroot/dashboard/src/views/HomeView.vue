@@ -34,7 +34,7 @@
       </a-layout-content>
       <!-- TODO: create component Footer.vue -->
       <a-layout-footer :style="{ textAlign: 'center' }">
-        SQL Accounting Rest API ©2024 - Created by HexaSync Inc.
+        SQL Account Rest API ©2024 - Created by HexaSync Inc.
       </a-layout-footer>
     </a-layout>
   </a-layout>

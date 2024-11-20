@@ -148,7 +148,7 @@ applicationLifetime.ApplicationStopped.Register(() =>
 
 applicationLifetime.ApplicationStarted.Register(() =>
 {
-    // TODO: login with SQL accounting if there is a cached username & password
+    // TODO: login with SQL account if there is a cached username & password
 });
 
 app.UseAuthorization();

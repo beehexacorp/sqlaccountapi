@@ -14,12 +14,12 @@
       <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
         <!-- TODO: create component Home.vue and use router -->
         <div :style="{ padding: '24px', textAlign: 'center' }">
-          Hello world
+          Under construction!!!
         </div>
       </a-layout-content>
       <!-- TODO: create component Footer.vue -->
       <a-layout-footer :style="{ textAlign: 'center' }">
-        SQL Accounting Rest API ©2024 - Created by HexaSync Inc.
+        SQL Account Rest API ©2024 - Created by HexaSync Inc.
       </a-layout-footer>
     </a-layout>
   </a-layout>

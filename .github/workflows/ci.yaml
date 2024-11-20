@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         dotnet-version: ['8.0.x']
+        node-version: [18]
         kind: ['linux', 'windows', 'macOS']
         include:
           - kind: linux
@@ -30,6 +31,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+        working-directory: src/SqlAccountRestAPI/wwwroot/dashboard
+      - run: npm run build
+        working-directory: src/SqlAccountRestAPI/wwwroot/dashboard
 
       - name: Build
         shell: bash
@@ -54,6 +63,6 @@ jobs:
       - name: Publish
         uses: softprops/action-gh-release@v2
         with:
-          files: "sql-accounting-*"
+          files: "sql-account-*"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

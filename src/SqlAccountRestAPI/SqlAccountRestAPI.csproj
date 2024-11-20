@@ -25,30 +25,16 @@
     <None Include="web.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Controllers\StockAdjustmentController.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Controllers\StockItemController.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Controllers\OrderController.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Lib\StockAdjustment.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Lib\StockItem.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Lib\SalesInvoice.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Models\Item.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Models\Order.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
+    <!-- Exclude specific folders -->
+    <Content Remove="wwwroot/dashboard/**" />
+    <Content Include="wwwroot/dashboard/dist/**" />
   </ItemGroup>
-
+  
+  <!-- Ensure exclusions are applied -->
+  <Target Name="ExcludeFromPublish" BeforeTargets="PrepareForPublish">
+    <ItemGroup>
+      <Content Update="@(Content)" CopyToPublishDirectory="Never" />
+      <None Update="@(None)" CopyToPublishDirectory="Never" />
+    </ItemGroup>
+  </Target>
 </Project>
