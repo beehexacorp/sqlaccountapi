@@ -3,10 +3,10 @@ paths:
   - src/ # Include source code
 
 paths-ignore:
-  - src/SqlAccountRestAPI/wwwroot/dashboard/dist/
-  - src/SqlAccountRestAPI/wwwroot/dashboard/build/
+  # - src/SqlAccountRestAPI/wwwroot/dashboard/dist/
+  # - src/SqlAccountRestAPI/wwwroot/dashboard/build/
   - src/SqlAccountRestAPI/wwwroot/dashboard/node_modules/
-  - bin/
-  - obj/
-  - src/SqlAccountRestAPI/obj/
-  - src/SqlAccountRestAPI/bin/
+  # - bin/
+  # - obj/
+  # - src/SqlAccountRestAPI/obj/
+  # - src/SqlAccountRestAPI/bin/
