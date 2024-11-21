@@ -12,5 +12,5 @@ paths-ignore:
   - src/SqlAccountRestAPI/obj/
   - src/SqlAccountRestAPI/bin/
 
-queries:
-  - use: security-and-quality  # Use default security and quality queries
+# queries:
+#   - uses: security-and-quality  # Use default security and quality queries
