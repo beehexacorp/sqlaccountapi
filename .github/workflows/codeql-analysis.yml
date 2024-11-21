@@ -12,6 +12,8 @@ jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_STEP_DEBUG: true  # Enable debug logging
 
     steps:
       # Step 1: Checkout the repository
