@@ -34,9 +34,9 @@ public class HistoryController(ILogger<HistoryController> logger) : ControllerBa
     [HttpGet("log-detail")]
     public IActionResult GetLogFileContent([FromQuery(Name = "fn")][Required] string fileName)
     {
-        if (string.IsNullOrEmpty(fileName))
+        if (string.IsNullOrEmpty(fileName) || fileName.Contains("..") || fileName.Contains("/") || fileName.Contains("\\"))
         {
-            return BadRequest($"Filename (fileName) is required.");
+            return BadRequest($"Invalid filename (fileName).");
         }
 
         // Get the current working directory
@@ -59,9 +59,9 @@ public class HistoryController(ILogger<HistoryController> logger) : ControllerBa
     [HttpGet("download")]
     public IActionResult Download([FromQuery(Name = "fn")][Required] string fileName)
     {
-        if (string.IsNullOrEmpty(fileName))
+        if (string.IsNullOrEmpty(fileName) || fileName.Contains("..") || fileName.Contains("/") || fileName.Contains("\\"))
         {
-            return BadRequest($"Filename (fileName) is required.");
+            return BadRequest($"Invalid filename (fileName).");
         }
 
         // Get the current working directory
