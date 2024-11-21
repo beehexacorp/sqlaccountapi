@@ -29,6 +29,8 @@ jobs:
         run: |
           dotnet restore src/SqlAccountRestAPI/
           dotnet build src/SqlAccountRestAPI/ --configuration Release
+        env:
+          CODEQL_EXTRACTOR_CSHARP_TRACING: "1"
 
       # Step 4: Set up Node.js (for Vue.js frontend)
       - name: Set up Node.js
