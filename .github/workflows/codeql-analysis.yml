@@ -21,6 +21,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           config-file: codeql-config.yml
+          languages: csharp,javascript
 
       - name: Build the Codebase
         run: |

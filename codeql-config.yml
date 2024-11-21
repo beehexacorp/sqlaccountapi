@@ -7,3 +7,7 @@ paths-ignore:
   - 'bin/**' # Ignore binaries
   - 'GeneratedCode/**' # Ignore generated code
   - '**/*.Designer.cs' # Ignore designer-generated code
+  - 'dist/**'
+  - 'node_modules/**'
+  - 'docs/**'
+  - '/**/env.example'
