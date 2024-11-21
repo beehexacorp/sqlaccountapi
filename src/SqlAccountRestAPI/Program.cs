@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.SignalR;
 using Serilog.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+DotNetEnv.Env.Load();
 
 // Configure logging
 builder.Logging.ClearProviders();
@@ -34,6 +35,7 @@ builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenLocalhost(int.Parse(port)); // Bind to the specified port
 });
+
 builder.WebHost.UseIISIntegration();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
@@ -68,6 +70,23 @@ if (OperatingSystem.IsWindows())
     builder.Host.UseWindowsService();
 }
 
+builder.Services.AddCors(options =>
+{
+    Console.WriteLine($"Is Development {builder.Environment.IsDevelopment()}");
+    if (builder.Environment.IsDevelopment())
+    {
+        var frontendPort = Environment.GetEnvironmentVariable("FRONTEND_PORT") ?? "3000";
+        Console.WriteLine($"Accepted Frontend Port {frontendPort}");
+        options.AddPolicy("AllowFrontend", policy =>
+        {
+            policy.WithOrigins($"https://localhost:{frontendPort}", $"http://localhost:{frontendPort}")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    }
+});
+
 var app = builder.Build();
 // Log by day
 Log.Logger = new LoggerConfiguration()
@@ -97,25 +116,19 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // Fallback to index.html for SPA routes
-app.MapHub<NotificationHub>("/notification-hub"); // Endpoint for SignalR hub
+var hubBuilder = app.MapHub<NotificationHub>("/notification-hub"); // Endpoint for SignalR hub
+if (builder.Environment.IsDevelopment())
+{
+    hubBuilder.RequireCors("AllowFrontend");
+}
 app.MapFallbackToFile("/dashboard/{*path:nonfile}", "dashboard/dist/index.html");
-// app.MapFallback(context =>
-// {
-//     // Check if the path refers to a file
-//     var path = context.Request.Path.Value;
-//     if (path != null && (path.EndsWith(".js") || path.EndsWith(".css") || path.EndsWith(".html") || path.EndsWith(".ico")))
-//     {
-//         return Task.CompletedTask; // Let static files middleware handle it
-//     }
 
-//     context.Response.ContentType = "text/html";
-//     return context.Response.SendFileAsync(Path.Combine(builder.Environment.WebRootPath, "dashboard", "index.html"));
-// });
 app.Use(async (context, next) =>
 {
     Console.WriteLine($"Request Path: {context.Request.Path}");
     await next();
 });
+app.UseCors("AllowFrontend");
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
@@ -155,8 +168,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
-
-
 
 public class SignalRSink : ILogEventSink, IDisposable
 {

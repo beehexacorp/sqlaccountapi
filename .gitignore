@@ -11,3 +11,4 @@ Logs/
 log*.txt
 node_modules
 dist
+.env

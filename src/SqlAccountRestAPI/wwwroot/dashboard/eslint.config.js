@@ -1,4 +1,4 @@
-import pluginVue from 'eslint-plugin-vue'
+import pluginVue, { rules } from 'eslint-plugin-vue'
 import vueTsEslintConfig from '@vue/eslint-config-typescript'
 import pluginVitest from '@vitest/eslint-plugin'
 import oxlint from 'eslint-plugin-oxlint'
@@ -24,4 +24,9 @@ export default [
   },
   oxlint.configs['flat/recommended'],
   skipFormatting,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off', // Disable the rule globally
+    },
+  }
 ]

@@ -7,16 +7,22 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ACard: typeof import('ant-design-vue/es')['Card']
+    ACol: typeof import('ant-design-vue/es')['Col']
+    AEmpty: typeof import('ant-design-vue/es')['Empty']
     ALayout: typeof import('ant-design-vue/es')['Layout']
     ALayoutContent: typeof import('ant-design-vue/es')['LayoutContent']
     ALayoutFooter: typeof import('ant-design-vue/es')['LayoutFooter']
     ALayoutSider: typeof import('ant-design-vue/es')['LayoutSider']
-    AList: typeof import('ant-design-vue/es')['List']
-    AListItem: typeof import('ant-design-vue/es')['ListItem']
     AMenu: typeof import('ant-design-vue/es')['Menu']
     AMenuItem: typeof import('ant-design-vue/es')['MenuItem']
+    ARow: typeof import('ant-design-vue/es')['Row']
+    HistoryLogs: typeof import('./src/components/HistoryLogs.vue')['default']
+    RealtimeLog: typeof import('./src/components/RealtimeLog.vue')['default']
+    RealtimeLogItem: typeof import('./src/components/RealtimeLogItem.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideBar: typeof import('./src/components/SideBar.vue')['default']
+    SiteLogo: typeof import('./src/components/SiteLogo.vue')['default']
   }
 }

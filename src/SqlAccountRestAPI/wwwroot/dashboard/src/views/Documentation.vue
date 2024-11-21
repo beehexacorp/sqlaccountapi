@@ -1,9 +1,7 @@
 <template>
   <a-layout has-sider>
     <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0, top: 0, bottom: 0 }">
-      <div class="ant-layout-sider-logo">
-        <Logo />
-      </div>
+      <site-logo></site-logo>
       <!-- TODO: create component Menu.vue -->
       <side-bar :selectedKeys="selectedKeys"></side-bar>
     </a-layout-sider>
@@ -26,18 +24,6 @@
 </template>
 <script lang="ts" setup>
 import { defineAsyncComponent, ref } from 'vue';
-import Logo from '../assets/logo.svg?component'
-// const Sidebar = defineAsyncComponent(() => import('../components/Sidebar.vue'))
-import {
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
-  BarChartOutlined,
-  CloudOutlined,
-  AppstoreOutlined,
-  TeamOutlined,
-  ShopOutlined,
-} from '@ant-design/icons-vue';
 
 const selectedKeys = ref<string[]>(['2']);
 </script>

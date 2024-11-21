@@ -1,7 +1,9 @@
 import * as signalR from '@microsoft/signalr';
 
+// @ts-ignore
+const notificationHubUrl = import.meta.env.VITE_NOTIFICATION_HUB_URL ? `${import.meta.env.VITE_NOTIFICATION_HUB_URL}/notification-hub` : '/notification-hub';
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl('/notification-hub') // Ensure this matches the backend SignalR endpoint
+    .withUrl(notificationHubUrl) // Ensure this matches the backend SignalR endpoint
     .withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Information)
     .build();
@@ -16,23 +18,17 @@ export async function startConnection() {
     }
 }
 
+export async function stopConnection() {
+    try {
+        await connection.stop();
+        console.log('SignalR Disconnected');
+    } catch (err) {
+        console.error('Error while disconnecting SignalR:', err);
+    }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function onReceiveLog(callback: any) {
     connection.on('ReceiveLog', callback);
 }
-// // Reconnection state handling
-// connection.onreconnecting((error) => {
-//     console.warn('SignalR reconnecting...', error);
-//     // Optionally notify the user
-// });
-
-// connection.onreconnected((connectionId) => {
-//     console.log('SignalR reconnected. Connection ID:', connectionId);
-//     // Optionally notify the user
-// });
-
-// connection.onclose(async (error) => {
-//     console.error('SignalR connection closed. Attempting to reconnect...', error);
-//     await startConnection(); // Restart connection on close
-// });
 export default connection;
