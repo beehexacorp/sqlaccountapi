@@ -28,7 +28,7 @@
                     </a-button>
                 </div>
             </template>
-            <pre style="text-align: left; width: 100%;">{{ logContent }}</pre>
+            <pre style="white-space: pre-wrap; text-align: left; width: 100%;">{{ logContent }}</pre>
         </a-drawer>
     </div>
 </template>

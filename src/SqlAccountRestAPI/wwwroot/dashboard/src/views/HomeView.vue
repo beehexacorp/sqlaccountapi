@@ -4,10 +4,11 @@
       <site-logo></site-logo>
       <side-bar :selectedKeys="selectedKeys"></side-bar>
     </a-layout-sider>
-    <a-layout :style="{ marginLeft: '200px' }">
-      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
+    <a-layout :style="{ marginLeft: '200px', display: 'flex', flexDirection: 'column', height: '100vh' }">
+      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'auto', flex: 1, display: 'flex',flexDirection: 'column',  }">
         <history-logs></history-logs>
-        <realtime-log></realtime-log>
+        <a-divider style="margin: 10px 0;" />
+        <realtime-log style="flex: 1"></realtime-log>
       </a-layout-content>
       <a-layout-footer :style="{ textAlign: 'center' }">
         SQL Account Rest API ©2024 - Created by HexaSync Inc.
@@ -15,11 +16,12 @@
     </a-layout>
   </a-layout>
 </template>
+
 <script lang="ts" setup>
 import { ref } from 'vue';
 const selectedKeys = ref<string[]>(['1']);
 // TODO: display list of log histories files so people can see the log histories and also the real-time log
 // TODO: improve UX for this page
-
 </script>
+
 <style scoped></style>

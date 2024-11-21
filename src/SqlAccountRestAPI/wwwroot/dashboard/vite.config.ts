@@ -47,6 +47,21 @@ export default defineConfig({
         }
         warn(warning); // Default behavior for other warnings
       },
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            // Group dependencies into chunks
+            if (id.includes('ant-design-vue')) {
+              return 'ant-design-vue';
+            }
+            if (id.includes('@vue')) {
+              return 'vue-core';
+            }
+            return 'vendor'; // Default vendor chunk
+          }
+        },
+        chunkFileNames: 'chunks/[name]-[hash].js', // Specify the output folder for chunks
+      },
     },
     outDir: 'dist', // Ensure the output folder matches the base
     assetsDir: 'assets',

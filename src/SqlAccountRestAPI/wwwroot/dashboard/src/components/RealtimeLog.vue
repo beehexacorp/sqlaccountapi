@@ -1,9 +1,16 @@
 <template>
-    <a-card title="Application Logs" :bordered="false">
+    <a-card title="Application Logs" class="realtime-log" :bordered="false">
         <a-empty v-if="!messages?.length"></a-empty>
-        <VirtualScrollList v-if="!!messages?.length" class="scrollable-list" :data-key="'id'" :data-sources="messages"
-            :keeps="20" style="max-height: 400px; overflow-y: auto;" :data-component="Item" ref="virtualScroll">
-        </VirtualScrollList>
+        <div v-if="!!messages?.length" class="scrollable-container">
+            <VirtualScrollList
+                class="scrollable-list"
+                :data-key="'id'"
+                :data-sources="messages"
+                :keeps="20"
+                :data-component="Item"
+                ref="virtualScroll"
+            ></VirtualScrollList>
+        </div>
     </a-card>
 </template>
 
@@ -12,36 +19,57 @@ import { onMounted, onBeforeUnmount, ref, defineAsyncComponent, nextTick } from 
 import { startConnection, onReceiveLog, stopConnection } from "../signalr";
 
 import VirtualScrollList from "vue3-virtual-scroll-list";
-const Item = defineAsyncComponent(() => import('./RealtimeLogItem.vue'))
+const Item = defineAsyncComponent(() => import('./RealtimeLogItem.vue'));
 
 const messages = ref<{ id: number; logLevel: string; message: string; ts: number }[]>([]);
 const virtualScroll = ref<InstanceType<typeof VirtualScrollList> | null>(null);
 
-// Scroll to the bottom of the list
 const scrollToBottom = async () => {
     await nextTick(); // Wait for DOM updates
-    virtualScroll.value.scrollToBottom()
+    if (virtualScroll.value) {
+        virtualScroll.value.scrollToBottom(); // Scroll to the last item
+    }
 };
 
 onMounted(async () => {
     await startConnection();
     onReceiveLog((logLevel: string, message: string, ts: number) => {
         messages.value.push({ id: Date.now(), logLevel, message, ts });
-        // Scroll to the bottom when a new message is added
-        scrollToBottom();
+        scrollToBottom(); // Scroll to the bottom when a new message is added
     });
 });
 
-onBeforeUnmount(async () => {
+onBeforeUnmount(() => {
     stopConnection();
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.realtime-log {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+
+    :deep(.ant-card-body) {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+}
+
+.scrollable-container {
+    flex-grow: 1; /* Fill the remaining space */
+    overflow: hidden; /* Prevent unnecessary scrolling of the container */
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 40px;
+}
+
 .scrollable-list {
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #d9d9d9;
+    flex-grow: 1; /* Allow the list to expand */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #e7e7e7;
     border-radius: 4px;
 }
 

@@ -8,13 +8,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using Serilog.Events;
 using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json.Serialization;
-using Serilog.Core;
 using Microsoft.AspNetCore.SignalR;
-using Serilog.Configuration;
 using MessagePack.Resolvers;
 using MessagePack.AspNetCoreMvcFormatter;
 using Microsoft.Extensions.FileProviders;
@@ -37,7 +34,7 @@ var port = args.Length > 0 ? args[0] :
 // Configure Kestrel to use the dynamic port
 builder.WebHost.ConfigureKestrel(options =>
 {
-    Console.WriteLine(@$"Listening to {port}");
+    Console.WriteLine(@$"Listening to http(s)://localhost:{port}");
     options.ListenLocalhost(int.Parse(port)); // Bind to the specified port
 });
 
@@ -107,31 +104,31 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("log.txt", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(1), rollingInterval: RollingInterval.Hour)
     .WriteTo.SignalR(app.Services.GetRequiredService<IHubContext<NotificationHub>>())
     .CreateLogger();
-// Serve static files
-app.UseStaticFiles(new StaticFileOptions
-{
-    ServeUnknownFileTypes = true, // Serve files with unknown extensions
-    DefaultContentType = "application/javascript", // Default MIME type if unknown
-    OnPrepareResponse = ctx =>
-    {
-        // Ensure proper MIME type for .js and .css files
-        var fileExtension = Path.GetExtension(ctx.File.Name);
-        if (fileExtension == ".js")
-        {
-            ctx.Context.Response.ContentType = "application/javascript";
-        }
-        else if (fileExtension == ".css")
-        {
-            ctx.Context.Response.ContentType = "text/css";
-        }
-    }
-});
 
+// Serve static files under wwwroot/dashboard/dist
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "dashboard", "dist", "assets")),
-    RequestPath = "/dashboard/assets"
+        Path.Combine(builder.Environment.WebRootPath, "dashboard", "dist")),
+    RequestPath = "/dashboard"
+});
+
+// Explicitly map /dashboard/favicon.ico to the correct file
+app.Map("/dashboard/favicon.ico", appBuilder =>
+{
+    appBuilder.Run(async context =>
+    {
+        var filePath = Path.Combine(builder.Environment.WebRootPath, "dashboard", "dist", "favicon.ico");
+        if (System.IO.File.Exists(filePath))
+        {
+            context.Response.ContentType = "image/x-icon";
+            await context.Response.SendFileAsync(filePath);
+        }
+        else
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+        }
+    });
 });
 
 // Fallback to index.html for SPA routes
@@ -189,11 +186,6 @@ applicationLifetime.ApplicationStarted.Register(() =>
             Console.WriteLine($"Application is running on: {address}");
         }
     }
-    else
-    {
-        Console.WriteLine("Could not determine server addresses.");
-    }
-
     // Optional: Log environment
     Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
     Console.WriteLine($"Application started successfully.");
@@ -204,42 +196,3 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
-
-public class SignalRSink : ILogEventSink, IDisposable
-{
-    private readonly IFormatProvider _formatProvider;
-    private readonly IHubContext<NotificationHub> _hubContext;
-
-    public SignalRSink(IHubContext<NotificationHub> hubContext, IFormatProvider formatProvider)
-    {
-        _hubContext = hubContext;
-        _formatProvider = formatProvider;
-    }
-
-    public void Emit(LogEvent logEvent)
-    {
-        // Format the log message
-        var message = logEvent.RenderMessage(_formatProvider);
-
-        // Send the message to all connected SignalR clients
-        Task.Run(() =>
-            _hubContext.Clients.All.SendAsync(NotificationHub.RECEIVE_LOG_EVENT, logEvent.Level.ToString(), message, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
-        );
-    }
-
-    public void Dispose()
-    {
-        // Cleanup resources if necessary
-    }
-}
-
-public static class SignalRLoggerConfigurationExtensions
-{
-    public static LoggerConfiguration SignalR(
-        this LoggerSinkConfiguration loggerSinkConfiguration,
-        IHubContext<NotificationHub> hubContext,
-        IFormatProvider formatProvider = null)
-    {
-        return loggerSinkConfiguration.Sink(new SignalRSink(hubContext, formatProvider));
-    }
-}
