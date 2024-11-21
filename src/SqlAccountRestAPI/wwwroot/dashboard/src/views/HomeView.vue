@@ -20,8 +20,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 const selectedKeys = ref<string[]>(['1']);
-// TODO: display list of log histories files so people can see the log histories and also the real-time log
-// TODO: improve UX for this page
 </script>
 
 <style scoped></style>
