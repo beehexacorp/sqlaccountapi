@@ -8,6 +8,8 @@
     "moduleResolution": "node", // For resolving node modules
     "target": "ESNext",
     "rootDir": "../",
+    "jsx": "preserve", // or "react" depending on your setup
+    "jsxImportSource": "vue",
     "forceConsistentCasingInFileNames": true,
     "lib": [
       "ESNext",

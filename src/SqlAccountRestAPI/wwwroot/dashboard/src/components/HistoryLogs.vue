@@ -8,123 +8,108 @@
                 <a-col v-for="(h, hix) in histories" :key="hix" :xs="24" :sm="12" :md="12" :lg="6" :xl="4"
                     class="gutter-row">
                     <div style="padding: 5px">
-                        <a href="javascript:void(0)" @click="() => onReadLogDetail(h)">{{ h.displayName }}</a>
+                        <a href="javascript:void(0)" @click="() => onReadLogDetail(h)">
+                            {{ h.displayName }}
+                        </a>
                     </div>
                 </a-col>
             </a-row>
         </a-card>
 
         <!-- Drawer for Log Detail -->
-        <a-drawer :title="`${selectedLogDetail?.displayName} (${selectedLogDetail?.filename})`"
-            :visible="isDrawerVisible" :width="800" @close="isDrawerVisible = false">
+        <a-drawer :visible="isDrawerVisible" :width="800" @close="isDrawerVisible = false">
+            <template #title>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>
+                        {{ selectedLogDetail?.displayName }} ({{ selectedLogDetail?.filename }})
+                    </span>
+                    <a-button type="link" style="margin-left: auto;" @click="handleDownload">
+                        <DownloadOutlined /> Download
+                    </a-button>
+                </div>
+            </template>
             <pre style="text-align: left; width: 100%;">{{ logContent }}</pre>
         </a-drawer>
     </div>
-
 </template>
+
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import msgpack from "msgpack-lite";
 import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
+import {
+    fetchHistoryLogs,
+    fetchLogDetail,
+    downloadLogFile,
+    LogEntry,
+} from '@/services/logService';
 
 // Extend Day.js with advanced format for ordinal dates
 dayjs.extend(advancedFormat);
 
-const formatDate = (date: dayjs.Dayjs) => {
-    if (!date) return '';
-    return date.format('MMM Do, YYYY'); // Example: Jul 24th, 2024
-};
-const selectedDate = ref<Dayjs>(dayjs());
+const formatDate = (date: dayjs.Dayjs) =>
+    date ? date.format('MMM Do, YYYY') : ''; // Example: Jul 24th, 2024
+
+const selectedDate = ref(dayjs());
 const defaultDate = dayjs();
-// Drawer states
 const isDrawerVisible = ref(false);
 const logContent = ref<string>('');
-const selectedLogDetail = ref<{ filename: string; displayName: string }>()
+const selectedLogDetail = ref<LogEntry | null>(null);
+const histories = ref<LogEntry[]>([]);
 
-// History logs (array of { filename: string, displayName: string })
-const histories = ref<{ filename: string; displayName: string }[]>([]);
+// Helper to display a notification message
+const showMessage = (type: 'success' | 'error', content: string) => {
+    message[type]({
+        content,
+        duration: 10
+    });
+};
 
 // Fetch history logs based on the selected date
-const fetchHistoryLogs = async () => {
+const updateHistoryLogs = async () => {
     try {
-        const unixTimestamp = selectedDate.value.valueOf(); // Unix timestamp in milliseconds
-        const endpoint = `api/history/logs?ts=${unixTimestamp}`
-
-        // @ts-ignore
-        const apiUrl = import.meta.env.VITE_SQL_ACCOUNT_API_URL ? `${import.meta.env.VITE_SQL_ACCOUNT_API_URL}/${endpoint}` : `/${endpoint}`;
-
-        const response = await fetch(apiUrl, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error fetching logs: ${response.statusText}`);
-        }
-
-        const data: { filename: string }[] = await response.json() as any;
-
-        // Transform filenames into the desired display format
-        histories.value = data.map((log) => {
-            const match = log.filename.match(
-                /^log(\d{4})(\d{2})(\d{2})(\d{2})\.txt$/
-            );
-            if (match) {
-                const [, year, month, day, hour] = match;
-                const logDate = dayjs(`${year}-${month}-${day}T${hour}:00`);
-                return {
-                    filename: log.filename,
-                    displayName: logDate.format("MMM Do, YYYY h A"),
-                };
-            }
-            return {
-                filename: log.filename,
-                displayName: log.filename, // Fallback if filename doesn't match pattern
-            };
-        });
+        const timestamp = selectedDate.value.valueOf();
+        histories.value = await fetchHistoryLogs(timestamp);
     } catch (error) {
-        console.error("Failed to fetch history logs:", error);
+        showMessage('error', 'Failed to fetch history logs. Please try again later.');
+        console.error(error);
         histories.value = [];
     }
 };
-const onReadLogDetail = async (history: { filename: string; displayName: string }) => {
-    const endpoint = `api/history/log-detail?fn=${encodeURIComponent(history.filename)}`
 
-    // @ts-ignore
-    const apiUrl = import.meta.env.VITE_SQL_ACCOUNT_API_URL ? `${import.meta.env.VITE_SQL_ACCOUNT_API_URL}/${endpoint}` : `/${endpoint}`;
-    const response = await fetch(apiUrl, {
-        headers: {
-            Accept: "application/x-msgpack",
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to fetch log file: ${response.statusText}`);
+const onReadLogDetail = async (history: LogEntry) => {
+    try {
+        const content = await fetchLogDetail(history.filename);
+        logContent.value = content;
+        selectedLogDetail.value = history;
+        isDrawerVisible.value = true;
+    } catch (error) {
+        showMessage('error', 'Error fetching log detail. Please try again later.');
+        console.error(error);
     }
-
-    // Parse the MessagePack response
-    const buffer = await response.arrayBuffer();
-    const decodedContent = msgpack.decode(new Uint8Array(buffer));
-
-    // Set the content and open the drawer
-    logContent.value = decodedContent as string;
-    isDrawerVisible.value = true;
-    selectedLogDetail.value = history
-    return decodedContent;
-}
-const onDateChange = (date: dayjs.Dayjs) => {
-    if (!date) {
-        return;
-    }
-    selectedDate.value = date; // Update the selected date
-    fetchHistoryLogs(); // Fetch logs for the selected date
 };
-// Lifecycle hook
-onMounted(() => {
-    fetchHistoryLogs(); // Fetch logs on mount
-});
+
+const handleDownload = async () => {
+    if (!selectedLogDetail.value) return;
+    try {
+        await downloadLogFile(selectedLogDetail.value.filename);
+        showMessage('success', 'File downloaded successfully!');
+    } catch (error) {
+        showMessage('error', 'Error downloading log file. Please try again later.');
+        console.error(error);
+    }
+};
+
+const onDateChange = () => {
+    updateHistoryLogs();
+};
+
+// Fetch logs on mount
+onMounted(updateHistoryLogs);
 </script>
+
+<style scoped>
+/* Add any necessary styles */
+</style>

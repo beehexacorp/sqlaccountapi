@@ -8,17 +8,28 @@
     "playwright.config.*",
     "src/**/*",
     "src/**/*.d.ts",
-    "src/*"
+    "src/*",
+    "vetur.config.js"
   ],
   "compilerOptions": {
+    "baseUrl": "./",
     "composite": true,
     "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "esnext",
     "module": "esnext",
+    "jsx": "preserve", // or "react" depending on your setup
+    "jsxImportSource": "vue",
     "lib": [
-      "ESNext"
+      "ESNext",
+      "dom"
     ],
+    "paths": {
+      "@/*": [
+        "src/*"
+      ] // Ensure this line exists
+    },
     "moduleResolution": "Bundler",
     "types": [
       "node",

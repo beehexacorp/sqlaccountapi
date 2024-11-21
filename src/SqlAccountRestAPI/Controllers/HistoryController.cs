@@ -51,11 +51,51 @@ public class HistoryController(ILogger<HistoryController> logger) : ControllerBa
             return NotFound($"File '{fileName}' not found.");
         }
 
-        // Read the file content
-        var content = System.IO.File.ReadAllText(filePath, Encoding.UTF8);
+        string content = ReadLogFileContent(filePath);
         return Ok(content);
     }
 
+
+    [HttpGet("download")]
+    public IActionResult Download([FromQuery(Name = "fn")][Required] string fileName)
+    {
+        if (string.IsNullOrEmpty(fileName))
+        {
+            return BadRequest($"Filename (fileName) is required.");
+        }
+
+        // Get the current working directory
+        var appDirectory = Directory.GetCurrentDirectory();
+
+        // Construct the full path to the file
+        var filePath = Path.Combine(appDirectory, fileName);
+
+        // Check if the file exists
+        if (!System.IO.File.Exists(filePath))
+        {
+            return NotFound($"File '{fileName}' not found.");
+        }
+
+        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+
+        // Return the file as a downloadable attachment
+        return File(fileStream, "text/plain", fileName);
+    }
+    private string ReadLogFileContent(string filePath)
+    {
+        try
+        {
+            using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var reader = new StreamReader(fileStream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+        catch (IOException ex)
+        {
+            throw new InvalidOperationException($"Failed to read log file: {ex.Message}", ex);
+        }
+    }
     private bool IsFileDateMatch(string filePath, DateTime targetDate)
     {
         // Extract date and hour from the filename

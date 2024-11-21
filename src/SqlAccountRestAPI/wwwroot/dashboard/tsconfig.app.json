@@ -3,7 +3,8 @@
   "include": [
     "env.d.ts",
     "src/**/*",
-    "src/*"
+    "src/*", 
+    "vetur.config.js"
   ],
   "exclude": [
     "src/**/__tests__/*"
@@ -14,14 +15,19 @@
     "target": "esnext", // or later (es2022, esnext)
     "module": "esnext", // Required for `import.meta`
     "moduleResolution": "node", // For resolving node modules
-    "baseUrl": ".",
-    "jsx": "preserve",
+    "baseUrl": "./",
+    "jsx": "preserve", // or "react" depending on your setup
+    "jsxImportSource": "vue",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
       "@/*": [
-        "./src/*"
+        "src/*"
       ]
-    }
+    },
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
   }
 }

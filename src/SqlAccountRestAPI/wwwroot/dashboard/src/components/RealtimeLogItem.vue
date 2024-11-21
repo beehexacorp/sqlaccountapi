@@ -7,11 +7,7 @@
             <div>{{ moment(source.ts).format("MMM DD, YYYY HH:mm:ss.SSS A") }}</div>
         </a-col>
         <a-col flex="auto" style="padding: 0px 20px;">
-            <div>
-                <pre style="text-align: left; width: 100%;">
-                    {{ source.message }}
-                </pre>
-            </div>
+            <pre style="text-align: left; width: 100%;">{{ source.message }}</pre>
         </a-col>
     </a-row>
 </template>

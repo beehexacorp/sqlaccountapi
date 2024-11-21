@@ -102,7 +102,7 @@ var app = builder.Build();
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console()
-    .WriteTo.File("log.txt", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(5), rollingInterval: RollingInterval.Hour)
+    .WriteTo.File("log.txt", shared: true, flushToDiskInterval: TimeSpan.FromSeconds(1), rollingInterval: RollingInterval.Hour)
     .WriteTo.SignalR(app.Services.GetRequiredService<IHubContext<NotificationHub>>())
     .CreateLogger();
 // Serve static files

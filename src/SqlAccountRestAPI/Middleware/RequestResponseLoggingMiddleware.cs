@@ -29,7 +29,7 @@ namespace SqlAccountRestAPI.Middleware
         private async Task LogRequest(HttpContext context)
         {
             // Allow the request body to be read multiple times
-            context.Request.EnableBuffering(); 
+            context.Request.EnableBuffering();
 
             var request = context.Request;
             var requestBody = "";
@@ -40,7 +40,7 @@ namespace SqlAccountRestAPI.Middleware
                 {
                     requestBody = await reader.ReadToEndAsync();
                     // Reset body stream position for further processing
-                    context.Request.Body.Position = 0; 
+                    context.Request.Body.Position = 0;
                 }
             }
 
@@ -61,18 +61,22 @@ namespace SqlAccountRestAPI.Middleware
             context.Response.Body = responseBodyStream;
 
             // Continue processing the request
-            await _next(context); 
+            await _next(context);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-            var logMessage = new StringBuilder();
-            logMessage.AppendLine("HTTP Response Information:");
-            logMessage.AppendLine($"Status Code: {context.Response.StatusCode}");
-            logMessage.AppendLine($"Response Body: {responseBody}");
+            var ignoredSegments = new List<string> { "/api/history/log-detail", "/api/history/download" };
+            if (!ignoredSegments.Any(s => context.Request.Path.StartsWithSegments(s)))
+            {
+                var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
+                var logMessage = new StringBuilder();
+                logMessage.AppendLine("HTTP Response Information:");
+                logMessage.AppendLine($"Status Code: {context.Response.StatusCode}");
+                logMessage.AppendLine($"Response Body: {responseBody}");
 
-            Log.Information(logMessage.ToString());
+                Log.Information(logMessage.ToString());
+            }
 
             await responseBodyStream.CopyToAsync(originalBodyStream);
         }

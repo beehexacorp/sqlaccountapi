@@ -7,6 +7,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AAlert: typeof import('ant-design-vue/es')['Alert']
+    AButton: typeof import('ant-design-vue/es')['Button']
     ACard: typeof import('ant-design-vue/es')['Card']
     ACol: typeof import('ant-design-vue/es')['Col']
     ADatePicker: typeof import('ant-design-vue/es')['DatePicker']
@@ -20,6 +22,7 @@ declare module 'vue' {
     AMenuItem: typeof import('ant-design-vue/es')['MenuItem']
     ARow: typeof import('ant-design-vue/es')['Row']
     HistoryLogs: typeof import('./src/components/HistoryLogs.vue')['default']
+    LogDetailTitleDrawer: typeof import('./src/components/LogDetailTitleDrawer.vue')['default']
     RealtimeLog: typeof import('./src/components/RealtimeLog.vue')['default']
     RealtimeLogItem: typeof import('./src/components/RealtimeLogItem.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

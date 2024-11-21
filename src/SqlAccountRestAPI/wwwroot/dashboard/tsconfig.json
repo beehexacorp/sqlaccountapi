@@ -13,5 +13,9 @@
     {
       "path": "./nightwatch/tsconfig.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+  }
 }
