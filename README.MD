@@ -4,6 +4,24 @@ This project provides REST APIs to connect to **SQL Account** via its SDK. It al
 
 ---
 
+## Table of Contents
+
+- [SQL Account Rest API](#sql-account-rest-api)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+    - [Controllers Summary](#controllers-summary)
+  - [Prerequisites](#prerequisites)
+  - [Usage](#usage)
+    - [Deployment](#deployment)
+    - [Local Development](#local-development)
+    - [Security Notes](#security-notes)
+  - [Development \& Contribution](#development--contribution)
+  - [Deployment Recommendations](#deployment-recommendations)
+  - [Contributors](#contributors)
+  - [License](#license)
+
+---
+
 ## Features
 
 - **REST APIs for Integration**: Provides endpoints to interact with SQL Account data using SQL queries.
@@ -93,8 +111,6 @@ To run the project locally for debugging and implementation:
 
 3. **Hot Reloading**:
    - Both the frontend and backend support hot-reloading. You can edit files in either codebase, and changes will apply automatically without restarting the application.
-
----
 
 ### Security Notes
 
