@@ -26,9 +26,10 @@ jobs:
 
       # Step 3: Restore and build .NET Core backend
       - name: Build .NET Core backend
+        working-directory: src/SqlAccountRestAPI/
         run: |
-          dotnet restore src/SqlAccountRestAPI/
-          dotnet build src/SqlAccountRestAPI/ --configuration Release
+          dotnet restore
+          dotnet build --configuration Release
         env:
           CODEQL_EXTRACTOR_CSHARP_TRACING: "1"
 
@@ -40,8 +41,8 @@ jobs:
 
       # Step 5: Install frontend dependencies and build Vue.js (TypeScript)
       - name: Install and build Vue.js frontend
+        working-directory: src/SqlAccountRestAPI/wwwroot/dashboard
         run: |
-          cd src/SqlAccountRestAPI/wwwroot/dashboard
           npm install
           npm run build
 
