@@ -6,55 +6,50 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 3 * * 1' # Weekly at 3 am on Monday
+    - cron: '0 3 * * 1'
 
 jobs:
   analyze:
-    name: Analyze
     runs-on: ubuntu-latest
     env:
-      ACTIONS_STEP_DEBUG: true  # Enable debug logging
+      ACTIONS_STEP_DEBUG: true
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up .NET Core environment
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
-      # Step 3: Restore and build .NET Core backend
-      - name: Build .NET Core backend
+      - name: Restore and build .NET Core backend
         working-directory: src/SqlAccountRestAPI/
         run: |
           dotnet restore
-          dotnet build --configuration Release
+          dotnet build --configuration Release --output ./bin/Release/net8.0
         env:
           CODEQL_EXTRACTOR_CSHARP_TRACING: "1"
 
-      # Step 4: Set up Node.js (for Vue.js frontend)
+      - name: Verify Build Output
+        run: ls -R src/SqlAccountRestAPI/bin/Release/net8.0
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # Adjust the Node.js version to match your project
+          node-version: '18'
 
-      # Step 5: Install frontend dependencies and build Vue.js (TypeScript)
       - name: Install and build Vue.js frontend
         working-directory: src/SqlAccountRestAPI/wwwroot/dashboard
         run: |
           npm install
           npm run build
 
-      # Step 6: Initialize CodeQL
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          config-file: codeql-config.yml
           languages: csharp,javascript
+          config-file: codeql-config.yml
 
-      # Step 7: Perform CodeQL analysis
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
