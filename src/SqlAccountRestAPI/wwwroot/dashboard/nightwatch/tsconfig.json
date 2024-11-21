@@ -4,17 +4,19 @@
     "composite": true,
     "noEmit": true,
     "tsBuildInfoFile": "../node_modules/.tmp/tsconfig.nightwatch.tsbuildinfo",
+    "module": "esnext", // Required for `import.meta`
+    "moduleResolution": "node", // For resolving node modules
     "target": "ESNext",
-    "module": "commonjs",
-    "moduleResolution": "node",
     "rootDir": "../",
+    "forceConsistentCasingInFileNames": true,
     "lib": [
       "ESNext",
       "dom"
     ],
     "types": [
       "nightwatch",
-      "node"
+      "node",
+      "vite/client"
     ]
   },
   "include": [

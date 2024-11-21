@@ -15,6 +15,9 @@ using System.Text.Json.Serialization;
 using Serilog.Core;
 using Microsoft.AspNetCore.SignalR;
 using Serilog.Configuration;
+using MessagePack.Resolvers;
+using MessagePack.AspNetCoreMvcFormatter;
+
 
 var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
@@ -38,11 +41,18 @@ builder.WebHost.ConfigureKestrel(options =>
 
 builder.WebHost.UseIISIntegration();
 
-builder.Services.AddControllers().AddJsonOptions(x =>
-{
-    // serialize enums as strings in api responses (e.g. Role)
-    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-}); ;
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(x =>
+    {
+        // serialize enums as strings in api responses (e.g. Role)
+        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    })
+    .AddMvcOptions(option =>
+    {
+        option.OutputFormatters.Add(new MessagePackOutputFormatter(ContractlessStandardResolver.Options));
+        option.InputFormatters.Add(new MessagePackInputFormatter(ContractlessStandardResolver.Options));
+    }); ;
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

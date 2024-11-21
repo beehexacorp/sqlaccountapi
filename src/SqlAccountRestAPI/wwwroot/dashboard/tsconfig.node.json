@@ -22,7 +22,7 @@
     "moduleResolution": "Bundler",
     "types": [
       "node",
-      "vite/client",
+      "vite/client"
     ]
   }
 }
