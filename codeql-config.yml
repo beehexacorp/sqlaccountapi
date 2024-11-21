@@ -1,6 +1,7 @@
 # codeql-config.yml
 paths:
-  - src/SqlAccountRestAPI/wwwroot/dashboard/ # Include source code
+  - src/
+  - src/SqlAccountRestAPI/
 
 paths-ignore:
   - src/SqlAccountRestAPI/wwwroot/dashboard/dist/
@@ -10,3 +11,6 @@ paths-ignore:
   - obj/
   - src/SqlAccountRestAPI/obj/
   - src/SqlAccountRestAPI/bin/
+
+queries:
+  - use: security-and-quality
