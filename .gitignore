@@ -13,3 +13,4 @@ node_modules
 dist
 .env
 vite.config.ts.*.mjs
+release

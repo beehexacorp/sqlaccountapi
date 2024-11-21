@@ -1,19 +1,17 @@
 import msgpack from "msgpack-lite";
+import {useServiceEndpoint} from "@/utils/serviceEndpoint";
 
 export interface LogEntry {
   filename: string;
   displayName: string;
 }
 
+const serviceEndpointHandler = useServiceEndpoint()
 /**
  * Fetch history logs for a specific date (timestamp in milliseconds).
  */
 export const fetchHistoryLogs = async (timestamp: number): Promise<LogEntry[]> => {
-  const endpoint = `api/history/logs?ts=${timestamp}`;
-  const apiUrl = import.meta.env.VITE_SQL_ACCOUNT_API_URL
-    ? `${import.meta.env.VITE_SQL_ACCOUNT_API_URL}/${endpoint}`
-    : `/${endpoint}`;
-
+  const apiUrl = serviceEndpointHandler.normalize(`api/history/logs?ts=${timestamp}`);
   const response = await fetch(apiUrl, {
     method: "GET",
     headers: {
@@ -53,11 +51,7 @@ export const fetchHistoryLogs = async (timestamp: number): Promise<LogEntry[]> =
  * Fetch log detail for a specific file.
  */
 export const fetchLogDetail = async (filename: string): Promise<string> => {
-  const endpoint = `api/history/log-detail?fn=${encodeURIComponent(filename)}`;
-  const apiUrl = import.meta.env.VITE_SQL_ACCOUNT_API_URL
-    ? `${import.meta.env.VITE_SQL_ACCOUNT_API_URL}/${endpoint}`
-    : `/${endpoint}`;
-
+  const apiUrl = serviceEndpointHandler.normalize(`api/history/log-detail?fn=${encodeURIComponent(filename)}`);
   const response = await fetch(apiUrl, {
     headers: {
       Accept: "application/x-msgpack",
@@ -78,11 +72,7 @@ export const fetchLogDetail = async (filename: string): Promise<string> => {
  * Download a log file by filename.
  */
 export const downloadLogFile = async (filename: string): Promise<void> => {
-  const endpoint = `api/history/download?fn=${encodeURIComponent(filename)}`;
-  const apiUrl = import.meta.env.VITE_SQL_ACCOUNT_API_URL
-    ? `${import.meta.env.VITE_SQL_ACCOUNT_API_URL}/${endpoint}`
-    : `/${endpoint}`;
-
+  const apiUrl = serviceEndpointHandler.normalize(`api/history/download?fn=${encodeURIComponent(filename)}`);
   const response = await fetch(apiUrl);
 
   if (!response.ok) {

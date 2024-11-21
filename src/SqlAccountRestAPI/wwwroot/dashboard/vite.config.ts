@@ -50,14 +50,43 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // Group dependencies into chunks
+            
+            // Handle shared utilities of ant-design-vue
+            // Dynamically split ant-design-vue components
             if (id.includes('ant-design-vue')) {
               return 'ant-design-vue';
             }
+
+            // Force splitting of Vue core libraries
             if (id.includes('@vue')) {
               return 'vue-core';
             }
-            return 'vendor'; // Default vendor chunk
+
+            // Force splitting of other large dependencies
+            if (id.includes('moment')) {
+              return 'moment';
+            }
+            if (id.includes('lodash')) {
+              return 'lodash';
+            }
+            if (id.includes('axios')) {
+              return 'axios';
+            }
+
+            // Group dependencies from the same namespace
+            const namespaceMatch = id.match(/node_modules\/@([^/]+)\//);
+            if (namespaceMatch) {
+              return `vendor-${namespaceMatch[1]}`;
+            }
+
+            // Group other libraries by their folder
+            const libraryMatch = id.match(/node_modules\/([^/]+)\//);
+            if (libraryMatch) {
+              return `vendor-${libraryMatch[1]}`;
+            }
+
+            // Default vendor chunk for remaining libraries
+            return 'vendor';
           }
         },
         chunkFileNames: 'chunks/[name]-[hash].js', // Specify the output folder for chunks
@@ -65,6 +94,10 @@ export default defineConfig({
     },
     outDir: 'dist', // Ensure the output folder matches the base
     assetsDir: 'assets',
+  },
+  optimizeDeps: {
+    include: ['ant-design-vue'],
+    exclude: ['@ant-design/icons-vue'],
   },
   resolve: {
     alias: {
