@@ -14,19 +14,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      # Step 1: Checkout the repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+      # Step 2: Set up .NET Core environment
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
         with:
-          config-file: codeql-config.yml
-          languages: csharp,javascript
+          dotnet-version: '8.0.x'
 
-      - name: Build the Codebase
+      # Step 3: Restore and build .NET Core backend
+      - name: Build .NET Core backend
         run: |
           dotnet restore src/SqlAccountRestAPI/
           dotnet build src/SqlAccountRestAPI/ --configuration Release
 
+      # Step 4: Set up Node.js (for Vue.js frontend)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Adjust the Node.js version to match your project
+
+      # Step 5: Install frontend dependencies and build Vue.js (TypeScript)
+      - name: Install and build Vue.js frontend
+        run: |
+          cd src/SqlAccountRestAPI/wwwroot/dashboard
+          npm install
+          npm run build
+
+      # Step 6: Initialize CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          config-file: .github/codeql/codeql-config.yml
+          languages: csharp,javascript
+
+      # Step 7: Perform CodeQL analysis
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
