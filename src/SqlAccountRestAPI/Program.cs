@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.SignalR;
 using Serilog.Configuration;
 using MessagePack.Resolvers;
 using MessagePack.AspNetCoreMvcFormatter;
+using Microsoft.Extensions.FileProviders;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,7 @@ var port = args.Length > 0 ? args[0] :
 // Configure Kestrel to use the dynamic port
 builder.WebHost.ConfigureKestrel(options =>
 {
+    Console.WriteLine(@$"Listening to {port}");
     options.ListenLocalhost(int.Parse(port)); // Bind to the specified port
 });
 
@@ -125,6 +127,13 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "dashboard", "dist", "assets")),
+    RequestPath = "/dashboard/assets"
+});
+
 // Fallback to index.html for SPA routes
 var hubBuilder = app.MapHub<NotificationHub>("/notification-hub"); // Endpoint for SignalR hub
 if (builder.Environment.IsDevelopment())
@@ -171,7 +180,24 @@ applicationLifetime.ApplicationStopped.Register(() =>
 
 applicationLifetime.ApplicationStarted.Register(() =>
 {
-    // TODO: login with SQL account if there is a cached username & password
+    // Output the port and URLs the application is running on
+    var serverAddressesFeature = app.Services.GetService<Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature>();
+    if (serverAddressesFeature != null)
+    {
+        foreach (var address in serverAddressesFeature.Addresses)
+        {
+            Console.WriteLine($"Application is running on: {address}");
+        }
+    }
+    else
+    {
+        Console.WriteLine("Could not determine server addresses.");
+    }
+
+    // Optional: Log environment
+    Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
+    Console.WriteLine($"Application started successfully.");
+
 });
 
 app.UseAuthorization();

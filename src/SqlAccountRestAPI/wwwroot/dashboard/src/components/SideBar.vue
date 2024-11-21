@@ -2,7 +2,7 @@
     <a-menu :selectedKeys="selectedKeys" theme="dark" mode="inline">
         <a-menu-item key="1">
             <bar-chart-outlined />
-            <span class="nav-text"><a href="/dashboard/">Home</a></span>
+            <span class="nav-text"><a href="/dashboard/">Logs</a></span>
         </a-menu-item>
         <a-menu-item key="2">
             <video-camera-outlined />

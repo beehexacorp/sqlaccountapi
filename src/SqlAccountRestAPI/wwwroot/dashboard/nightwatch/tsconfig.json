@@ -8,6 +8,12 @@
     "moduleResolution": "node", // For resolving node modules
     "target": "ESNext",
     "rootDir": "../",
+    "baseUrl": "../",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ] // Maps @ to src
+    },
     "jsx": "preserve", // or "react" depending on your setup
     "jsxImportSource": "vue",
     "forceConsistentCasingInFileNames": true,
@@ -24,7 +30,12 @@
   "include": [
     "../node_modules/@nightwatch/**/*",
     "../src/**/*",
+    "../src/*",
     "../tests/e2e/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ],
   "ts-node": {
     "transpileOnly": true

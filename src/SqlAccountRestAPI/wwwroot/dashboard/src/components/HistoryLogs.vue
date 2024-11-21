@@ -42,9 +42,9 @@ import { message } from 'ant-design-vue';
 import {
     fetchHistoryLogs,
     fetchLogDetail,
-    downloadLogFile,
-    LogEntry,
+    downloadLogFile
 } from '@/services/logService';
+import type { LogEntry } from '@/services/logService';
 
 // Extend Day.js with advanced format for ordinal dates
 dayjs.extend(advancedFormat);

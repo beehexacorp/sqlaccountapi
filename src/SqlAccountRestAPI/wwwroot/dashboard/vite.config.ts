@@ -5,6 +5,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import nightwatchPlugin from 'vite-plugin-nightwatch';
 import Components from 'unplugin-vue-components/vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import svgLoader from 'vite-svg-loader';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 import * as dotenv from 'dotenv';
@@ -14,16 +15,18 @@ dotenv.config();
 
 console.log("Base Directory", process.env.VITE_BASE || '/dashboard/dist/')
 console.log("Port", Number(process.env.VITE_PORT) || 3000)
+console.log(fileURLToPath(new URL('./src', import.meta.url)));
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.VITE_BASE || '/dashboard/dist/',
+  base: '/dashboard',
   server: {
     port: Number(process.env.VITE_PORT) || 3000,
   },
   plugins: [
     vue(),
     vueJsx(),
+    tsconfigPaths(),
     svgLoader(),
     vueDevTools(),
     nightwatchPlugin(),
@@ -46,6 +49,7 @@ export default defineConfig({
       },
     },
     outDir: 'dist', // Ensure the output folder matches the base
+    assetsDir: 'assets',
   },
   resolve: {
     alias: {
