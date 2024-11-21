@@ -1,0 +1,9 @@
+# codeql-config.yml
+paths:
+  - src/ # Include source code
+
+paths-ignore:
+  - 'obj/**' # Ignore compiled files
+  - 'bin/**' # Ignore binaries
+  - 'GeneratedCode/**' # Ignore generated code
+  - '**/*.Designer.cs' # Ignore designer-generated code
