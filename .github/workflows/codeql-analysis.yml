@@ -47,7 +47,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          config-file: .github/codeql/codeql-config.yml
+          config-file: codeql-config.yml
           languages: csharp,javascript
 
       # Step 7: Perform CodeQL analysis
