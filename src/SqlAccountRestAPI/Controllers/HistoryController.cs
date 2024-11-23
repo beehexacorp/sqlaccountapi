@@ -34,9 +34,10 @@ public class HistoryController(ILogger<HistoryController> logger) : ControllerBa
     [HttpGet("log-detail")]
     public IActionResult GetLogFileContent([FromQuery(Name = "fn")][Required] string fileName)
     {
-        if (string.IsNullOrEmpty(fileName))
+        var illegalPathSegments = new List<string> { "..", "/", "\\" };
+        if (string.IsNullOrWhiteSpace(fileName) || illegalPathSegments.Any(s => fileName.Contains(s)))
         {
-            return BadRequest($"Filename (fileName) is required.");
+            return BadRequest($"Invalid filename (fileName).");
         }
 
         // Get the current working directory
@@ -59,9 +60,10 @@ public class HistoryController(ILogger<HistoryController> logger) : ControllerBa
     [HttpGet("download")]
     public IActionResult Download([FromQuery(Name = "fn")][Required] string fileName)
     {
-        if (string.IsNullOrEmpty(fileName))
+        var illegalPathSegments = new List<string> { "..", "/", "\\" };
+        if (string.IsNullOrWhiteSpace(fileName) || illegalPathSegments.Any(s => fileName.Contains(s)))
         {
-            return BadRequest($"Filename (fileName) is required.");
+            return BadRequest($"Invalid filename (fileName).");
         }
 
         // Get the current working directory
@@ -85,11 +87,9 @@ public class HistoryController(ILogger<HistoryController> logger) : ControllerBa
     {
         try
         {
-            using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (var reader = new StreamReader(fileStream))
-            {
-                return reader.ReadToEnd();
-            }
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var reader = new StreamReader(fileStream);
+            return reader.ReadToEnd();
         }
         catch (IOException ex)
         {

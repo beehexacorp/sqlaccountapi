@@ -65,7 +65,7 @@ namespace SqlAccountRestAPI.Middleware
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-            var ignoredSegments = new List<string> { "/api/history/log-detail", "/api/history/download" };
+            var ignoredSegments = new List<string> { "/api/history/log-detail", "/api/history/download", "/dashboard" };
             if (!ignoredSegments.Any(s => context.Request.Path.StartsWithSegments(s)))
             {
                 var responseBody = await new StreamReader(context.Response.Body).ReadToEndAsync();
