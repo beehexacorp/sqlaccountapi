@@ -22,13 +22,15 @@
                     </span>
                 </div>
             </template>
-            <div v-if="selectedBizObjectDetail?.dataset?.length">
-                <div v-for="(item, index) in selectedBizObjectDetail.dataset" :key="index">
-                    {{ item.name }}
+            <div v-if="selectedBizObjectDetail && selectedBizObjectDetail.datasets">  
+                <div v-for="(d, didx) in selectedBizObjectDetail.datasets" :key="didx">
+                    <strong>{{ d.name }}</strong>
+                    <div v-for="(f,fidx) in d.fields" :key="fidx">
+                        {{ f }}
+                    </div>
                 </div>
             </div>
             <a-empty v-else></a-empty>
-
 
             
         </a-drawer>

@@ -6,7 +6,7 @@ export interface BizObjectEntry {
 }
 export interface BizObjectDetail {
   name: string;
-  dataset: BizObjectDataset[]
+  datasets: BizObjectDataset[]
 }
 export interface BizObjectDataset {
   name: string;
