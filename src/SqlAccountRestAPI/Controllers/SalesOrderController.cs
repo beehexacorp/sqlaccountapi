@@ -13,20 +13,20 @@ namespace SqlAccountRestAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SaleOrderController : ControllerBase
+public class SalesOrderController : ControllerBase
 {
-    private readonly SqlAccountingSaleOrderHelper _saleOrderHelper;
-    public SaleOrderController(SqlAccountingSaleOrderHelper saleOrderHelper)
+    private readonly SqlAccountingSalesOrderHelper _salesOrderHelper;
+    public SalesOrderController(SqlAccountingSalesOrderHelper salesOrderHelper)
     {
-        _saleOrderHelper = saleOrderHelper;
+        _salesOrderHelper = salesOrderHelper;
     }
 
     [HttpGet("docno/{documentNumber}")]
-    public IActionResult GetByDocno([FromRoute] string documentNumber = "")
+    public IActionResult GetByDocno([FromRoute] string documentNumber = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _saleOrderHelper.GetByDocno(documentNumber);
+            var result = _salesOrderHelper.GetByDocno(documentNumber, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -40,11 +40,11 @@ public class SaleOrderController : ControllerBase
         }
     }
     [HttpGet("days-ago/{days}")]
-    public IActionResult GetFromDaysAgo([FromRoute] int days = 0)
+    public IActionResult GetFromDaysAgo([FromRoute] int days = 0, [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _saleOrderHelper.GetFromDaysAgo(days);
+            var result = _salesOrderHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -58,11 +58,11 @@ public class SaleOrderController : ControllerBase
         }
     }
     [HttpGet("from-date/{date}")]
-    public IActionResult GetFromDate([FromRoute] string date = "")
+    public IActionResult GetFromDate([FromRoute] string date = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _saleOrderHelper.GetFromDate(date);
+            var result = _salesOrderHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)

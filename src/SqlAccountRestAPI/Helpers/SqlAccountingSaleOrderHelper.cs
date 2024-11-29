@@ -10,49 +10,67 @@ using SqlAccountRestAPI.Core;
 
 namespace SqlAccountRestAPI.Helpers;
 
-public class SqlAccountingSaleOrderHelper
+public class SqlAccountingSalesOrderHelper
 {
     private SqlAccountingORM _microORM;
-    public SqlAccountingSaleOrderHelper(SqlAccountingORM microORM)
+    public SqlAccountingSalesOrderHelper(SqlAccountingORM microORM)
     {
         _microORM = microORM;
     }
 
-    public IEnumerable<IDictionary<string, object>> GetByDocno(string documentNumber){
-        var mainFields = _microORM.GetFields("SL_SO").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
+    public IEnumerable<IDictionary<string, object>> GetByDocno(string documentNumber, int limit, int offset){
+        var mainFields = _microORM.GetFields("SL_SO", limit, offset).Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
 
         var sql = $@"SELECT * 
-FROM SL_SO
-LEFT JOIN SL_SODTL ON SL_SO.DOCKEY = SL_SODTL.DOCKEY 
-WHERE SL_SO.DOCNO ='{documentNumber}'
+FROM (
+    SELECT *
+    FROM SL_SO
+    WHERE SL_SO.DOCNO ='{documentNumber}'
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) SL_SO_LIMIT
+LEFT JOIN SL_SODTL 
+    ON SL_SO_LIMIT.DOCKEY = SL_SODTL.DOCKEY 
 ";
            
-        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsDocDetail");
+        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsDocDetail", 0, offset);
     }
-    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days){
-        var customerFields = _microORM.GetFields("SL_SO").Distinct().ToHashSet(); 
+    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days, int limit, int offset){
+        var mainFields = _microORM.GetFields("SL_SO", limit, offset).Distinct().ToHashSet(); 
 
         var date = DateTime.Now.AddDays(-days).ToString("yyyy-MM-dd");
         
         var sql = $@"SELECT * 
-FROM SL_SO
-LEFT JOIN SL_SODTL ON SL_SO.DOCKEY = SL_SODTL.DOCKEY 
-WHERE SL_SO.DOCDATE >= '{date}'
+FROM (
+    SELECT *
+    FROM SL_SO
+    WHERE SL_SO.DOCDATE >= '{date}'
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) SL_SO_LIMIT
+LEFT JOIN SL_SODTL 
+    ON SL_SO_LIMIT.DOCKEY = SL_SODTL.DOCKEY 
 ";
         
            
-        return _microORM.GroupQuery(sql, customerFields, "DOCKEY", "cdsDocDetail");
+        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsDocDetail", 0, offset);
     }
-    public IEnumerable<IDictionary<string, object>> GetFromDate(string date){
-        var customerFields = _microORM.GetFields("SL_SO").Distinct().ToHashSet(); 
+    public IEnumerable<IDictionary<string, object>> GetFromDate(string date, int limit, int offset){
+        var mainFields = _microORM.GetFields("SL_SO", limit, offset).Distinct().ToHashSet(); 
         
         var sql = $@"SELECT * 
-FROM SL_SO
-LEFT JOIN SL_SODTL ON SL_SO.DOCKEY = SL_SODTL.DOCKEY 
-WHERE SL_SO.DOCDATE >= '{date}'
+FROM (
+    SELECT *
+    FROM SL_SO
+    WHERE SL_SO.DOCDATE >= '{date}'
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) SL_SO_LIMIT
+LEFT JOIN SL_SODTL 
+    ON SL_SO_LIMIT.DOCKEY = SL_SODTL.DOCKEY 
 ";
         
            
-        return _microORM.GroupQuery(sql, customerFields, "DOCKEY", "cdsDocDetail");
+        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsDocDetail", 0, offset);
     }
 }

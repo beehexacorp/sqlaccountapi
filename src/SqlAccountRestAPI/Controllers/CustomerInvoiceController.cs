@@ -22,11 +22,11 @@ public class CustomerInvoiceController : ControllerBase
     }
 
     [HttpGet("docno/{documentNumber}")]
-    public IActionResult GetByDocno([FromRoute] string documentNumber = "")
+    public IActionResult GetByDocno([FromRoute] string documentNumber = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _customerInvoiceHelper.GetByDocno(documentNumber);
+            var result = _customerInvoiceHelper.GetByDocno(documentNumber, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -40,11 +40,11 @@ public class CustomerInvoiceController : ControllerBase
         }
     }
     [HttpGet("days-ago/{days}")]
-    public IActionResult GetFromDaysAgo([FromRoute] int days = 0)
+    public IActionResult GetFromDaysAgo([FromRoute] int days = 0, [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _customerInvoiceHelper.GetFromDaysAgo(days);
+            var result = _customerInvoiceHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -58,11 +58,11 @@ public class CustomerInvoiceController : ControllerBase
         }
     }
     [HttpGet("from-date/{date}")]
-    public IActionResult GetFromDate([FromRoute] string date = "")
+    public IActionResult GetFromDate([FromRoute] string date = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _customerInvoiceHelper.GetFromDate(date);
+            var result = _customerInvoiceHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)

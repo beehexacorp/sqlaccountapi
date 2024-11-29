@@ -18,44 +18,62 @@ public class SqlAccountingStockItemTemplateHelper
         _microORM = microORM;
     }
 
-    public IEnumerable<IDictionary<string, object>> GetByCode(string code){
-        var mainFields = _microORM.GetFields("ST_ITEM_TPL").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
+    public IEnumerable<IDictionary<string, object>> GetByCode(string code, int limit, int offset){
+        var mainFields = _microORM.GetFields("ST_ITEM_TPL", limit, offset).Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
 
         var sql = $@"SELECT * 
-FROM ST_ITEM_TPL
-LEFT JOIN ST_ITEM_TPLDTL ON ST_ITEM_TPL.CODE = ST_ITEM_TPLDTL.CODE 
-WHERE ST_ITEM_TPL.CODE ='{code}'
+FROM (
+    SELECT *
+    FROM ST_ITEM_TPL
+    WHERE ST_ITEM_TPL.CODE ='{code}'
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) ST_ITEM_TPL_LIMIT
+LEFT JOIN ST_ITEM_TPLDTL 
+    ON ST_ITEM_TPL_LIMIT.CODE = ST_ITEM_TPLDTL.CODE 
 ";
            
-        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsItemTplDtl");
+        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsItemTplDtl", 0, offset);
     }
-    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days){
-        var customerFields = _microORM.GetFields("ST_ITEM_TPL").Distinct().ToHashSet(); 
+    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days, int limit, int offset){
+        var mainFields = _microORM.GetFields("ST_ITEM_TPL", limit, offset).Distinct().ToHashSet(); 
         
         var currentUnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var convertedUnixTime = currentUnixTime - (days * 86400);
         var sql = $@"SELECT * 
-FROM ST_ITEM_TPL
-LEFT JOIN ST_ITEM_TPLDTL ON ST_ITEM_TPL.CODE = ST_ITEM_TPLDTL.CODE 
-WHERE ST_ITEM_TPL.LASTMODIFIED >= {convertedUnixTime}
+FROM (
+    SELECT *
+    FROM ST_ITEM_TPL
+    WHERE ST_ITEM_TPL.LASTMODIFIED >= {convertedUnixTime}
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) ST_ITEM_TPL_LIMIT
+LEFT JOIN ST_ITEM_TPLDTL 
+    ON ST_ITEM_TPL_LIMIT.CODE = ST_ITEM_TPLDTL.CODE 
 ";
         
            
-        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsItemTplDtl");
+        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsItemTplDtl", 0, offset);
     }
-    public IEnumerable<IDictionary<string, object>> GetFromDate(string date){
-        var customerFields = _microORM.GetFields("ST_ITEM_TPL").Distinct().ToHashSet(); 
+    public IEnumerable<IDictionary<string, object>> GetFromDate(string date, int limit, int offset){
+        var mainFields = _microORM.GetFields("ST_ITEM_TPL", limit, offset).Distinct().ToHashSet(); 
 
         DateTime.TryParse(date, out var parsedDate);
         var convertedUnixTime = new DateTimeOffset(parsedDate).ToUnixTimeSeconds();
         
         var sql = $@"SELECT * 
-FROM ST_ITEM_TPL
-LEFT JOIN ST_ITEM_TPLDTL ON ST_ITEM_TPL.CODE = ST_ITEM_TPLDTL.CODE 
-WHERE ST_ITEM_TPL.LASTMODIFIED >= {convertedUnixTime}
+FROM (
+    SELECT *
+    FROM ST_ITEM_TPL
+    WHERE ST_ITEM_TPL.LASTMODIFIED >= {convertedUnixTime}
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) ST_ITEM_TPL_LIMIT
+LEFT JOIN ST_ITEM_TPLDTL 
+    ON ST_ITEM_TPL_LIMIT.CODE = ST_ITEM_TPLDTL.CODE 
 ";
         
            
-        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsItemTplDtl");
+        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsItemTplDtl", 0, offset);
     }
 }

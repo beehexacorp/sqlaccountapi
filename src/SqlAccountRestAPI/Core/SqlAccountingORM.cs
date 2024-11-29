@@ -36,7 +36,7 @@ public class SqlAccountingORM
         return result;
     }
 
-    public IEnumerable<string> GetFields(string entityType)
+    public IEnumerable<string> GetFields(string entityType, int limit, int offset)
     {
         dynamic app = _factory.GetInstance();
         var fields = app.DBManager.NewDataSet($@"SELECT * 
@@ -102,9 +102,12 @@ FETCH NEXT 1 ROWS ONLY";
     }
     public IEnumerable<IDictionary<string, object>> AsIterator(string sql, IDictionary<string, object?>? @params = null, int offset = 0, int limit = 100)
     {
-        sql = $@"{sql} 
+        if(limit>0){
+            sql = $@"{sql} 
 OFFSET {offset} ROWS 
 FETCH NEXT {limit} ROWS ONLY";
+        }
+        
         var dataset = CreateDataset(sql, @params);
         try
         {
@@ -112,17 +115,10 @@ FETCH NEXT {limit} ROWS ONLY";
             while (!dataset.eof)
             {
                 IEnumerable<dynamic> fields = ItemsIterator(dataset.Fields);
-
-                List<string> check = new List<string> { };
-                foreach (var field in fields){
-                    check.Add(field.FieldName);
-                }
-                
-
                 var item = fields
                 .ToDictionary(
                     field => (string)field.FieldName,
-                    field => field.value
+                    field => field.value ?? ""
                 );
                 dataset.Next();
 
@@ -151,10 +147,12 @@ FETCH NEXT {limit} ROWS ONLY";
         string sql,
         HashSet<string> mainFields,
         string groupBy,
-        string cdsName
+        string cdsName,
+        int limit,
+        int offset
     )
     {
-        var results = AsIterator(sql)
+        var results = AsIterator(sql, null, offset, limit)
             .GroupBy(x => x[groupBy].ToString()!)
             .Select(groupped =>
             {
