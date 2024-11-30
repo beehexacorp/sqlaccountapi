@@ -68,7 +68,7 @@ builder.Services.AddTransient<SqlAccountingBizObjectHelper>();
 builder.Services.AddTransient<SqlAccountingCustomerHelper>();
 builder.Services.AddTransient<SqlAccountingStockItemHelper>();
 builder.Services.AddTransient<SqlAccountingSalesOrderHelper>();
-builder.Services.AddTransient<SqlAccountingSaleInvoiceHelper>();
+builder.Services.AddTransient<SqlAccountingSalesInvoiceHelper>();
 builder.Services.AddTransient<SqlAccountingCustomerInvoiceHelper>();
 builder.Services.AddTransient<SqlAccountingCustomerPaymentHelper>();
 builder.Services.AddTransient<SqlAccountingStockAdjustmentHelper>();

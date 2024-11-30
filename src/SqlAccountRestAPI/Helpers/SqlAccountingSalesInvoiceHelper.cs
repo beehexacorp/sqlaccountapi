@@ -10,10 +10,10 @@ using SqlAccountRestAPI.Core;
 
 namespace SqlAccountRestAPI.Helpers;
 
-public class SqlAccountingSaleInvoiceHelper
+public class SqlAccountingSalesInvoiceHelper
 {
     private SqlAccountingORM _microORM;
-    public SqlAccountingSaleInvoiceHelper(SqlAccountingORM microORM)
+    public SqlAccountingSalesInvoiceHelper(SqlAccountingORM microORM)
     {
         _microORM = microORM;
     }

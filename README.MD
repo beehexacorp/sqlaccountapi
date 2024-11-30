@@ -38,7 +38,7 @@ This project provides REST APIs to connect to **SQL Account** via its SDK. It al
    - Handles business object-related operations.
 3. **CustomerController**:
    - Provides customer-related CRUD operations.
-4. **SaleInvoiceController**:
+4. **SalesInvoiceController**:
    - Manages sales invoices and related transactions.
 5. **CustomerInvoiceController**:
    - Handles customer invoices and financial details.

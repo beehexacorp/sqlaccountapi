@@ -13,12 +13,12 @@ namespace SqlAccountRestAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SaleInvoiceController : ControllerBase
+public class SalesInvoiceController : ControllerBase
 {
-    private readonly SqlAccountingSaleInvoiceHelper _saleInvoiceHelper;
-    public SaleInvoiceController(SqlAccountingSaleInvoiceHelper saleInvoiceHelper)
+    private readonly SqlAccountingSalesInvoiceHelper _salesInvoiceHelper;
+    public SalesInvoiceController(SqlAccountingSalesInvoiceHelper salesInvoiceHelper)
     {
-        _saleInvoiceHelper = saleInvoiceHelper;
+        _salesInvoiceHelper = salesInvoiceHelper;
     }
 
     [HttpGet("docno/{documentNumber}")]
@@ -26,7 +26,7 @@ public class SaleInvoiceController : ControllerBase
     {
         try
         {
-            var result = _saleInvoiceHelper.GetByDocno(documentNumber, limit, offset);
+            var result = _salesInvoiceHelper.GetByDocno(documentNumber, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class SaleInvoiceController : ControllerBase
     {
         try
         {
-            var result = _saleInvoiceHelper.GetFromDaysAgo(days, limit, offset);
+            var result = _salesInvoiceHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -62,7 +62,7 @@ public class SaleInvoiceController : ControllerBase
     {
         try
         {
-            var result = _saleInvoiceHelper.GetFromDate(date, limit, offset);
+            var result = _salesInvoiceHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
