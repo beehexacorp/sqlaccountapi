@@ -118,7 +118,7 @@ FETCH NEXT {limit} ROWS ONLY";
                 var item = fields
                 .ToDictionary(
                     field => (string)field.FieldName,
-                    field => field.value ?? ""
+                    field => field.AsString != null ? field.value : ""
                 );
                 dataset.Next();
 
@@ -161,7 +161,10 @@ FETCH NEXT {limit} ROWS ONLY";
                 var childrenDataset = groupped
                     .Select(item => item
                         .Where(field => !mainFields.Contains(field.Key)) 
-                        .ToDictionary(field => field.Key, field => field.Value)  
+                        .ToDictionary(
+                            field => field.Key, 
+                            field => field.Value
+                        )  
                     )
                     .ToList();
                 customerItem.Add(cdsName, childrenDataset);
