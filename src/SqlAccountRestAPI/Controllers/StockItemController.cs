@@ -22,11 +22,11 @@ public class StockItemController : ControllerBase
     }
 
     [HttpGet("code/{code}")]
-    public IActionResult GetByCode([FromRoute] string code = "")
+    public IActionResult GetByCode([FromRoute] string code = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _stockItemHelper.GetByCode(code);
+            var result = _stockItemHelper.GetByCode(code, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -40,11 +40,11 @@ public class StockItemController : ControllerBase
         }
     }
     [HttpGet("days-ago/{days}")]
-    public IActionResult GetFromDaysAgo([FromRoute] int days = 0)
+    public IActionResult GetFromDaysAgo([FromRoute] int days = 0, [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _stockItemHelper.GetFromDaysAgo(days);
+            var result = _stockItemHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -58,11 +58,11 @@ public class StockItemController : ControllerBase
         }
     }
     [HttpGet("from-date/{date}")]
-    public IActionResult GetFromDate([FromRoute] string date = "")
+    public IActionResult GetFromDate([FromRoute] string date = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _stockItemHelper.GetFromDate(date);
+            var result = _stockItemHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)

@@ -42,11 +42,11 @@ public class CustomerController : ControllerBase
 
     [HttpGet("email/{email}")]
     // TODO: validate email
-    public IActionResult GetByEmail([FromRoute] string email = "")
+    public IActionResult GetByEmail([FromRoute] string email = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _customerHelper.GetByEmail(email);
+            var result = _customerHelper.GetByEmail(email, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -84,11 +84,11 @@ public class CustomerController : ControllerBase
     }
 
     [HttpGet("code/{code}")]
-    public IActionResult GetByCode([FromRoute] string code = "")
+    public IActionResult GetByCode([FromRoute] string code = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _customerHelper.GetByCode(code);
+            var result = _customerHelper.GetByCode(code, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -102,11 +102,11 @@ public class CustomerController : ControllerBase
         }
     }
     [HttpGet("days-ago/{days}")]
-    public IActionResult GetFromDaysAgo([FromRoute] int days = 0)
+    public IActionResult GetFromDaysAgo([FromRoute] int days = 0, [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _customerHelper.GetFromDaysAgo(days);
+            var result = _customerHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -120,11 +120,11 @@ public class CustomerController : ControllerBase
         }
     }
     [HttpGet("from-date/{date}")]
-    public IActionResult GetFromDate([FromRoute] string date = "")
+    public IActionResult GetFromDate([FromRoute] string date = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _customerHelper.GetFromDate(date);
+            var result = _customerHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)

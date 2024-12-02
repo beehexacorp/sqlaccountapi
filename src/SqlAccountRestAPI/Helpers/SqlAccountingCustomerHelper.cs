@@ -70,63 +70,88 @@ public class SqlAccountingCustomerHelper
         }
     }
 
-    public IEnumerable<IDictionary<string, object>> GetByEmail(string email)
+    public IEnumerable<IDictionary<string, object>> GetByEmail(string email, int limit, int offset)
     {
          if (string.IsNullOrEmpty(email) || !new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").IsMatch(email))
         {
             throw new ArgumentException("Invalid email format.");
         }
-        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
+        var mainFields = _microORM.GetFields("AR_CUSTOMER", limit, offset).Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
 
         var sql = $@"SELECT * 
-FROM AR_CUSTOMER
-LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE
-WHERE AR_CUSTOMER.CODE IN (
-    SELECT CODE 
-    FROM AR_CUSTOMERBRANCH 
-    WHERE AR_CUSTOMERBRANCH.EMAIL='{email}'
-)";
-        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
+FROM (
+    SELECT *
+    FROM AR_CUSTOMER
+    WHERE AR_CUSTOMER.CODE IN (
+        SELECT CODE 
+        FROM AR_CUSTOMERBRANCH 
+        WHERE AR_CUSTOMERBRANCH.EMAIL='{email}'
+    )
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) AR_CUSTOMER_LIMIT
+LEFT JOIN AR_CUSTOMERBRANCH 
+    ON AR_CUSTOMER_LIMIT.CODE = AR_CUSTOMERBRANCH.CODE
+";
+        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsBranch", 0, offset);
     }
-    public IEnumerable<IDictionary<string, object>> GetByCode(string code){
-        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
+    public IEnumerable<IDictionary<string, object>> GetByCode(string code, int limit, int offset){
+        var mainFields = _microORM.GetFields("AR_CUSTOMER", limit, offset).Distinct().ToHashSet(); //app.ComServer.DBManager.NewDataSet("SELECT * FROM AR_CUSTOMER").Fields;
 
         var sql = $@"SELECT * 
-FROM AR_CUSTOMER 
-LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE 
-WHERE AR_CUSTOMER.CODE ='{code}'
+FROM (
+    SELECT *
+    FROM AR_CUSTOMER
+    WHERE AR_CUSTOMER.CODE ='{code}'
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) AR_CUSTOMER_LIMIT
+LEFT JOIN AR_CUSTOMERBRANCH 
+    ON AR_CUSTOMER_LIMIT.CODE = AR_CUSTOMERBRANCH.CODE 
 ";
            
-        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
+        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsBranch", 0, offset);
     }
-    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days){
-        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); 
+    public IEnumerable<IDictionary<string, object>> GetFromDaysAgo(int days, int limit, int offset){
+        var mainFields = _microORM.GetFields("AR_CUSTOMER", limit, offset).Distinct().ToHashSet(); 
         
         var currentUnixTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var convertedUnixTime = currentUnixTime - (days * 86400);
-        var sql = $@"SELECT * 
-FROM AR_CUSTOMER 
-LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE 
-WHERE AR_CUSTOMER.LASTMODIFIED >= {convertedUnixTime}
+        var sql = $@"SELECT *
+FROM (
+    SELECT *
+    FROM AR_CUSTOMER
+    WHERE LASTMODIFIED >= {convertedUnixTime}
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) AR_CUSTOMER_LIMIT
+LEFT JOIN AR_CUSTOMERBRANCH 
+    ON AR_CUSTOMER_LIMIT.CODE = AR_CUSTOMERBRANCH.CODE;
 ";
         
            
-        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
+        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsBranch", 0, offset);
     }
-    public IEnumerable<IDictionary<string, object>> GetFromDate(string date){
-        var customerFields = _microORM.GetFields("AR_CUSTOMER").Distinct().ToHashSet(); 
+    public IEnumerable<IDictionary<string, object>> GetFromDate(string date, int limit, int offset){
+        var mainFields = _microORM.GetFields("AR_CUSTOMER", limit, offset).Distinct().ToHashSet(); 
 
         DateTime.TryParse(date, out var parsedDate);
         var convertedUnixTime = new DateTimeOffset(parsedDate).ToUnixTimeSeconds();
         
-        var sql = $@"SELECT * 
-FROM AR_CUSTOMER 
-LEFT JOIN AR_CUSTOMERBRANCH ON AR_CUSTOMER.CODE = AR_CUSTOMERBRANCH.CODE 
-WHERE AR_CUSTOMER.LASTMODIFIED >= {convertedUnixTime}
+        var sql = $@"SELECT *
+FROM (
+    SELECT *
+    FROM AR_CUSTOMER
+    WHERE LASTMODIFIED >= {convertedUnixTime}
+    OFFSET {offset} ROWS
+    FETCH NEXT {limit} ROWS ONLY
+) AR_CUSTOMER_LIMIT
+LEFT JOIN AR_CUSTOMERBRANCH 
+    ON AR_CUSTOMER_LIMIT.CODE = AR_CUSTOMERBRANCH.CODE;
 ";
         
            
-        return _microORM.GroupQuery(sql, customerFields, "CODE", "cdsBranch");
+        return _microORM.GroupQuery(sql, mainFields, "CODE", "cdsBranch", 0, offset);
     }
 }
 //     public string LoadAllByDaysToNow(int days)
