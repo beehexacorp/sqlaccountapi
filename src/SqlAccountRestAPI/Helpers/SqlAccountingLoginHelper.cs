@@ -135,6 +135,12 @@ public class SqlAccountingLoginHelper : SqlAccountingORM
 
     public List<string> ReLogin()
     {
+        string directoryPath = Path.GetDirectoryName(_credentialsPath) ?? string.Empty;
+        if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         if (File.Exists(_credentialsPath))
         {   
             var encrypted = File.ReadAllText(_credentialsPath);
