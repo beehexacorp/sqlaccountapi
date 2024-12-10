@@ -21,7 +21,6 @@ declare module 'vue' {
     AMenu: typeof import('ant-design-vue/es')['Menu']
     AMenuItem: typeof import('ant-design-vue/es')['MenuItem']
     ARow: typeof import('ant-design-vue/es')['Row']
-    copy: typeof import('./src/components/HistoryLogs copy.vue')['default']
     DocumentEntities: typeof import('./src/components/DocumentEntities.vue')['default']
     HistoryLogs: typeof import('./src/components/HistoryLogs.vue')['default']
     RealtimeLog: typeof import('./src/components/RealtimeLog.vue')['default']
