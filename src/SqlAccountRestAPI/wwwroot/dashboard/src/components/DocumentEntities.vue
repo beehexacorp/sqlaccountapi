@@ -41,10 +41,12 @@
 import { onMounted, ref } from 'vue';
 import { message } from 'ant-design-vue';
 import {
-    BizObjectDetail,
-    BizObjectEntry,
     fetchBizObject,
     fetchBizObjectDetail
+} from '@/services/documentService';
+import type {
+    BizObjectDetail,
+    BizObjectEntry
 } from '@/services/documentService';
 
 const isDrawerVisible = ref(false);
