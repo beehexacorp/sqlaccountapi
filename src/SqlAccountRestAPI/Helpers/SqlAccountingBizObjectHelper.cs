@@ -81,11 +81,15 @@ public class SqlAccountingBizObjectHelper
                 {
                     field.value = prop.Value?.ToString();
                 }
-                else if (prop.Value is IEnumerable<IDictionary<string, object?>> childrenData)
-                // TODO: this is cds
-                // AddChildrenDataset(IvBizObj, prop.Key, prop.Value);
-
+                else if (prop.Value is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
                 {
+                    // Convert JSON array to a list of dictionaries
+                    var childrenData = jsonElement.EnumerateArray()
+                                                .Select(item => item.Deserialize<Dictionary<string, object?>>())
+                                                .Where(item => item != null)
+                                                .Cast<IDictionary<string, object?>>()
+                                                .ToList();
+
                     AddChildrenDataset(bizObj, prop.Key, childrenData);
                 }
 
