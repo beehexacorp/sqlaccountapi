@@ -53,7 +53,7 @@ LEFT JOIN AR_KNOCKOFF
 ";
         
            
-        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsDocDetail", 0, offset);
+        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsKnockOff", 0, offset);
     }
     public IEnumerable<IDictionary<string, object>> GetFromDate(string date, int limit, int offset){
         var mainFields = _microORM.GetFields("AR_PM", limit, offset).Distinct().ToHashSet(); 
@@ -71,6 +71,6 @@ LEFT JOIN AR_KNOCKOFF
 ";
         
            
-        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsDocDetail", 0, offset);
+        return _microORM.GroupQuery(sql, mainFields, "DOCKEY", "cdsKnockOff", 0, offset);
     }
 }

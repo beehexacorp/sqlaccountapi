@@ -11,14 +11,14 @@ using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/stock-adjustments")]
 [ApiController]
-public class CustomerPaymentController : ControllerBase
+public class StockAdjustmentController : ControllerBase
 {
-    private readonly SqlAccountingCustomerPaymentHelper _customerPaymentHelper;
-    public CustomerPaymentController(SqlAccountingCustomerPaymentHelper customerPaymentHelper)
+    private readonly SqlAccountingStockAdjustmentHelper _stockAdjustmentHelper;
+    public StockAdjustmentController(SqlAccountingStockAdjustmentHelper stockAdjustmentHelper)
     {
-        _customerPaymentHelper = customerPaymentHelper;
+        _stockAdjustmentHelper = stockAdjustmentHelper;
     }
 
     [HttpGet("docno/{documentNumber}")]
@@ -26,7 +26,7 @@ public class CustomerPaymentController : ControllerBase
     {
         try
         {
-            var result = _customerPaymentHelper.GetByDocno(documentNumber, limit, offset);
+            var result = _stockAdjustmentHelper.GetByDocno(documentNumber, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class CustomerPaymentController : ControllerBase
     {
         try
         {
-            var result = _customerPaymentHelper.GetFromDaysAgo(days, limit, offset);
+            var result = _stockAdjustmentHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -62,7 +62,7 @@ public class CustomerPaymentController : ControllerBase
     {
         try
         {
-            var result = _customerPaymentHelper.GetFromDate(date, limit, offset);
+            var result = _stockAdjustmentHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -75,5 +75,6 @@ public class CustomerPaymentController : ControllerBase
             return BadRequest(errorResponse);
         }
     }
+
     
 }

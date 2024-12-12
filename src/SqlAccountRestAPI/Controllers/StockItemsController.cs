@@ -11,22 +11,22 @@ using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/stock-items")]
 [ApiController]
-public class SalesOrderController : ControllerBase
+public class StockItemController : ControllerBase
 {
-    private readonly SqlAccountingSalesOrderHelper _salesOrderHelper;
-    public SalesOrderController(SqlAccountingSalesOrderHelper salesOrderHelper)
+    private readonly SqlAccountingStockItemHelper _stockItemHelper;
+    public StockItemController(SqlAccountingStockItemHelper stockItemHelper)
     {
-        _salesOrderHelper = salesOrderHelper;
+        _stockItemHelper = stockItemHelper;
     }
 
-    [HttpGet("docno/{documentNumber}")]
-    public IActionResult GetByDocno([FromRoute] string documentNumber = "", [FromQuery] int limit = 100, int offset = 0)
+    [HttpGet("code/{code}")]
+    public IActionResult GetByCode([FromRoute] string code = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _salesOrderHelper.GetByDocno(documentNumber, limit, offset);
+            var result = _stockItemHelper.GetByCode(code, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class SalesOrderController : ControllerBase
     {
         try
         {
-            var result = _salesOrderHelper.GetFromDaysAgo(days, limit, offset);
+            var result = _stockItemHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -62,7 +62,7 @@ public class SalesOrderController : ControllerBase
     {
         try
         {
-            var result = _salesOrderHelper.GetFromDate(date, limit, offset);
+            var result = _stockItemHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -75,6 +75,5 @@ public class SalesOrderController : ControllerBase
             return BadRequest(errorResponse);
         }
     }
-
     
 }

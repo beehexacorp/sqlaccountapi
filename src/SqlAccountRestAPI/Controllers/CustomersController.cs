@@ -11,7 +11,7 @@ using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/customers")]
 [ApiController]
 public class CustomerController : ControllerBase
 {
