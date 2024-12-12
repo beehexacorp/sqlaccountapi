@@ -175,7 +175,7 @@ public class SqlAccountingBizObjectHelper
 
             foreach (var prop in mainObject)
             {
-                if (new List<string> { "DOCNO", "DOCKEY", "DESCRIPTION" }.Any(k => prop.Key.Contains(k) == true))
+                if (new List<string> { "DOCNO", "DOCKEY", "DESCRIPTION", "DATE" }.Any(k => prop.Key.Contains(k) == true))
                 {
                     continue;
                 }
@@ -217,7 +217,7 @@ public class SqlAccountingBizObjectHelper
                         lCdsDataSet.Append();
                     foreach (var prop in cdsItem)
                     {
-                        if (new List<string> { "DOCNO", "DLTKEY", "DOCKEY" }.Any(k => prop.Key.Contains(k) == true))
+                        if (new List<string> { "DOCNO", "DOCKEY", "DTLKEY" }.Any(k => prop.Key.Contains(k) == true))
                         {
                             continue;
                         }

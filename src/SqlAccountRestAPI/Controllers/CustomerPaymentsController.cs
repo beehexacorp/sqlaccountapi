@@ -11,22 +11,22 @@ using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/customer-payments")]
 [ApiController]
-public class StockItemController : ControllerBase
+public class CustomerPaymentController : ControllerBase
 {
-    private readonly SqlAccountingStockItemHelper _stockItemHelper;
-    public StockItemController(SqlAccountingStockItemHelper stockItemHelper)
+    private readonly SqlAccountingCustomerPaymentHelper _customerPaymentHelper;
+    public CustomerPaymentController(SqlAccountingCustomerPaymentHelper customerPaymentHelper)
     {
-        _stockItemHelper = stockItemHelper;
+        _customerPaymentHelper = customerPaymentHelper;
     }
 
-    [HttpGet("code/{code}")]
-    public IActionResult GetByCode([FromRoute] string code = "", [FromQuery] int limit = 100, int offset = 0)
+    [HttpGet("docno/{documentNumber}")]
+    public IActionResult GetByDocno([FromRoute] string documentNumber = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _stockItemHelper.GetByCode(code, limit, offset);
+            var result = _customerPaymentHelper.GetByDocno(documentNumber, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class StockItemController : ControllerBase
     {
         try
         {
-            var result = _stockItemHelper.GetFromDaysAgo(days, limit, offset);
+            var result = _customerPaymentHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -62,7 +62,7 @@ public class StockItemController : ControllerBase
     {
         try
         {
-            var result = _stockItemHelper.GetFromDate(date, limit, offset);
+            var result = _customerPaymentHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
