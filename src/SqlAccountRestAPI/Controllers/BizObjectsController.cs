@@ -25,9 +25,16 @@ namespace SqlAccountRestAPI.Controllers
             return Ok(results);
         }
         [HttpPost("{entityType}")]
-        public IActionResult Add(string entityType, [FromBody] BizObjectAddRequest request)
+        public IActionResult Add(string entityType, [FromBody] BizObjectRequest request)
         {
             var result = _bizObject.AddDetail(entityType, request.Data);
+            return Ok(result);
+        }
+
+        [HttpPut("{entityType}/{fieldKey}/{fieldValue}")]
+        public IActionResult Update(string entityType, string fieldKey, string fieldValue, [FromBody] BizObjectRequest request)
+        {
+            var result = _bizObject.Update(entityType, fieldKey, fieldValue, request.Data);
             return Ok(result);
         }
 
