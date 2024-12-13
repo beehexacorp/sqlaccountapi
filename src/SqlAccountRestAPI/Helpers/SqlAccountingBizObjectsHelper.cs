@@ -81,11 +81,15 @@ public class SqlAccountingBizObjectHelper
                 {
                     field.value = prop.Value?.ToString();
                 }
-                else if (prop.Value is IEnumerable<IDictionary<string, object?>> childrenData)
-                // TODO: this is cds
-                // AddChildrenDataset(IvBizObj, prop.Key, prop.Value);
-
+                else if (prop.Value is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
                 {
+                    // Convert JSON array to a list of dictionaries
+                    var childrenData = jsonElement.EnumerateArray()
+                                                .Select(item => item.Deserialize<Dictionary<string, object?>>())
+                                                .Where(item => item != null)
+                                                .Cast<IDictionary<string, object?>>()
+                                                .ToList();
+
                     AddChildrenDataset(bizObj, prop.Key, childrenData);
                 }
 
@@ -171,7 +175,7 @@ public class SqlAccountingBizObjectHelper
 
             foreach (var prop in mainObject)
             {
-                if (new List<string> { "DOCNO", "DOCKEY", "DESCRIPTION" }.Any(k => prop.Key.Contains(k) == true))
+                if (new List<string> { "DOCNO", "DOCKEY", "DESCRIPTION", "DATE" }.Any(k => prop.Key.Contains(k) == true))
                 {
                     continue;
                 }
@@ -213,7 +217,7 @@ public class SqlAccountingBizObjectHelper
                         lCdsDataSet.Append();
                     foreach (var prop in cdsItem)
                     {
-                        if (new List<string> { "DOCNO", "DLTKEY", "DOCKEY" }.Any(k => prop.Key.Contains(k) == true))
+                        if (new List<string> { "DOCNO", "DOCKEY", "DTLKEY" }.Any(k => prop.Key.Contains(k) == true))
                         {
                             continue;
                         }
@@ -247,5 +251,79 @@ public class SqlAccountingBizObjectHelper
         // if (lMainDataSet.FindField("DOCNO") != null)
         //     return new JObject { { "DOCNO", lMainDataSet.FindField("DOCNO").value.ToString() } };
         // return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
+    }
+
+    /// <param name="fieldKey">the key field of the entity type</param>
+    /// <param name="fieldValue">the value of the key field</param>
+    /// <param name="data">the data to update the entity type</param>
+    /// <returns>a dictionary of the updated fields and values</returns>
+    public IDictionary<string, object> Update(string entityType, string fieldKey, string fieldValue, IDictionary<string, object?> data)
+    {
+        using (var bizObj = _microORM.FindBizObject(entityType))
+        {
+            
+            var mainDataset = bizObj.FindMainDataset();
+            var updateObj = bizObj.FindKeyByRef(fieldKey, fieldValue);
+            if (!Convert.IsDBNull(updateObj))
+            {
+               var bizObjField = bizObj.Params(fieldKey);
+                bizObjField.Value = fieldValue;
+                bizObj.Open();
+                bizObj.Edit();
+                foreach (var prop in data)
+                {
+                    var field = mainDataset.Findfield(prop.Key);
+                    if (field != null)
+                    {
+                        field.value = prop.Value?.ToString();
+                    }
+                    else if (prop.Value is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+                    {
+                        // Convert JSON array to a list of dictionaries
+                        var childrenData = jsonElement.EnumerateArray()
+                                                    .Select(item => item.Deserialize<Dictionary<string, object?>>())
+                                                    .Where(item => item != null)
+                                                    .Cast<IDictionary<string, object?>>()
+                                                    .ToList();
+
+                        UpdateChildrenDataset(bizObj, prop.Key, childrenData);
+                    }
+
+                }
+                bizObj.Save();
+            }
+            var result = new Dictionary<string, object>();
+            foreach (var field in _microORM.ItemsIterator(mainDataset.Fields))
+            {
+                result.Add(field.FieldName, field.value);
+            }
+            return result;
+        }
+
+
+
+
+
+    }
+    public void UpdateChildrenDataset(SqlAccountingBizObject bizObject, string datasetName, IEnumerable<IDictionary<string, object?>>? cdsData)
+    {
+        var lCdsDataSet = bizObject.FindDataset(datasetName);
+        cdsData = cdsData ?? new List<IDictionary<string, object?>>();
+        var RecordCount = lCdsDataSet.RecordCount;
+        foreach (var dataItem in cdsData)
+        {
+
+            lCdsDataSet.Edit();
+
+            // foreach (var prop in dataItem)
+            // {
+            //     var field = lCdsDataSet.Findfield(prop.Key);
+            //     if (field != null)
+            //     {
+            //         field.value = prop.Value?.ToString();
+            //     }
+            // }
+            lCdsDataSet.Post();
+        }
     }
 }

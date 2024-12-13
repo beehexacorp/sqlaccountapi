@@ -11,22 +11,22 @@ using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/stock-item-templates")]
 [ApiController]
-public class StockAdjustmentController : ControllerBase
+public class StockItemTemplateController : ControllerBase
 {
-    private readonly SqlAccountingStockAdjustmentHelper _stockAdjustmentHelper;
-    public StockAdjustmentController(SqlAccountingStockAdjustmentHelper stockAdjustmentHelper)
+    private readonly SqlAccountingStockItemTemplateHelper _stockItemTemplateHelper;
+    public StockItemTemplateController(SqlAccountingStockItemTemplateHelper stockItemTemplateHelper)
     {
-        _stockAdjustmentHelper = stockAdjustmentHelper;
+        _stockItemTemplateHelper = stockItemTemplateHelper;
     }
 
-    [HttpGet("docno/{documentNumber}")]
-    public IActionResult GetByDocno([FromRoute] string documentNumber = "", [FromQuery] int limit = 100, int offset = 0)
+    [HttpGet("code/{code}")]
+    public IActionResult GetByDocno([FromRoute] string code = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _stockAdjustmentHelper.GetByDocno(documentNumber, limit, offset);
+            var result = _stockItemTemplateHelper.GetByCode(code, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class StockAdjustmentController : ControllerBase
     {
         try
         {
-            var result = _stockAdjustmentHelper.GetFromDaysAgo(days, limit, offset);
+            var result = _stockItemTemplateHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -62,7 +62,7 @@ public class StockAdjustmentController : ControllerBase
     {
         try
         {
-            var result = _stockAdjustmentHelper.GetFromDate(date, limit, offset);
+            var result = _stockItemTemplateHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -75,6 +75,5 @@ public class StockAdjustmentController : ControllerBase
             return BadRequest(errorResponse);
         }
     }
-
     
 }

@@ -1,7 +1,6 @@
 namespace SqlAccountRestAPI;
-public class BizObjectAddRequest
+public class BizObjectRequest
 {
-    public string EntityType { get; set; } = null!;
     public IDictionary<string, object?> Data { get; set; } = null!;
 }
 

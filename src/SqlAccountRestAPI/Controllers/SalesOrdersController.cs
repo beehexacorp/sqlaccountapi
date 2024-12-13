@@ -11,22 +11,22 @@ using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/sales-orders")]
 [ApiController]
-public class StockItemTemplateController : ControllerBase
+public class SalesOrderController : ControllerBase
 {
-    private readonly SqlAccountingStockItemTemplateHelper _stockItemTemplateHelper;
-    public StockItemTemplateController(SqlAccountingStockItemTemplateHelper stockItemTemplateHelper)
+    private readonly SqlAccountingSalesOrderHelper _salesOrderHelper;
+    public SalesOrderController(SqlAccountingSalesOrderHelper salesOrderHelper)
     {
-        _stockItemTemplateHelper = stockItemTemplateHelper;
+        _salesOrderHelper = salesOrderHelper;
     }
 
-    [HttpGet("code/{code}")]
-    public IActionResult GetByDocno([FromRoute] string code = "", [FromQuery] int limit = 100, int offset = 0)
+    [HttpGet("docno/{documentNumber}")]
+    public IActionResult GetByDocno([FromRoute] string documentNumber = "", [FromQuery] int limit = 100, int offset = 0)
     {
         try
         {
-            var result = _stockItemTemplateHelper.GetByCode(code, limit, offset);
+            var result = _salesOrderHelper.GetByDocno(documentNumber, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -44,7 +44,7 @@ public class StockItemTemplateController : ControllerBase
     {
         try
         {
-            var result = _stockItemTemplateHelper.GetFromDaysAgo(days, limit, offset);
+            var result = _salesOrderHelper.GetFromDaysAgo(days, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -62,7 +62,7 @@ public class StockItemTemplateController : ControllerBase
     {
         try
         {
-            var result = _stockItemTemplateHelper.GetFromDate(date, limit, offset);
+            var result = _salesOrderHelper.GetFromDate(date, limit, offset);
             return Ok(result);
         }
         catch (Exception ex)
@@ -75,5 +75,6 @@ public class StockItemTemplateController : ControllerBase
             return BadRequest(errorResponse);
         }
     }
+
     
 }

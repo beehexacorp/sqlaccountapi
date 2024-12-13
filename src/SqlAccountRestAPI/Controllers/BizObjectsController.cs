@@ -8,7 +8,7 @@ using SqlAccountRestAPI.Helpers;
 
 namespace SqlAccountRestAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/biz-objects")]
     [ApiController]
     public partial class BizObjectController : ControllerBase
     {
@@ -24,10 +24,17 @@ namespace SqlAccountRestAPI.Controllers
             var results = _bizObject.Query(request.Sql, request.Params, request.Offset, request.Limit);
             return Ok(results);
         }
-        [HttpPost("add")]
-        public IActionResult Add([FromBody] BizObjectAddRequest request)
+        [HttpPost("{entityType}")]
+        public IActionResult Add(string entityType, [FromBody] BizObjectRequest request)
         {
-            var result = _bizObject.AddDetail(request.EntityType, request.Data);
+            var result = _bizObject.AddDetail(entityType, request.Data);
+            return Ok(result);
+        }
+
+        [HttpPut("{entityType}/{fieldKey}/{fieldValue}")]
+        public IActionResult Update(string entityType, string fieldKey, string fieldValue, [FromBody] BizObjectRequest request)
+        {
+            var result = _bizObject.Update(entityType, fieldKey, fieldValue, request.Data);
             return Ok(result);
         }
 

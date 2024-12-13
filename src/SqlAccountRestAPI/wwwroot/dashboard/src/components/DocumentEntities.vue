@@ -3,9 +3,10 @@
         <a-card title="BizObjects" :bordered="false">
             <a-empty v-if="!bizObjects?.length"></a-empty>
             <a-row v-if="!!bizObjects?.length" style="padding: 20px 0px;">
-                <a-col v-for="(b, bix) in bizObjects" :key="bix" :xs="24" class="gutter-row">
+                <a-col v-for="(b, bix) in bizObjects" :key="bix" :xs="24"
+                    class="gutter-row">
                     <div style="padding: 5px">
-                        <a href="javascript:void(0)" @click="() => onGetBizObjectDetail(b)">
+                        <a href="javascript:void(0)" @click="()=>onGetBizObjectDetail(b)">
                             {{ b.name }}
                         </a>
                     </div>
@@ -21,17 +22,17 @@
                     </span>
                 </div>
             </template>
-            <div v-if="selectedBizObjectDetail && selectedBizObjectDetail.datasets">
+            <div v-if="selectedBizObjectDetail && selectedBizObjectDetail.datasets">  
                 <div v-for="(d, didx) in selectedBizObjectDetail.datasets" :key="didx">
                     <strong>{{ d.name }}</strong>
-                    <div v-for="(f, fidx) in d.fields" :key="fidx">
+                    <div v-for="(f,fidx) in d.fields" :key="fidx">
                         {{ f }}
                     </div>
                 </div>
             </div>
             <a-empty v-else></a-empty>
 
-
+            
         </a-drawer>
     </div>
 </template>
@@ -39,14 +40,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { message } from 'ant-design-vue';
-import type {
-    BizObjectDetail,
-    BizObjectEntry,
-} from '@/services/documentService';
-
 import {
     fetchBizObject,
     fetchBizObjectDetail
+} from '@/services/documentService';
+import type {
+    BizObjectDetail,
+    BizObjectEntry
 } from '@/services/documentService';
 
 const isDrawerVisible = ref(false);
