@@ -49,6 +49,7 @@ public class SqlAccountingCustomerHelper
             mainDataset.FindField("LOCALDOCAMT").value = customerInvoice["DOCAMT"];
             mainDataset.FindField("PROJECT").value = project;
             mainDataset.FindField("PAYMENTPROJECT").value = project;
+            mainDataset.Post();
 
             var knockOfCds = paymentBizObject.FindDataset("cdsKnockOff");
             //Step 5: Knock Off IV
@@ -62,7 +63,7 @@ public class SqlAccountingCustomerHelper
             paymentBizObject.Save();
 
             var results = new Dictionary<string, object>();
-            foreach (var field in mainDataset.Fields)
+            foreach (var field in _microORM.ItemsIterator(mainDataset.Fields))
             {
                 results.Add(field.FieldName, field.value);
             }
