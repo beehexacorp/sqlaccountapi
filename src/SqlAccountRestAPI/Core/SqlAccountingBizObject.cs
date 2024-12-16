@@ -48,10 +48,10 @@ public class SqlAccountingBizObject : IDisposable
     {
         _bizObject.Edit();
     }
-    public void Params(string fieldKey, string fieldValue)
+    public void Params(string mainKey, string fieldKey, string fieldValue)
     {
         var lDocKey = _bizObject.FindKeyByRef(fieldKey, fieldValue);
-        _bizObject.Params.Find("DocKey").Value = lDocKey;
+        _bizObject.Params.Find(mainKey).Value = lDocKey;
     }
     public void Find(string entityType)
     {

@@ -253,7 +253,7 @@ public class SqlAccountingBizObjectHelper
         // return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
     }
 
-    public IDictionary<string, object> Update(string entityType, string fieldKey, string fieldValue, IDictionary<string, object?> data)
+    public IDictionary<string, object> Update(string entityType, string mainKey, string fieldKey, string fieldValue, IDictionary<string, object?> data)
     {
         using (var bizObj = _microORM.FindBizObject(entityType))
         {
@@ -262,7 +262,7 @@ public class SqlAccountingBizObjectHelper
             var updateObj = bizObj.FindKeyByRef(fieldKey, fieldValue);
             if (!Convert.IsDBNull(updateObj))
             {
-                bizObj.Params(fieldKey,fieldValue);
+                bizObj.Params(mainKey, fieldKey,fieldValue);
                 bizObj.Open();
                 bizObj.Edit();
                 foreach (var prop in data)
