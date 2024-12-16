@@ -253,10 +253,6 @@ public class SqlAccountingBizObjectHelper
         // return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
     }
 
-    /// <param name="fieldKey">the key field of the entity type</param>
-    /// <param name="fieldValue">the value of the key field</param>
-    /// <param name="data">the data to update the entity type</param>
-    /// <returns>a dictionary of the updated fields and values</returns>
     public IDictionary<string, object> Update(string entityType, string fieldKey, string fieldValue, IDictionary<string, object?> data)
     {
         using (var bizObj = _microORM.FindBizObject(entityType))
@@ -266,8 +262,7 @@ public class SqlAccountingBizObjectHelper
             var updateObj = bizObj.FindKeyByRef(fieldKey, fieldValue);
             if (!Convert.IsDBNull(updateObj))
             {
-               var bizObjField = bizObj.Params(fieldKey);
-                bizObjField.Value = fieldValue;
+                bizObj.Params(fieldKey,fieldValue);
                 bizObj.Open();
                 bizObj.Edit();
                 foreach (var prop in data)
@@ -312,17 +307,15 @@ public class SqlAccountingBizObjectHelper
         var RecordCount = lCdsDataSet.RecordCount;
         foreach (var dataItem in cdsData)
         {
-
             lCdsDataSet.Edit();
-
-            // foreach (var prop in dataItem)
-            // {
-            //     var field = lCdsDataSet.Findfield(prop.Key);
-            //     if (field != null)
-            //     {
-            //         field.value = prop.Value?.ToString();
-            //     }
-            // }
+            foreach (var prop in dataItem)
+            {
+                var field = lCdsDataSet.Findfield(prop.Key);
+                if (field != null)
+                {
+                    field.value = prop.Value?.ToString();
+                }
+            }
             lCdsDataSet.Post();
         }
     }

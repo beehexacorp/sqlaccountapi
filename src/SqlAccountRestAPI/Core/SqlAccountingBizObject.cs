@@ -1,3 +1,5 @@
+using Microsoft.VisualBasic;
+
 namespace SqlAccountRestAPI.Core;
 
 public class SqlAccountingBizObject : IDisposable
@@ -28,7 +30,8 @@ public class SqlAccountingBizObject : IDisposable
     {
         return _bizObject.DataSets.Find("MainDataSet");
     }
-    public dynamic FindKeyByRef(string keyName, string keyValue){
+    public dynamic FindKeyByRef(string keyName, string keyValue)
+    {
         return _bizObject.FindKeyByRef(keyName, keyValue);
     }
 
@@ -45,17 +48,13 @@ public class SqlAccountingBizObject : IDisposable
     {
         _bizObject.Edit();
     }
-    public dynamic Params(string fieldKey)
+    public void Params(string fieldKey, string fieldValue)
     {
-       var lMain = _bizObject.DataSets.Find("MainDataSet");  //lMain contains master data
-           var lDtl = _bizObject.DataSets.Find("cdsUOM");
-        var lDocKey = _bizObject.FindKeyByRef("CODE", "E-BAT");
-        var paramsTest = _bizObject.Params;
-        // var field
-        _bizObject.Params.Find("CODE").Value = lDocKey;
-        return _bizObject.Params.Find(fieldKey);
+        var lDocKey = _bizObject.FindKeyByRef(fieldKey, fieldValue);
+        _bizObject.Params.Find("DocKey").Value = lDocKey;
     }
-    public void Find(string entityType){
+    public void Find(string entityType)
+    {
         _bizObject.Find(entityType);
     }
 
