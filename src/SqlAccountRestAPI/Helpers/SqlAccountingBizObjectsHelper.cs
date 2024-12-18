@@ -215,15 +215,34 @@ public class SqlAccountingBizObjectHelper
                     }
                     else
                         lCdsDataSet.Append();
+                    var taxInclusiveFlag = 0;
+                    var taxAmt = 0m;
                     foreach (var prop in cdsItem)
                     {
-                        if (new List<string> { "DOCNO", "DOCKEY", "DTLKEY" }.Any(k => prop.Key.Contains(k) == true))
+                        if (new List<string> { "DOCNO", "DOCKEY", "DTLKEY"}.Any(k => prop.Key.Contains(k) == true))
                         {
                             continue;
                         }
                         var field = lCdsDataSet.Findfield(prop.Key);
                         if (field != null)
                         {
+                            // Get tax amount
+                            if (new List<string> {"TAXAMT"}.Any(k => prop.Key.Contains(k) == true) && decimal.TryParse(prop.Value?.ToString(), out var taxAmtValue))
+                            {
+                                taxAmt = taxAmtValue;
+                            }
+                            // Check tax inclusive 
+                            if (prop.Key.Contains("TAXINCLUSIVE") && int.TryParse(prop.Value?.ToString(), out var taxInclusiveFlagValue))
+                            {
+                                taxInclusiveFlag = taxInclusiveFlagValue;
+                            }
+                            // Handle tax inclusive transfer
+                            if (new List<string> { "LOCALAMOUNT", "TAXABLEAMT", "AMOUNT"}.Any(k => prop.Key.Contains(k) == true) &&
+                                    decimal.TryParse(prop.Value?.ToString(), out var amountValue))
+                            {
+                                field.value = taxInclusiveFlag == 1 ? amountValue + taxAmt : amountValue;
+                                continue;
+                            }
                             // TODO: do we overwrite null values?
                             // "" mean not having | -1 mean default value or auto generated
                             // prop has null values
@@ -257,12 +276,12 @@ public class SqlAccountingBizObjectHelper
     {
         using (var bizObj = _microORM.FindBizObject(entityType))
         {
-            
+
             var mainDataset = bizObj.FindMainDataset();
             var updateObj = bizObj.FindKeyByRef(fieldKey, fieldValue);
             if (!Convert.IsDBNull(updateObj))
             {
-                bizObj.Params(mainKey, fieldKey,fieldValue);
+                bizObj.Params(mainKey, fieldKey, fieldValue);
                 bizObj.Open();
                 bizObj.Edit();
                 foreach (var prop in data)
