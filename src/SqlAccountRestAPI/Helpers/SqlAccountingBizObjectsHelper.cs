@@ -215,15 +215,34 @@ public class SqlAccountingBizObjectHelper
                     }
                     else
                         lCdsDataSet.Append();
+                    var taxInclusiveFlag = 0;
+                    var taxAmt = 0m;
                     foreach (var prop in cdsItem)
                     {
-                        if (new List<string> { "DOCNO", "DOCKEY", "DTLKEY" }.Any(k => prop.Key.Contains(k) == true))
+                        if (new List<string> { "DOCNO", "DOCKEY", "DTLKEY"}.Any(k => prop.Key.Contains(k) == true))
                         {
                             continue;
                         }
                         var field = lCdsDataSet.Findfield(prop.Key);
                         if (field != null)
                         {
+                            // Get tax amount
+                            if (new List<string> {"TAXAMT"}.Any(k => prop.Key.Contains(k) == true) && decimal.TryParse(prop.Value?.ToString(), out var taxAmtValue))
+                            {
+                                taxAmt = taxAmtValue;
+                            }
+                            // Check tax inclusive 
+                            if (prop.Key.Contains("TAXINCLUSIVE") && int.TryParse(prop.Value?.ToString(), out var taxInclusiveFlagValue))
+                            {
+                                taxInclusiveFlag = taxInclusiveFlagValue;
+                            }
+                            // Handle tax inclusive transfer
+                            if (new List<string> { "LOCALAMOUNT", "TAXABLEAMT", "AMOUNT"}.Any(k => prop.Key.Contains(k) == true) &&
+                                    decimal.TryParse(prop.Value?.ToString(), out var amountValue))
+                            {
+                                field.value = taxInclusiveFlag == 1 ? amountValue + taxAmt : amountValue;
+                                continue;
+                            }
                             // TODO: do we overwrite null values?
                             // "" mean not having | -1 mean default value or auto generated
                             // prop has null values
@@ -253,21 +272,16 @@ public class SqlAccountingBizObjectHelper
         // return new JObject { { "CODE", lMainDataSet.FindField("CODE").value.ToString() } };
     }
 
-    /// <param name="fieldKey">the key field of the entity type</param>
-    /// <param name="fieldValue">the value of the key field</param>
-    /// <param name="data">the data to update the entity type</param>
-    /// <returns>a dictionary of the updated fields and values</returns>
-    public IDictionary<string, object> Update(string entityType, string fieldKey, string fieldValue, IDictionary<string, object?> data)
+    public IDictionary<string, object> Update(string entityType, string mainKey, string fieldKey, string fieldValue, IDictionary<string, object?> data)
     {
         using (var bizObj = _microORM.FindBizObject(entityType))
         {
-            
+
             var mainDataset = bizObj.FindMainDataset();
             var updateObj = bizObj.FindKeyByRef(fieldKey, fieldValue);
             if (!Convert.IsDBNull(updateObj))
             {
-               var bizObjField = bizObj.Params(fieldKey);
-                bizObjField.Value = fieldValue;
+                bizObj.Params(mainKey, fieldKey, fieldValue);
                 bizObj.Open();
                 bizObj.Edit();
                 foreach (var prop in data)
@@ -312,17 +326,15 @@ public class SqlAccountingBizObjectHelper
         var RecordCount = lCdsDataSet.RecordCount;
         foreach (var dataItem in cdsData)
         {
-
             lCdsDataSet.Edit();
-
-            // foreach (var prop in dataItem)
-            // {
-            //     var field = lCdsDataSet.Findfield(prop.Key);
-            //     if (field != null)
-            //     {
-            //         field.value = prop.Value?.ToString();
-            //     }
-            // }
+            foreach (var prop in dataItem)
+            {
+                var field = lCdsDataSet.Findfield(prop.Key);
+                if (field != null)
+                {
+                    field.value = prop.Value?.ToString();
+                }
+            }
             lCdsDataSet.Post();
         }
     }

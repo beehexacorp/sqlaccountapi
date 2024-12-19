@@ -32,9 +32,9 @@ namespace SqlAccountRestAPI.Controllers
         }
 
         [HttpPut("{entityType}/{fieldKey}/{fieldValue}")]
-        public IActionResult Update(string entityType, string fieldKey, string fieldValue, [FromBody] BizObjectRequest request)
+        public IActionResult Update(string entityType, string fieldKey, string fieldValue, [FromBody] BizObjectUpdateRequest request)
         {
-            var result = _bizObject.Update(entityType, fieldKey, fieldValue, request.Data);
+            var result = _bizObject.Update(entityType, request.MainKey, fieldKey, fieldValue, request.Data);
             return Ok(result);
         }
 
