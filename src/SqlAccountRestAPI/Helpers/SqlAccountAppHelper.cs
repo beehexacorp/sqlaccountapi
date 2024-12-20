@@ -1,7 +1,13 @@
 ﻿using System.Reflection;
 using System.Text.Json.Nodes;
 using SqlAccountRestAPI.Core;
+using SqlAccountRestAPI.Helpers;
 using SqlAccountRestAPI.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.IO.Compression;
 
 namespace SqlAccountRestAPI.Helpers;
 
@@ -18,15 +24,46 @@ public class SqlAccountingAppHelper
         _factory = factory;
     }
 
-    public SqlAccountingAppInfo GetInfo()
+    public async Task<SqlAccountingAppInfo> GetInfo()
     {
         dynamic app = _factory.GetInstance();
-        return new SqlAccountingAppInfo
+        var result = new SqlAccountingAppInfo
         {
             Title = app.Title,
             ReleaseDate = app.ReleaseDate.ToString("yyyy-MM-dd"),
             BuildNo = app.BuildNo.ToString()
         };
+        var npmFolder = SystemHelper.RunPowerShellCommand("npm -g root");
+        var configPath = Path.Combine(npmFolder, ApplicationConstants.NPM_PACKAGE_NAME,
+            ApplicationConstants.CONFIGURATION_FOLDER_NAME, ApplicationConstants.CONFIGURATION_FILE_NAME);
+        if (File.Exists(configPath))
+        {
+            try
+            {
+                string fileContent = File.ReadAllText(configPath);
+
+                // Parse JSON to Dictionary
+                var applicationInfo = JsonSerializer.Deserialize<Dictionary<string, object>>(fileContent);
+                var releaseInfo = await GithubHelper.GetLatestReleaseInfo();
+                applicationInfo!["LATEST_VERSION"] = releaseInfo["tag_name"];
+                result.ApplicationInfo = applicationInfo;
+            }
+            catch (Exception ex)
+            {
+                result.ApplicationInfo = new Dictionary<string, object>
+                {
+                    { "Error", ex.Message }
+                };
+            }
+        }
+        else
+        {
+            result.ApplicationInfo = new Dictionary<string, object>
+                {
+                    { "Error", "The configuration file does not exist." }
+                };
+        }
+        return result;
     }
 
     public IEnumerable<SqlAccountingModuleInfo> GetModules()
@@ -110,7 +147,7 @@ public class SqlAccountingAppHelper
         for (int i = 0; i < datasets.Count; i++)
         {
             var dataset = datasets.Items(i);
-            var fields =_microORM.FieldIterator(dataset.Fields);
+            var fields = _microORM.FieldIterator(dataset.Fields);
             var datasetData = new Dictionary<string, object?>
             {
                 { "name", dataset.Name },
@@ -120,7 +157,7 @@ public class SqlAccountingAppHelper
         }
         result.Add("datasets", datasetList);
         return result;
-        
+
         throw new NotImplementedException();
     }
 }

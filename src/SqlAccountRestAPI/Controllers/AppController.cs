@@ -29,9 +29,9 @@ public partial class AppController : ControllerBase
 
     // GET: api/<AppController>
     [HttpGet("info")]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        return Ok(_app.GetInfo());
+        return Ok(await _app.GetInfo());
     }
     [HttpGet("actions")]
     public IActionResult GetActions()
