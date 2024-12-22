@@ -42,7 +42,12 @@ public class SqlAccountingAppHelper
                 string fileContent = File.ReadAllText(configPath);
 
                 // Parse JSON to Dictionary
-                var applicationInfo = JsonSerializer.Deserialize<Dictionary<string, object>>(fileContent);
+                var options = new JsonSerializerOptions
+                    {
+                        AllowTrailingCommas = true,
+                        ReadCommentHandling = JsonCommentHandling.Skip
+                    };
+                var applicationInfo = JsonSerializer.Deserialize<Dictionary<string, object>>(fileContent,options);
                 var releaseInfo = await GithubHelper.GetLatestReleaseInfo();
                 applicationInfo!["LATEST_VERSION"] = releaseInfo["tag_name"];
                 result.ApplicationInfo = applicationInfo;

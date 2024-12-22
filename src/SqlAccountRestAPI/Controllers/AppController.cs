@@ -69,4 +69,9 @@ public partial class AppController : ControllerBase
             return BadRequest(ex);
         }
     }
+    [HttpPost("update")]
+    public async Task<IActionResult> Update()
+    {
+        return Ok(await _app.Update());
+    }
 }
