@@ -174,7 +174,7 @@ public class SqlAccountingAppHelper
         });
         string downloadUrl = await GithubHelper.GetDownloadUrl();
 
-        string appDir = appInfo.ApplicationInfo["APP_DIR"].ToString()!;
+        string appDir = appInfo.ApplicationInfo["APP_DIR"].ToString()!.Replace("\\", "/");
         string appName = appInfo.ApplicationInfo["APP_NAME"].ToString()!;
 
         // PowerShell script as a string
