@@ -180,15 +180,16 @@ public class SqlAccountingAppHelper
         // PowerShell script as a string
         // Stop sv -> Download -> Extract -> Clean up -> Update version in config file -> Start sv
         string powerShellScript = $@"
-        param (
-            [string]$AppName,
-            [string]$DownloadUrl,
-            [string]$AppDir
-        )
+        $AppName = '{appName}'
+        $DownloadUrl = '{downloadUrl}'
+        $AppDir = '{appDir}'
+        Write-Host ${appName}
+        Write-Host $DownloadUrl
+        Write-Host $AppDir
 
         sc.exe stop $AppName
 
-        $DownloadPath = Join-Path $AppDir 'downloaded.zip'
+        $DownloadPath = Join-Path -Path $AppDir -ChildPath 'downloaded.zip'
         Invoke-WebRequest -Uri $DownloadUrl -OutFile $DownloadPath
 
         Expand-Archive -Path $DownloadPath -DestinationPath $AppDir -Force
@@ -204,11 +205,9 @@ public class SqlAccountingAppHelper
         var processInfo = new System.Diagnostics.ProcessStartInfo
         {
             FileName = "powershell.exe",
-            Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{powerShellScript}\" -AppName '{appName}' -DownloadUrl '{downloadUrl}' -AppDir '{appDir}'",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
+            Arguments = $"-NoExit -NoProfile -ExecutionPolicy Bypass -Command \"{powerShellScript}\"",
+            Verb = "runas",
+            UseShellExecute = true,
         };
 
         var process = System.Diagnostics.Process.Start(processInfo);
