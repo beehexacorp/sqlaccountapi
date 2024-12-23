@@ -182,10 +182,7 @@ public class SqlAccountingAppHelper
         string powerShellScript = $@"
         $AppName = '{appName}'
         $DownloadUrl = '{downloadUrl}'
-        $AppDir = '{appDir}'
-        Write-Host ${appName}
-        Write-Host $DownloadUrl
-        Write-Host $AppDir
+        $AppDir = '{Path.Combine(appDir, appName)}'
 
         sc.exe stop $AppName
 
