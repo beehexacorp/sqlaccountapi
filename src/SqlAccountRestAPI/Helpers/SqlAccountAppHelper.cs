@@ -207,17 +207,11 @@ public class SqlAccountingAppHelper
             UseShellExecute = true,
         };
 
-        var process = System.Diagnostics.Process.Start(processInfo);
-
-        // process run without wait -> application will stop here
-        string output = await process!.StandardOutput.ReadToEndAsync();
-        string errors = await process.StandardError.ReadToEndAsync();
+        System.Diagnostics.Process.Start(processInfo);
 
         return new Dictionary<string, object>
-            {
-                { "Status", "Update process started. Service will restart soon." },
-                { "Output", output },
-                { "Errors", errors }
-            };
+        {
+            { "Status", "Update process started. Service will restart soon." },
+        };
     }
 }
